@@ -1,12 +1,123 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { motion } from "framer-motion";
+import { ArrowRight, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { storage, type EntryMode } from "@/lib/storage";
+
+const archetypePreviews = [
+  {
+    emoji: "🦁",
+    name: "Lion",
+    tagline: "The Autonomous Leader",
+    desc: "Decisive, independent, visionary. You take charge and drive results.",
+  },
+  {
+    emoji: "🐋",
+    name: "Whale",
+    tagline: "The Collaborative Anchor",
+    desc: "Empathetic, supportive, adaptive. You build bridges and lift teams.",
+  },
+  {
+    emoji: "🦅",
+    name: "Falcon",
+    tagline: "The Precision Specialist",
+    desc: "Detail-oriented, systematic, expert. You master craft and optimize.",
+  },
+];
 
 const Index = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
+
+  useEffect(() => {
+    let mode: EntryMode = "public";
+    let token: string | undefined;
+    let orgCode: string | undefined;
+
+    if (location.pathname === "/assess") {
+      mode = "candidate";
+      token = searchParams.get("token") || undefined;
+    } else if (location.pathname === "/team") {
+      mode = "team";
+      orgCode = searchParams.get("org") || undefined;
+    }
+
+    storage.setEntryMode({ mode, token, orgCode });
+  }, [location.pathname, searchParams]);
+
+  const handleStart = () => {
+    navigate("/assessment");
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-navy-radial flex flex-col">
+      {/* Hero */}
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-2xl mx-auto"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass mb-8 text-sm text-muted-foreground">
+            <Sparkles className="w-4 h-4 text-primary" />
+            Work Archetype Assessment
+          </div>
+
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-6">
+            Discover Your{" "}
+            <span className="text-gradient-gold">Work DNA</span>
+          </h1>
+
+          <p className="text-lg sm:text-xl text-muted-foreground mb-10 max-w-xl mx-auto">
+            12 questions. 5 minutes. Uncover the archetype that drives your
+            career success.
+          </p>
+
+          <Button
+            size="lg"
+            onClick={handleStart}
+            className="text-lg px-8 py-6 rounded-xl font-bold animate-pulse-gold"
+          >
+            Start Assessment
+            <ArrowRight className="ml-2 w-5 h-5" />
+          </Button>
+        </motion.div>
+
+        {/* Archetype Preview Cards */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-16 max-w-3xl mx-auto w-full px-4"
+        >
+          {archetypePreviews.map((a, idx) => (
+            <motion.div
+              key={a.name}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 + idx * 0.15, duration: 0.4 }}
+              className="glass-card p-6 text-center hover:scale-105 transition-transform duration-300"
+            >
+              <div className="text-5xl mb-3">{a.emoji}</div>
+              <h3 className="font-bold text-lg text-foreground mb-1">
+                {a.name}
+              </h3>
+              <p className="text-sm text-primary font-medium mb-2">
+                {a.tagline}
+              </p>
+              <p className="text-xs text-muted-foreground">{a.desc}</p>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
+
+      {/* Footer */}
+      <footer className="py-6 text-center text-xs text-muted-foreground">
+        Candidate DNA Profile · Powered by Be Connect
+      </footer>
     </div>
   );
 };
