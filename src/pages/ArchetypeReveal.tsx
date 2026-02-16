@@ -144,12 +144,12 @@ const ArchetypeReveal = () => {
                 <h3 className="text-center font-semibold text-foreground mb-2">
                   Your Dimension Scores
                 </h3>
-                <ResponsiveContainer width="100%" height={250}>
-                  <RadarChart data={radarData}>
+                <ResponsiveContainer width="100%" height={280}>
+                  <RadarChart data={radarData} cx="50%" cy="50%" outerRadius="65%">
                     <PolarGrid stroke="hsl(213 40% 28%)" />
                     <PolarAngleAxis
                       dataKey="dimension"
-                      tick={{ fill: "hsl(220 20% 65%)", fontSize: 11 }}
+                      tick={{ fill: "hsl(220 20% 65%)", fontSize: 10 }}
                     />
                     <PolarRadiusAxis
                       angle={90}
