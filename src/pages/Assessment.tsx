@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowLeft } from "lucide-react";
@@ -18,6 +18,15 @@ const Assessment = () => {
 
   const question = questions[currentIdx];
   const answer = answers[question.id];
+
+  // Auto-initialize slider answers with default value
+  useEffect(() => {
+    if (question.type === "slider" && answers[question.id] === undefined) {
+      const updated = { ...answers, [question.id]: 5 };
+      setAnswers(updated);
+      storage.setAnswers(updated);
+    }
+  }, [question.id, question.type]);
 
   const isAnswered = () => {
     if (answer === undefined) return false;
