@@ -52,7 +52,7 @@ const Index = () => {
             setTokenError("This link is invalid or has expired.");
           } else {
             orgCode = result.orgCode;
-            storage.setEntryMode({ mode, token, orgCode, candidateEmail: result.candidateEmail });
+            storage.setEntryMode({ mode, token, orgCode, candidateEmail: result.candidateEmail, candidateName: result.candidateName });
           }
         });
         return; // Don't set entry mode yet, wait for validation
