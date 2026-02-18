@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { storage } from "@/lib/storage";
 import { archetypeData } from "@/lib/archetypes";
 import type { Archetype, AssessmentResult } from "@/lib/scoring";
+import { persistCareerProfile } from "@/lib/persistence";
 
 interface Milestone {
   id: string;
@@ -64,9 +65,16 @@ const CareerCompass = () => {
     setMilestones(milestones.map((m) => (m.id === id ? { ...m, [field]: value } : m)));
   };
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
     storage.setMilestones(milestones);
     storage.setMotivators(motivators);
+
+    // Persist to database
+    const assessmentId = storage.getAssessmentId();
+    if (assessmentId) {
+      await persistCareerProfile(assessmentId, milestones, motivators);
+    }
+
     setStep("complete");
   };
 

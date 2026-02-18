@@ -1,9 +1,10 @@
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { storage, type EntryMode } from "@/lib/storage";
+import { validateMagicLink } from "@/lib/persistence";
 
 const archetypePreviews = [
   {
@@ -30,6 +31,8 @@ const Index = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const location = useLocation();
+  const [tokenError, setTokenError] = useState<string | null>(null);
+  const [validating, setValidating] = useState(false);
 
   useEffect(() => {
     let mode: EntryMode = "public";
@@ -39,6 +42,21 @@ const Index = () => {
     if (location.pathname === "/assess") {
       mode = "candidate";
       token = searchParams.get("token") || undefined;
+
+      // Validate magic link token
+      if (token) {
+        setValidating(true);
+        validateMagicLink(token).then((result) => {
+          setValidating(false);
+          if (!result.valid) {
+            setTokenError("This link is invalid or has expired.");
+          } else {
+            orgCode = result.orgCode;
+            storage.setEntryMode({ mode, token, orgCode });
+          }
+        });
+        return; // Don't set entry mode yet, wait for validation
+      }
     } else if (location.pathname === "/team") {
       mode = "team";
       orgCode = searchParams.get("org") || undefined;
@@ -50,6 +68,27 @@ const Index = () => {
   const handleStart = () => {
     navigate("/assessment");
   };
+
+  if (validating) {
+    return (
+      <div className="min-h-screen bg-navy-radial flex items-center justify-center">
+        <p className="text-lg text-muted-foreground">Validating your link...</p>
+      </div>
+    );
+  }
+
+  if (tokenError) {
+    return (
+      <div className="min-h-screen bg-navy-radial flex flex-col items-center justify-center px-4">
+        <div className="text-6xl mb-6">🔗</div>
+        <h1 className="text-2xl font-bold text-foreground mb-3">Link Invalid</h1>
+        <p className="text-muted-foreground mb-6 text-center max-w-md">{tokenError}</p>
+        <Button onClick={() => navigate("/")} variant="outline" className="rounded-xl">
+          Go to Public Assessment
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-navy-radial flex flex-col">
