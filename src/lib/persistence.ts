@@ -155,7 +155,7 @@ export async function persistCareerProfile(
   }
 }
 
-export async function validateMagicLink(token: string): Promise<{ valid: boolean; orgCode?: string; candidateName?: string }> {
+export async function validateMagicLink(token: string): Promise<{ valid: boolean; orgCode?: string; candidateName?: string; candidateEmail?: string }> {
   try {
     const { data, error } = await supabase
       .from("magic_links")
@@ -171,6 +171,7 @@ export async function validateMagicLink(token: string): Promise<{ valid: boolean
       valid: true,
       orgCode: data.org_code,
       candidateName: data.candidate_name || undefined,
+      candidateEmail: data.candidate_email || undefined,
     };
   } catch {
     return { valid: false };
