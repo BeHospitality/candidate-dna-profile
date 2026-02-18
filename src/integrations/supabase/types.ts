@@ -14,7 +14,263 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      assessment_responses: {
+        Row: {
+          answer: Json
+          assessment_id: string
+          created_at: string
+          id: string
+          question_id: number
+        }
+        Insert: {
+          answer: Json
+          assessment_id: string
+          created_at?: string
+          id?: string
+          question_id: number
+        }
+        Update: {
+          answer?: Json
+          assessment_id?: string
+          created_at?: string
+          id?: string
+          question_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_responses_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "assessments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assessments: {
+        Row: {
+          archetype: string
+          archetype_scores: Json
+          completed_at: string
+          created_at: string
+          dimension_scores: Json
+          entry_mode: string
+          id: string
+          org_code: string | null
+          token: string | null
+          user_id: string | null
+        }
+        Insert: {
+          archetype: string
+          archetype_scores?: Json
+          completed_at?: string
+          created_at?: string
+          dimension_scores?: Json
+          entry_mode?: string
+          id?: string
+          org_code?: string | null
+          token?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          archetype?: string
+          archetype_scores?: Json
+          completed_at?: string
+          created_at?: string
+          dimension_scores?: Json
+          entry_mode?: string
+          id?: string
+          org_code?: string | null
+          token?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      audit_log: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          event_type: string
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          target_id: string | null
+          target_type: string | null
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          event_type: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Relationships: []
+      }
+      career_milestones: {
+        Row: {
+          assessment_id: string
+          created_at: string
+          description: string | null
+          id: string
+          sort_order: number
+          title: string
+          user_id: string | null
+          year: number | null
+        }
+        Insert: {
+          assessment_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          sort_order?: number
+          title: string
+          user_id?: string | null
+          year?: number | null
+        }
+        Update: {
+          assessment_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          sort_order?: number
+          title?: string
+          user_id?: string | null
+          year?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "career_milestones_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "assessments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      magic_links: {
+        Row: {
+          assessment_id: string | null
+          candidate_email: string | null
+          candidate_name: string | null
+          created_at: string
+          expire_at: string | null
+          id: string
+          org_code: string
+          token: string
+          used: boolean
+          used_at: string | null
+        }
+        Insert: {
+          assessment_id?: string | null
+          candidate_email?: string | null
+          candidate_name?: string | null
+          created_at?: string
+          expire_at?: string | null
+          id?: string
+          org_code: string
+          token?: string
+          used?: boolean
+          used_at?: string | null
+        }
+        Update: {
+          assessment_id?: string | null
+          candidate_email?: string | null
+          candidate_name?: string | null
+          created_at?: string
+          expire_at?: string | null
+          id?: string
+          org_code?: string
+          token?: string
+          used?: boolean
+          used_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "magic_links_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "assessments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      motivators: {
+        Row: {
+          assessment_id: string
+          category: string
+          created_at: string
+          id: string
+          user_id: string | null
+          value: string
+        }
+        Insert: {
+          assessment_id: string
+          category: string
+          created_at?: string
+          id?: string
+          user_id?: string | null
+          value: string
+        }
+        Update: {
+          assessment_id?: string
+          category?: string
+          created_at?: string
+          id?: string
+          user_id?: string | null
+          value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "motivators_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "assessments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          email: string | null
+          id: string
+          org_code: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          org_code?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          org_code?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
