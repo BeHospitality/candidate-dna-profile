@@ -4,6 +4,7 @@ export interface EntryInfo {
   mode: EntryMode;
   token?: string;
   orgCode?: string;
+  candidateEmail?: string;
 }
 
 const KEYS = {

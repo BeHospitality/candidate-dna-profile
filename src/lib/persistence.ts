@@ -48,6 +48,33 @@ export async function persistAssessment({ result, answers, entryInfo }: PersistA
       console.error("Failed to persist responses:", responsesError);
     }
 
+    // Send results to Hub if this is a candidate assessment
+    if (entryInfo.mode === 'candidate' && entryInfo.candidateEmail) {
+      try {
+        await fetch('https://buriwmeuvujisgmqnpjr.supabase.co/functions/v1/dna-webhook', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            assessment_id: assessment.id,
+            candidate_email: entryInfo.candidateEmail,
+            archetype: result.primaryArchetype,
+            dimension_scores: {
+              autonomy: result.scores.autonomy,
+              collaboration: result.scores.collaboration,
+              precision: result.scores.precision,
+              leadership: result.scores.leadership,
+              adaptability: result.scores.adaptability,
+            },
+          }),
+        });
+        console.log('Results sent to Hub successfully');
+      } catch (err) {
+        console.error('Failed to send results to Hub:', err);
+      }
+    }
+
     // Audit log
     await supabase.from("audit_log").insert({
       event_type: "assessment_completed",
