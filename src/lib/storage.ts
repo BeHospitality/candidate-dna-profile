@@ -12,6 +12,7 @@ const KEYS = {
   results: "dna-results",
   milestones: "dna-milestones",
   motivators: "dna-motivators",
+  assessmentId: "dna-assessment-id",
 } as const;
 
 export const storage = {
@@ -44,6 +45,9 @@ export const storage = {
     try { return JSON.parse(localStorage.getItem(KEYS.motivators) || "{}"); }
     catch { return {}; }
   },
+
+  setAssessmentId: (id: string) => localStorage.setItem(KEYS.assessmentId, id),
+  getAssessmentId: (): string | null => localStorage.getItem(KEYS.assessmentId),
 
   clear: () => Object.values(KEYS).forEach((k) => localStorage.removeItem(k)),
 };

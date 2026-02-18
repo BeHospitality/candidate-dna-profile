@@ -15,6 +15,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useToast } from "@/hooks/use-toast";
+import { persistAssessment, markMagicLinkUsed } from "@/lib/persistence";
 
 const ArchetypeReveal = () => {
   const navigate = useNavigate();
@@ -32,6 +33,18 @@ const ArchetypeReveal = () => {
     const res = calculateScores(answers);
     setResult(res);
     storage.setResults(res);
+
+    // Persist to database
+    const entryInfo = storage.getEntryMode();
+    persistAssessment({ result: res, answers, entryInfo }).then((assessmentId) => {
+      if (assessmentId) {
+        storage.setAssessmentId(assessmentId);
+        // Mark magic link as used if candidate mode
+        if (entryInfo.mode === "candidate" && entryInfo.token) {
+          markMagicLinkUsed(entryInfo.token, assessmentId);
+        }
+      }
+    });
 
     const t1 = setTimeout(() => setPhase("flip"), 2000);
     const t2 = setTimeout(() => setPhase("revealed"), 3000);
