@@ -21,12 +21,12 @@ const RankingQuestion = ({ items, ranking, onRank }: RankingQuestionProps) => {
     return idx === -1 ? null : idx + 1;
   };
 
-  const rankLabels = ["1st", "2nd", "3rd"];
+  const rankLabels = ["1st", "2nd", "3rd", "4th"];
 
   return (
     <div className="flex flex-col gap-3 w-full max-w-lg mx-auto">
       <p className="text-sm text-muted-foreground text-center mb-2">
-        Tap in order of importance (1st → 3rd)
+        Tap in order of importance (1st → {items.length === 4 ? '4th' : '3rd'})
       </p>
       {items.map((item, idx) => {
         const rank = getRank(item.text);
