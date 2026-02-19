@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Share2, Copy, Linkedin, Twitter, ArrowRight, Download } from "lucide-react";
+import { Share2, Copy, Linkedin, Twitter, ArrowRight, Download, FileText, Link as LinkIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { storage } from "@/lib/storage";
 import { calculateScores, calculateComprehensiveScores, type AssessmentResult, type ComprehensiveScores } from "@/lib/scoring";
@@ -20,6 +20,7 @@ import {
 } from "recharts";
 import { useToast } from "@/hooks/use-toast";
 import { persistAssessment, markMagicLinkUsed } from "@/lib/persistence";
+import { generateProfilePDF } from "@/utils/generateProfilePDF";
 import ScrollRevealSection from "@/components/results/ScrollRevealSection";
 import DimensionBreakdown from "@/components/results/DimensionBreakdown";
 import SectorMatches from "@/components/results/SectorMatches";
@@ -125,6 +126,30 @@ const ArchetypeReveal = () => {
   };
 
   const handleContinue = () => navigate("/career-compass");
+
+  const handleDownloadPDF = () => {
+    const path = storage.getExperiencePath() || 'experienced';
+    const scores = comprehensiveScores || result.scores;
+    generateProfilePDF({
+      archetype: { name: archetype.name, emoji: archetype.emoji, title: archetype.tagline, traits: archetype.traits, strengths: archetype.strengths, workStyle: archetype.workStyle },
+      comprehensiveScores: scores as unknown as Record<string, number>,
+      sectorMatches,
+      geographyMatches,
+      departmentMatches,
+      experiencePath: path,
+      completedAt: new Date().toISOString(),
+    });
+  };
+
+  const assessmentId = storage.getAssessmentId();
+  const shareableUrl = assessmentId ? `${window.location.origin}/results/${assessmentId}` : null;
+
+  const copyShareLink = () => {
+    if (shareableUrl) {
+      navigator.clipboard.writeText(shareableUrl);
+      toast({ title: "Link copied!", description: "Share your DNA profile with anyone." });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-navy-radial">
@@ -243,6 +268,12 @@ const ArchetypeReveal = () => {
                 transition={{ delay: 0.5 }}
                 className="w-full max-w-lg mx-auto space-y-6"
               >
+                {/* Download DNA Profile - Top */}
+                <Button onClick={handleDownloadPDF} variant="outline" className="w-full rounded-xl" size="lg">
+                  <FileText className="mr-2 w-4 h-4" />
+                  Download DNA Profile
+                </Button>
+
                 {/* Strengths */}
                 <div className="glass-card p-6 rounded-2xl">
                   <h3 className="font-bold text-lg text-foreground mb-3">💪 Strengths</h3>
@@ -391,6 +422,18 @@ const ArchetypeReveal = () => {
                     <Button variant="outline" size="sm" onClick={copyLink} className="rounded-lg">
                       <Copy className="w-4 h-4 mr-2" />
                       Copy Link
+                    </Button>
+                    {shareableUrl && (
+                      <Button variant="outline" size="sm" onClick={copyShareLink} className="rounded-lg">
+                        <LinkIcon className="w-4 h-4 mr-2" />
+                        Share Profile
+                      </Button>
+                    )}
+                  </div>
+                  <div className="mt-4">
+                    <Button onClick={handleDownloadPDF} variant="outline" size="sm" className="w-full rounded-lg">
+                      <Download className="w-4 h-4 mr-2" />
+                      Download PDF
                     </Button>
                   </div>
                 </div>

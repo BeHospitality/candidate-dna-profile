@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Assessment from "./pages/Assessment";
 import ArchetypeReveal from "./pages/ArchetypeReveal";
 import CareerCompass from "./pages/CareerCompass";
+import SharedResults from "./pages/SharedResults";
 import NotFound from "./pages/NotFound";
 import { retryPendingPayload } from "./utils/hubIntegration";
 
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/team" element={<Index />} />
           <Route path="/assessment" element={<Assessment />} />
           <Route path="/reveal" element={<ArchetypeReveal />} />
+          <Route path="/results/:assessmentId" element={<SharedResults />} />
           <Route path="/career-compass" element={<CareerCompass />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
