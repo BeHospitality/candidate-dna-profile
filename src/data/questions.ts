@@ -813,6 +813,180 @@ export const questionBank: BranchedQuestion[] = [
       { text: "Treating everyone exactly the same regardless of background", scores: { agreeableness: 1 } },
     ],
   },
+
+  // ===== LAYER 5: RELIABILITY & RISK (Q63-Q77) — Experienced path ONLY =====
+
+  // Q63 — Integrity (MC)
+  {
+    id: 63, type: "mc", layer: "reliability", paths: ["experienced"], dimensionKey: "integrity",
+    text: "You find a guest's wallet on the floor of the restaurant. It has €300 cash inside. No one is watching. You:",
+    options: [
+      { label: "A", text: "Hand it to reception immediately with the cash untouched and log it in the lost property book", scores: { integrity: 10, ruleFollowing: 6, dependability: 4 } },
+      { label: "B", text: "Try to find the guest first — check recent reservations, ask nearby tables", scores: { integrity: 8, problemSolving: 5 } },
+      { label: "C", text: "Hand it in but don't bother logging it — it'll find its way back", scores: { integrity: 5, conscientiousness: 2 } },
+      { label: "D", text: "Take the cash and hand in the wallet — they'd assume it was already missing", scores: { integrity: 1 } },
+    ],
+  },
+
+  // Q64 — Integrity (MC)
+  {
+    id: 64, type: "mc", layer: "reliability", paths: ["experienced"], dimensionKey: "integrity",
+    text: "Your manager asks you to mark a food delivery as 'received in full' even though 3 items were missing. They say they'll sort it out later. You:",
+    options: [
+      { label: "A", text: "Refuse politely — I'll note what was actually received and let them handle the supplier", scores: { integrity: 9, ruleFollowing: 7 } },
+      { label: "B", text: "Sign it but send an email to the manager documenting what was actually missing — paper trail", scores: { integrity: 7, selfRegulation: 4 } },
+      { label: "C", text: "Sign it — the manager knows what they're doing", scores: { integrity: 3, agreeableness: 5 } },
+      { label: "D", text: "Sign it but mention it to another manager quietly", scores: { integrity: 5, socialAwareness: 4 } },
+    ],
+  },
+
+  // Q65 — Integrity (Slider)
+  {
+    id: 65, type: "slider", layer: "reliability", paths: ["experienced"], dimensionKey: "integrity",
+    text: "You accidentally break a wine glass backstage — no one saw it. How likely are you to report it?",
+    leftLabel: "Sweep it up and move on — it's just a glass",
+    rightLabel: "Report it immediately — stock counts matter and someone could get cut",
+    leftScores: { integrity: 2, safetyConsciousness: 1 },
+    rightScores: { integrity: 9, safetyConsciousness: 7, dependability: 4 },
+  },
+
+  // Q66 — Integrity (MC)
+  {
+    id: 66, type: "mc", layer: "reliability", paths: ["experienced"], dimensionKey: "integrity",
+    text: "A colleague regularly takes leftover food home without permission. It would otherwise be thrown away. A new manager asks if anyone does this. You:",
+    options: [
+      { label: "A", text: "Be honest about what you've observed — it's a fair question and the manager deserves a straight answer", scores: { integrity: 8, ruleFollowing: 5 } },
+      { label: "B", text: "Suggest the property creates a formal leftover policy instead of singling anyone out", scores: { integrity: 7, socialAwareness: 6, leadership: 4 } },
+      { label: "C", text: "Stay quiet — I'm not going to get a colleague in trouble over food waste", scores: { integrity: 3, agreeableness: 6 } },
+      { label: "D", text: "Deny any knowledge — it's not my problem to solve", scores: { integrity: 1 } },
+    ],
+  },
+
+  // Q67 — Rule-Following (MC)
+  {
+    id: 67, type: "mc", layer: "reliability", paths: ["experienced"], dimensionKey: "ruleFollowing",
+    text: "Your hotel's check-in procedure requires verifying photo ID for every guest. A clearly elderly couple arrives, exhausted after a long journey. They can't find their passports in their bags. You:",
+    options: [
+      { label: "A", text: "Follow procedure — help them search, offer to hold their bags, but I can't check them in without ID. It's policy for a reason", scores: { ruleFollowing: 9, empathy: 5 } },
+      { label: "B", text: "Check them in with a note to verify ID in the morning — use common sense", scores: { ruleFollowing: 4, empathy: 7, agreeableness: 5 } },
+      { label: "C", text: "Call the manager and let them make the call", scores: { ruleFollowing: 6 } },
+      { label: "D", text: "Check them in — they're clearly who they say they are", scores: { ruleFollowing: 2, empathy: 4 } },
+    ],
+  },
+
+  // Q68 — Rule-Following (Slider)
+  {
+    id: 68, type: "slider", layer: "reliability", paths: ["experienced"], dimensionKey: "ruleFollowing",
+    text: "When you think a workplace rule or procedure is outdated or inefficient, what do you do?",
+    leftLabel: "I find my own way around it — results matter more than process",
+    rightLabel: "I follow it exactly while raising the issue through proper channels",
+    leftScores: { ruleFollowing: 2, autonomy: 7 },
+    rightScores: { ruleFollowing: 9, integrity: 5 },
+  },
+
+  // Q69 — Rule-Following (MC)
+  {
+    id: 69, type: "mc", layer: "reliability", paths: ["experienced"], dimensionKey: "ruleFollowing",
+    text: "Health & Safety requires you to wear non-slip shoes in the kitchen. Yours are uncomfortable and you have a 12-hour shift. A colleague offers you their regular trainers that feel much better. You:",
+    options: [
+      { label: "A", text: "No — non-slip shoes are non-negotiable in a kitchen. I'll buy better ones tomorrow and push through today", scores: { ruleFollowing: 9, safetyConsciousness: 8 } },
+      { label: "B", text: "Wear the trainers but stay extra careful on wet floors", scores: { ruleFollowing: 3, safetyConsciousness: 3 } },
+      { label: "C", text: "Ask the manager if there's a spare pair in the right size", scores: { ruleFollowing: 7, problemSolving: 5 } },
+      { label: "D", text: "Wear the trainers — the rule is overcautious anyway", scores: { ruleFollowing: 1, safetyConsciousness: 1 } },
+    ],
+  },
+
+  // Q70 — Rule-Following (MC)
+  {
+    id: 70, type: "mc", layer: "reliability", paths: ["experienced"], dimensionKey: "ruleFollowing",
+    text: "A VIP guest asks you to serve alcohol to their 16-year-old at a private dinner. 'In our country it's perfectly normal,' they explain. You:",
+    options: [
+      { label: "A", text: "Decline respectfully — Irish law is clear, regardless of the guest's home customs. Offer non-alcoholic alternatives", scores: { ruleFollowing: 10, integrity: 8, socialAwareness: 5 } },
+      { label: "B", text: "Check with the manager before deciding", scores: { ruleFollowing: 6 } },
+      { label: "C", text: "Serve it discreetly — the guest is VIP and it's a private dinner", scores: { ruleFollowing: 1, integrity: 1 } },
+      { label: "D", text: "Explain the law but suggest the parent could order and share at their own discretion", scores: { ruleFollowing: 4, socialAwareness: 4 } },
+    ],
+  },
+
+  // Q71 — Safety Consciousness (MC)
+  {
+    id: 71, type: "mc", layer: "reliability", paths: ["experienced"], dimensionKey: "safetyConsciousness",
+    text: "You notice a small water leak from a pipe above the walk-in fridge. It's not urgent — just a slow drip. You:",
+    options: [
+      { label: "A", text: "Report it immediately to maintenance, put a bucket underneath, and flag it in the handover notes for the next shift", scores: { safetyConsciousness: 9, attentionToDetail: 6, dependability: 5 } },
+      { label: "B", text: "Report it to maintenance — they'll prioritise it", scores: { safetyConsciousness: 7 } },
+      { label: "C", text: "Put a bucket under it and mention it when I next see maintenance", scores: { safetyConsciousness: 4 } },
+      { label: "D", text: "It's a slow drip — someone else will notice and handle it", scores: { safetyConsciousness: 1 } },
+    ],
+  },
+
+  // Q72 — Safety Consciousness (MC)
+  {
+    id: 72, type: "mc", layer: "reliability", paths: ["experienced"], dimensionKey: "safetyConsciousness",
+    text: "A guest with a severe nut allergy asks if the chocolate dessert is safe. The kitchen says yes, but you notice 'may contain traces of nuts' on the garnish packaging. You:",
+    options: [
+      { label: "A", text: "Stop. Tell the guest you need to double-check. Go back to the kitchen with the packaging and get absolute confirmation before serving", scores: { safetyConsciousness: 10, integrity: 7, attentionToDetail: 7 } },
+      { label: "B", text: "Mention the packaging to the kitchen and let them decide", scores: { safetyConsciousness: 6 } },
+      { label: "C", text: "Trust the kitchen — they know their ingredients better than I do", scores: { safetyConsciousness: 3 } },
+      { label: "D", text: "Serve it — 'may contain traces' isn't the same as 'contains nuts'", scores: { safetyConsciousness: 1 } },
+    ],
+  },
+
+  // Q73 — Safety Consciousness (Slider)
+  {
+    id: 73, type: "slider", layer: "reliability", paths: ["experienced"], dimensionKey: "safetyConsciousness",
+    text: "You see a fire exit partially blocked by stacked chairs. The corridor is still passable. How urgently do you act?",
+    leftLabel: "It's passable — I'll mention it when I get a chance",
+    rightLabel: "I clear it immediately — fire exits must be completely unobstructed, no exceptions",
+    leftScores: { safetyConsciousness: 2, ruleFollowing: 2 },
+    rightScores: { safetyConsciousness: 10, ruleFollowing: 8 },
+  },
+
+  // Q74 — Safety Consciousness (MC)
+  {
+    id: 74, type: "mc", layer: "reliability", paths: ["experienced"], dimensionKey: "safetyConsciousness",
+    text: "During a heatwave, the kitchen temperature is dangerously high. Staff are uncomfortable but service must continue. You:",
+    options: [
+      { label: "A", text: "Flag it formally — request additional breaks, portable fans, cold water stations. Document the temperature in case it becomes an H&S issue", scores: { safetyConsciousness: 9, leadership: 6, integrity: 5 } },
+      { label: "B", text: "Set up water stations and encourage the team to take breaks", scores: { safetyConsciousness: 7, empathy: 5 } },
+      { label: "C", text: "Push through — it's a heatwave, everyone's dealing with it", scores: { safetyConsciousness: 3 } },
+      { label: "D", text: "Complain but keep working — what else can you do?", scores: { safetyConsciousness: 2 } },
+    ],
+  },
+
+  // Q75 — Dependability (MC)
+  {
+    id: 75, type: "mc", layer: "reliability", paths: ["experienced"], dimensionKey: "dependability",
+    text: "You're feeling genuinely unwell — not life-threatening, but you'd rather be in bed. You're rostered for a busy Saturday night and the team is already short-staffed. You:",
+    options: [
+      { label: "A", text: "Go in — the team needs me. I'll power through and rest tomorrow", scores: { dependability: 9, collaboration: 5 } },
+      { label: "B", text: "Go in but tell the manager I'm not 100%, so they can adjust if needed", scores: { dependability: 8, integrity: 5 } },
+      { label: "C", text: "Call in sick — my health comes first and I don't want to underperform", scores: { dependability: 4, autonomy: 5 } },
+      { label: "D", text: "Call in sick — Saturday nights aren't my problem if I'm unwell", scores: { dependability: 2 } },
+    ],
+  },
+
+  // Q76 — Dependability (Slider)
+  {
+    id: 76, type: "slider", layer: "reliability", paths: ["experienced"], dimensionKey: "dependability",
+    text: "How often are you the person who arrives before the shift starts and stays until everything is properly finished?",
+    leftLabel: "I arrive on time and leave on time — boundaries matter",
+    rightLabel: "Almost always — I'm typically first in and last out",
+    leftScores: { dependability: 4, autonomy: 5 },
+    rightScores: { dependability: 9, conscientiousness: 6 },
+  },
+
+  // Q77 — Dependability (MC)
+  {
+    id: 77, type: "mc", layer: "reliability", paths: ["experienced"], dimensionKey: "dependability",
+    text: "You promised a colleague you'd cover their Tuesday shift. On Monday, a friend offers you concert tickets for Tuesday night. You:",
+    options: [
+      { label: "A", text: "I made a commitment — I'll cover the shift. The concert will come around again", scores: { dependability: 10, integrity: 7 } },
+      { label: "B", text: "Try to find someone else to cover, and only go to the concert if I find a replacement", scores: { dependability: 7, problemSolving: 4 } },
+      { label: "C", text: "Ask my colleague if they can find their own cover — I really want to go", scores: { dependability: 3 } },
+      { label: "D", text: "Go to the concert — my colleague will understand", scores: { dependability: 1, integrity: 1 } },
+    ],
+  },
 ];
 
 /** Get the filtered question list for a given experience path */
@@ -827,7 +1001,7 @@ export function getLayerLabel(layer: LayerType): string {
     case 'cognitive': return 'Testing your cognitive strengths...';
     case 'personality': return 'Exploring your personality...';
     case 'eq': return 'Measuring emotional intelligence...';
-    case 'reliability': return 'Assessing reliability & values...';
+    case 'reliability': return 'Assessing your reliability & professional standards...';
     case 'career': return 'Mapping career drivers...';
     default: return '';
   }
