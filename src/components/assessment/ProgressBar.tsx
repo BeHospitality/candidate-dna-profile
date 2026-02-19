@@ -3,9 +3,11 @@ import { motion } from "framer-motion";
 interface ProgressBarProps {
   current: number;
   total: number;
+  layerLabel?: string;
+  timeEstimate?: string;
 }
 
-const ProgressBar = ({ current, total }: ProgressBarProps) => {
+const ProgressBar = ({ current, total, layerLabel, timeEstimate }: ProgressBarProps) => {
   const percentage = (current / total) * 100;
 
   return (
@@ -26,6 +28,16 @@ const ProgressBar = ({ current, total }: ProgressBarProps) => {
           transition={{ duration: 0.5, ease: "easeOut" }}
         />
       </div>
+      {(layerLabel || timeEstimate) && (
+        <div className="flex items-center justify-between mt-1.5">
+          {layerLabel && (
+            <span className="text-xs text-muted-foreground italic">{layerLabel}</span>
+          )}
+          {timeEstimate && (
+            <span className="text-xs text-muted-foreground">{timeEstimate}</span>
+          )}
+        </div>
+      )}
     </div>
   );
 };

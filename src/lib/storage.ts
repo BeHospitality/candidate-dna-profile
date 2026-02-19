@@ -1,3 +1,5 @@
+import type { ExperiencePath } from "@/data/questions";
+
 export type EntryMode = "public" | "candidate" | "team";
 
 export interface EntryInfo {
@@ -15,6 +17,7 @@ const KEYS = {
   milestones: "dna-milestones",
   motivators: "dna-motivators",
   assessmentId: "dna-assessment-id",
+  experiencePath: "dna_experience_path",
 } as const;
 
 export const storage = {
@@ -50,6 +53,9 @@ export const storage = {
 
   setAssessmentId: (id: string) => localStorage.setItem(KEYS.assessmentId, id),
   getAssessmentId: (): string | null => localStorage.getItem(KEYS.assessmentId),
+
+  setExperiencePath: (path: ExperiencePath) => localStorage.setItem(KEYS.experiencePath, path),
+  getExperiencePath: (): ExperiencePath | null => localStorage.getItem(KEYS.experiencePath) as ExperiencePath | null,
 
   clear: () => Object.values(KEYS).forEach((k) => localStorage.removeItem(k)),
 };

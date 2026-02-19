@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Share2, Copy, Linkedin, Twitter, ArrowRight, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { storage } from "@/lib/storage";
-import { calculateScores, type AssessmentResult } from "@/lib/scoring";
+import { calculateScores, calculateComprehensiveScores, type AssessmentResult } from "@/lib/scoring";
+import { getQuestionsForPath, type ExperiencePath } from "@/data/questions";
 import { archetypeData } from "@/lib/archetypes";
 import {
   RadarChart,
@@ -33,6 +34,12 @@ const ArchetypeReveal = () => {
     const res = calculateScores(answers);
     setResult(res);
     storage.setResults(res);
+
+    // Compute comprehensive scores for new dimensions
+    const path = storage.getExperiencePath() || 'experienced';
+    const pathQuestions = getQuestionsForPath(path as ExperiencePath);
+    const comprehensive = calculateComprehensiveScores(answers, pathQuestions);
+    console.log('📊 Comprehensive scores:', comprehensive);
 
     // Persist to database
     const entryInfo = storage.getEntryMode();
