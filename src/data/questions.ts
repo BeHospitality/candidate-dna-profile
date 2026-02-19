@@ -987,6 +987,296 @@ export const questionBank: BranchedQuestion[] = [
       { label: "D", text: "Go to the concert — my colleague will understand", scores: { dependability: 1, integrity: 1 } },
     ],
   },
+
+  // ============================================================
+  // LAYER 6: CAREER COMPASS — SHARED (Q78-Q87) — ALL paths
+  // ============================================================
+
+  // Q78 — Career Aspirations (MC)
+  {
+    id: 78, type: "mc", layer: "career", paths: allPaths, dimensionKey: "careerAspiration",
+    text: "Where do you honestly see yourself in hospitality 3 years from now?",
+    options: [
+      { label: "A", text: "Running my own department or property — I want to lead", scores: { leadership: 7, autonomy: 6 } },
+      { label: "B", text: "Becoming a specialist — mastering my craft at the highest level", scores: { precision: 7, conscientiousness: 5 } },
+      { label: "C", text: "Growing steadily — better roles, better properties, better pay", scores: { adaptability: 5, dependability: 4 } },
+      { label: "D", text: "I'm not sure yet — I'm still figuring out my path", scores: { openness: 5, adaptability: 4 } },
+    ],
+  },
+
+  // Q79 — Career Aspirations (MC)
+  {
+    id: 79, type: "mc", layer: "career", paths: allPaths, dimensionKey: "careerAspiration",
+    text: "What would make you leave a hospitality job you otherwise liked?",
+    options: [
+      { label: "A", text: "No growth — if I can't see a path upward, I'll find one elsewhere", scores: { leadership: 5, autonomy: 6 } },
+      { label: "B", text: "Toxic culture — no amount of money makes up for a bad team", scores: { collaboration: 7, emotionalStability: 4 } },
+      { label: "C", text: "Pay — I need to earn what I'm worth", scores: { autonomy: 4 } },
+      { label: "D", text: "Burnout — if the hours or pressure become unsustainable", scores: { emotionalStability: 3, adaptability: 3 } },
+    ],
+  },
+
+  // Q80 — Work-Life Balance (Slider)
+  {
+    id: 80, type: "slider", layer: "career", paths: allPaths, dimensionKey: "workLifeBalance",
+    text: "How important is work-life balance to you versus career progression?",
+    leftLabel: "Career comes first — I'll sacrifice personal time to get ahead",
+    rightLabel: "Balance is non-negotiable — I work to live, not live to work",
+    leftScores: { leadership: 5, conscientiousness: 4 },
+    rightScores: { emotionalStability: 5, adaptability: 4 },
+  },
+
+  // Q81 — Geographic Flexibility (MC)
+  {
+    id: 81, type: "mc", layer: "career", paths: allPaths, dimensionKey: "geographicFlexibility",
+    text: "If the perfect role came up but required relocating to another country, you would:",
+    options: [
+      { label: "A", text: "Go without hesitation — my career is global", scores: { adaptability: 8, openness: 7 } },
+      { label: "B", text: "Seriously consider it — depends on the country and the role", scores: { adaptability: 6, openness: 5 } },
+      { label: "C", text: "Only within Europe — I want to stay close to home", scores: { adaptability: 4 } },
+      { label: "D", text: "No — I'm rooted here and not willing to relocate", scores: { adaptability: 2 } },
+    ],
+  },
+
+  // Q82 — Learning Preference (MC)
+  {
+    id: 82, type: "mc", layer: "career", paths: allPaths, dimensionKey: "learningPreference",
+    text: "How do you prefer to develop your professional skills?",
+    options: [
+      { label: "A", text: "On the job — shadowing, mentoring, real-world experience", scores: { learningSpeed: 6, collaboration: 5 } },
+      { label: "B", text: "Structured courses — online certifications, classroom training", scores: { conscientiousness: 6, learningSpeed: 5 } },
+      { label: "C", text: "Self-directed — books, podcasts, YouTube, industry blogs", scores: { autonomy: 7, learningSpeed: 5 } },
+      { label: "D", text: "Mix of everything — whatever gets results fastest", scores: { adaptability: 6, openness: 5 } },
+    ],
+  },
+
+  // Q83 — Sector Preference (Ranking)
+  {
+    id: 83, type: "ranking", layer: "career", paths: allPaths, dimensionKey: "sectorPreference",
+    text: "Rank these hospitality sectors from most to least appealing to you:",
+    items: [
+      { text: "Luxury Hotels & Resorts", scores: { precision: 1, conscientiousness: 1 } },
+      { text: "Restaurants & Fine Dining", scores: { adaptability: 1, extraversion: 1 } },
+      { text: "Events & Conferences", scores: { collaboration: 1, openness: 1 } },
+      { text: "Private Members' Clubs", scores: { empathy: 1, socialAwareness: 1 } },
+    ],
+  },
+
+  // Q84 — Role Satisfaction (Slider)
+  {
+    id: 84, type: "slider", layer: "career", paths: allPaths, dimensionKey: "roleSatisfaction",
+    text: "In your current or most recent role, how fulfilled do you feel professionally?",
+    leftLabel: "Deeply unfulfilled — I know I'm capable of much more",
+    rightLabel: "Very fulfilled — I'm in the right place doing the right work",
+    leftScores: { autonomy: 5, leadership: 4 },
+    rightScores: { emotionalStability: 5, conscientiousness: 4 },
+  },
+
+  // Q85 — Motivation (MC)
+  {
+    id: 85, type: "mc", layer: "career", paths: allPaths, dimensionKey: "motivation",
+    text: "What motivates you most in your day-to-day work?",
+    options: [
+      { label: "A", text: "Making guests genuinely happy — that look on their face when you nail it", scores: { empathy: 7, extraversion: 4 } },
+      { label: "B", text: "Building and leading a team that works brilliantly together", scores: { leadership: 7, collaboration: 5 } },
+      { label: "C", text: "Personal mastery — getting better at my craft every single day", scores: { precision: 6, conscientiousness: 5 } },
+      { label: "D", text: "Career progression — every role is a stepping stone to where I'm going", scores: { autonomy: 6, leadership: 4 } },
+    ],
+  },
+
+  // Q86 — Challenge Tolerance (MC)
+  {
+    id: 86, type: "mc", layer: "career", paths: allPaths, dimensionKey: "challengeTolerance",
+    text: "How do you feel about working weekends, bank holidays, and late nights — the reality of hospitality hours?",
+    options: [
+      { label: "A", text: "It's part of the deal — I knew what I signed up for and I genuinely don't mind", scores: { dependability: 7, adaptability: 6 } },
+      { label: "B", text: "I accept it but I need a fair roster — predictability matters to me", scores: { dependability: 5, conscientiousness: 5, ruleFollowing: 4 } },
+      { label: "C", text: "I tolerate it for now but I'm working toward a role with more normal hours", scores: { autonomy: 5 } },
+      { label: "D", text: "It's the worst part of the job and I'd leave if I could find something with regular hours", scores: { adaptability: 2 } },
+    ],
+  },
+
+  // Q87 — Industry Commitment (Slider)
+  {
+    id: 87, type: "slider", layer: "career", paths: allPaths, dimensionKey: "industryCommitment",
+    text: "How likely are you to still be in the hospitality industry in 5 years?",
+    leftLabel: "Unlikely — I'm exploring my options",
+    rightLabel: "Certain — hospitality is my career, not just a job",
+    leftScores: { adaptability: 4 },
+    rightScores: { dependability: 6, conscientiousness: 5 },
+  },
+
+  // ============================================================
+  // CAREER DEVELOPMENT — EXPERIENCED ONLY (Q88-Q95)
+  // ============================================================
+
+  // Q88 — Skill Gap Awareness (MC)
+  {
+    id: 88, type: "mc", layer: "career", paths: ["experienced"], dimensionKey: "skillGapAwareness",
+    text: "What's the biggest skill gap holding you back from your next career step?",
+    options: [
+      { label: "A", text: "Financial management — P&L, budgeting, revenue optimisation", scores: { precision: 5, problemSolving: 4 } },
+      { label: "B", text: "People management — hiring, coaching, having difficult conversations", scores: { leadership: 5, empathy: 4 } },
+      { label: "C", text: "Technical systems — PMS, POS, analytics tools", scores: { learningSpeed: 5, attentionToDetail: 4 } },
+      { label: "D", text: "I honestly don't know what I don't know — I need guidance", scores: { openness: 5 } },
+    ],
+  },
+
+  // Q89 — Management Readiness (Slider)
+  {
+    id: 89, type: "slider", layer: "career", paths: ["experienced"], dimensionKey: "managementReadiness",
+    text: "How ready do you feel to manage a team of 10+ people?",
+    leftLabel: "Not ready — I need more experience and training first",
+    rightLabel: "Fully ready — I could step into that role tomorrow",
+    leftScores: { conscientiousness: 5, openness: 4 },
+    rightScores: { leadership: 8, autonomy: 6 },
+  },
+
+  // Q90 — Mentorship (MC)
+  {
+    id: 90, type: "mc", layer: "career", paths: ["experienced"], dimensionKey: "mentorship",
+    text: "Do you currently have a mentor or someone you look up to in the industry?",
+    options: [
+      { label: "A", text: "Yes — a formal or informal mentor who actively guides my career", scores: { collaboration: 6, openness: 5 } },
+      { label: "B", text: "Sort of — I admire certain leaders but we don't have a formal relationship", scores: { openness: 4 } },
+      { label: "C", text: "No, but I'd love one — I just don't know how to find the right person", scores: { openness: 5, collaboration: 3 } },
+      { label: "D", text: "No — I prefer to figure things out on my own", scores: { autonomy: 7 } },
+    ],
+  },
+
+  // Q91 — Cross-Department Experience (MC)
+  {
+    id: 91, type: "mc", layer: "career", paths: ["experienced"], dimensionKey: "crossDepartment",
+    text: "How many different departments have you worked in during your hospitality career?",
+    options: [
+      { label: "A", text: "4 or more — I've worked across the house", scores: { adaptability: 8, openness: 6 } },
+      { label: "B", text: "2-3 — I've moved around a bit", scores: { adaptability: 6 } },
+      { label: "C", text: "Mostly one department — I've deepened my expertise", scores: { precision: 6, conscientiousness: 5 } },
+      { label: "D", text: "Just one — I haven't had the opportunity to move", scores: { adaptability: 3 } },
+    ],
+  },
+
+  // Q92 — Revenue Awareness (MC)
+  {
+    id: 92, type: "mc", layer: "career", paths: ["experienced"], dimensionKey: "revenueAwareness",
+    text: "How well do you understand the commercial side of your property — revenue, occupancy rates, average spend per head?",
+    options: [
+      { label: "A", text: "Very well — I actively track numbers and understand how my role impacts them", scores: { patternRecognition: 7, problemSolving: 5, leadership: 4 } },
+      { label: "B", text: "Somewhat — I know the basics but don't track them myself", scores: { patternRecognition: 4 } },
+      { label: "C", text: "Barely — that's management's concern, not mine", scores: { patternRecognition: 2 } },
+      { label: "D", text: "Not at all — I focus on service, not numbers", scores: { patternRecognition: 1 } },
+    ],
+  },
+
+  // Q93 — Conflict Resolution Style (MC)
+  {
+    id: 93, type: "mc", layer: "career", paths: ["experienced"], dimensionKey: "conflictResolution",
+    text: "Two members of your team are in an ongoing disagreement that's affecting service. As the senior on shift, you:",
+    options: [
+      { label: "A", text: "Speak to each privately first to understand both sides, then facilitate a direct conversation between them", scores: { leadership: 8, empathy: 6, selfRegulation: 5 } },
+      { label: "B", text: "Pull them both aside together and make it clear the behaviour needs to stop", scores: { leadership: 6, selfRegulation: 4 } },
+      { label: "C", text: "Escalate to the manager — conflict resolution is above my pay grade", scores: { leadership: 2 } },
+      { label: "D", text: "Separate them on the floor and hope it resolves itself", scores: { leadership: 1, adaptability: 3 } },
+    ],
+  },
+
+  // Q94 — Training Others (Slider)
+  {
+    id: 94, type: "slider", layer: "career", paths: ["experienced"], dimensionKey: "trainingOthers",
+    text: "How much do you enjoy training and developing less experienced team members?",
+    leftLabel: "Not my strength — I'd rather focus on my own performance",
+    rightLabel: "I love it — watching someone grow because of my guidance is incredibly rewarding",
+    leftScores: { autonomy: 5 },
+    rightScores: { leadership: 7, empathy: 5, collaboration: 4 },
+  },
+
+  // Q95 — Career Ceiling (MC)
+  {
+    id: 95, type: "mc", layer: "career", paths: ["experienced"], dimensionKey: "careerCeiling",
+    text: "What's your ultimate career goal in hospitality?",
+    options: [
+      { label: "A", text: "General Manager of a flagship property", scores: { leadership: 9, autonomy: 7 } },
+      { label: "B", text: "Regional or multi-property leadership", scores: { leadership: 8, patternRecognition: 5 } },
+      { label: "C", text: "Head of Department — I want depth, not breadth", scores: { precision: 7, conscientiousness: 6 } },
+      { label: "D", text: "I want to stay operational — I love being on the floor with guests", scores: { extraversion: 6, empathy: 5 } },
+    ],
+  },
+
+  // ============================================================
+  // EXECUTIVE LEADERSHIP — EXECUTIVE ONLY (Q96-Q98)
+  // ============================================================
+
+  // Q96 — Strategic Vision (MC)
+  {
+    id: 96, type: "mc", layer: "career", paths: ["executive"], dimensionKey: "strategicVision",
+    text: "Your ownership group asks you to present a 3-year vision for the property. Your approach:",
+    options: [
+      { label: "A", text: "Start with data — market analysis, competitor benchmarking, revenue trends — then build the vision from evidence", scores: { patternRecognition: 8, problemSolving: 7, precision: 5 } },
+      { label: "B", text: "Start with the guest experience I want to create, then work backwards to the numbers", scores: { openness: 7, empathy: 5 } },
+      { label: "C", text: "Consult the senior team first — a vision without buy-in is just a slide deck", scores: { collaboration: 8, leadership: 5, socialAwareness: 5 } },
+      { label: "D", text: "Focus on quick wins first — show results in year one, build trust for years two and three", scores: { adaptability: 6, problemSolving: 5 } },
+    ],
+  },
+
+  // Q97 — Influence Style (Slider)
+  {
+    id: 97, type: "slider", layer: "career", paths: ["executive"], dimensionKey: "influenceStyle",
+    text: "When you need your team to embrace a major change, how do you lead it?",
+    leftLabel: "I decide, communicate clearly, and expect follow-through",
+    rightLabel: "I involve the team early, co-create the plan, and build consensus",
+    leftScores: { autonomy: 7, leadership: 6 },
+    rightScores: { collaboration: 7, empathy: 5, socialAwareness: 5 },
+  },
+
+  // Q98 — Legacy Thinking (MC)
+  {
+    id: 98, type: "mc", layer: "career", paths: ["executive"], dimensionKey: "legacyThinking",
+    text: "What do you want your professional legacy to be?",
+    options: [
+      { label: "A", text: "The leader who built something that outlasted them — systems, culture, and people who thrived", scores: { leadership: 9, collaboration: 5, integrity: 5 } },
+      { label: "B", text: "The innovator who changed how things were done in the industry", scores: { openness: 8, autonomy: 6 } },
+      { label: "C", text: "The mentor who developed the next generation of hospitality leaders", scores: { empathy: 7, leadership: 6, collaboration: 5 } },
+      { label: "D", text: "The operator who consistently delivered exceptional results", scores: { precision: 7, conscientiousness: 6, dependability: 5 } },
+    ],
+  },
+
+  // ============================================================
+  // ENTRY GROWTH MINDSET — ENTRY ONLY (Q99-Q101)
+  // ============================================================
+
+  // Q99 — Growth Ambition (MC)
+  {
+    id: 99, type: "mc", layer: "career", paths: ["entry"], dimensionKey: "growthAmbition",
+    text: "What excites you most about starting a career in hospitality?",
+    options: [
+      { label: "A", text: "The variety — every day is different and I'll never be bored", scores: { adaptability: 7, openness: 6 } },
+      { label: "B", text: "The people — I love meeting new faces and building connections", scores: { extraversion: 7, collaboration: 5 } },
+      { label: "C", text: "The career ladder — I can go from entry level to management faster than most industries", scores: { leadership: 5, autonomy: 5 } },
+      { label: "D", text: "The travel potential — hospitality skills work anywhere in the world", scores: { openness: 7, adaptability: 6 } },
+    ],
+  },
+
+  // Q100 — Feedback Reception (Slider)
+  {
+    id: 100, type: "slider", layer: "career", paths: ["entry"], dimensionKey: "feedbackReception",
+    text: "When a more experienced colleague corrects your work, how do you feel?",
+    leftLabel: "Defensive — I feel criticised even when I know they're right",
+    rightLabel: "Grateful — every correction makes me better at my job",
+    leftScores: { emotionalStability: 2 },
+    rightScores: { emotionalStability: 7, openness: 6, learningSpeed: 5 },
+  },
+
+  // Q101 — First Job Priorities (Ranking)
+  {
+    id: 101, type: "ranking", layer: "career", paths: ["entry"], dimensionKey: "firstJobPriorities",
+    text: "Rank what matters most to you in your first hospitality role:",
+    items: [
+      { text: "Good training and mentorship", scores: { learningSpeed: 1, openness: 1 } },
+      { text: "Friendly, supportive team", scores: { collaboration: 1, agreeableness: 1 } },
+      { text: "Clear path to promotion", scores: { leadership: 1, autonomy: 1 } },
+      { text: "Decent pay and fair hours", scores: { dependability: 1, emotionalStability: 1 } },
+    ],
+  },
 ];
 
 /** Get the filtered question list for a given experience path */
@@ -1002,7 +1292,7 @@ export function getLayerLabel(layer: LayerType): string {
     case 'personality': return 'Exploring your personality...';
     case 'eq': return 'Measuring emotional intelligence...';
     case 'reliability': return 'Assessing your reliability & professional standards...';
-    case 'career': return 'Mapping career drivers...';
+    case 'career': return 'Mapping your career compass...';
     default: return '';
   }
 }
