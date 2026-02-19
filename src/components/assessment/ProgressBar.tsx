@@ -5,9 +5,10 @@ interface ProgressBarProps {
   total: number;
   layerLabel?: string;
   timeEstimate?: string;
+  encouragement?: string;
 }
 
-const ProgressBar = ({ current, total, layerLabel, timeEstimate }: ProgressBarProps) => {
+const ProgressBar = ({ current, total, layerLabel, timeEstimate, encouragement }: ProgressBarProps) => {
   const percentage = (current / total) * 100;
 
   return (
@@ -15,6 +16,7 @@ const ProgressBar = ({ current, total, layerLabel, timeEstimate }: ProgressBarPr
       <div className="flex items-center justify-between mb-2">
         <span className="text-sm font-medium text-muted-foreground">
           Question {current} of {total}
+          {timeEstimate && <span className="ml-1">· {timeEstimate}</span>}
         </span>
         <span className="text-sm font-semibold text-primary">
           {Math.round(percentage)}%
@@ -28,16 +30,14 @@ const ProgressBar = ({ current, total, layerLabel, timeEstimate }: ProgressBarPr
           transition={{ duration: 0.5, ease: "easeOut" }}
         />
       </div>
-      {(layerLabel || timeEstimate) && (
-        <div className="flex items-center justify-between mt-1.5">
-          {layerLabel && (
-            <span className="text-xs text-muted-foreground italic">{layerLabel}</span>
-          )}
-          {timeEstimate && (
-            <span className="text-xs text-muted-foreground">{timeEstimate}</span>
-          )}
-        </div>
-      )}
+      <div className="flex items-center justify-between mt-1.5">
+        {layerLabel && (
+          <span className="text-xs text-muted-foreground italic">{layerLabel}</span>
+        )}
+        {encouragement && (
+          <span className="text-xs text-muted-foreground">{encouragement}</span>
+        )}
+      </div>
     </div>
   );
 };
