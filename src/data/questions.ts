@@ -637,6 +637,182 @@ export const questionBank: BranchedQuestion[] = [
       { label: "D", text: "I say no — my day off is my day off, roster changes need proper notice", scores: { emotionalStability: 5, autonomy: 7, ruleFollowing: 4 } },
     ],
   },
+
+  // === LAYER 4: EMOTIONAL INTELLIGENCE (Q48-Q62) — experienced & executive ONLY ===
+
+  // Q48 — Reading Others (MC)
+  {
+    id: 48, type: "mc", layer: "eq", paths: ["experienced", "executive"], dimensionKey: "readingOthers",
+    text: "A regular guest arrives for dinner. They smile and say 'lovely to be back' but their body language is tense and they keep checking their phone. You:",
+    options: [
+      { label: "A", text: "Seat them at their favourite table, but give them space — something's clearly on their mind. Check in gently after they've settled", scores: { readingOthers: 9, empathy: 5 } },
+      { label: "B", text: "Engage them in warm conversation to lift their mood", scores: { readingOthers: 5, extraversion: 5 } },
+      { label: "C", text: "Take their words at face value — they said they're happy to be here", scores: { readingOthers: 2 } },
+      { label: "D", text: "Seat them quickly and efficiently — don't overthink it", scores: { readingOthers: 1 } },
+    ],
+  },
+
+  // Q49 — Reading Others (Slider)
+  {
+    id: 49, type: "slider", layer: "eq", paths: ["experienced", "executive"], dimensionKey: "readingOthers",
+    text: "How quickly can you usually tell if a colleague is having a bad day, even if they haven't said anything?",
+    leftLabel: "I don't usually notice unless they tell me directly",
+    rightLabel: "I pick it up within minutes from their tone, pace, or body language",
+    leftScores: { readingOthers: 2 },
+    rightScores: { readingOthers: 9, empathy: 4 },
+  },
+
+  // Q50 — Reading Others (MC)
+  {
+    id: 50, type: "mc", layer: "eq", paths: ["experienced", "executive"], dimensionKey: "readingOthers",
+    text: "During a team briefing, your manager announces a new policy. Most of the team nods along, but you notice two colleagues exchanging a look. You:",
+    options: [
+      { label: "A", text: "Make a mental note — they clearly have concerns. I'll check in with them privately after", scores: { readingOthers: 9, socialAwareness: 6 } },
+      { label: "B", text: "Raise it in the meeting: 'Does anyone have questions or concerns about this?'", scores: { readingOthers: 7, leadership: 5 } },
+      { label: "C", text: "Ignore it — if they have a problem, they'll speak up", scores: { readingOthers: 3 } },
+      { label: "D", text: "I wouldn't have noticed the look", scores: { readingOthers: 1 } },
+    ],
+  },
+
+  // Q51 — Reading Others (MC)
+  {
+    id: 51, type: "mc", layer: "eq", paths: ["experienced", "executive"], dimensionKey: "readingOthers",
+    text: "A guest couple is celebrating an anniversary. The partner who booked is enthusiastic, but the other seems distracted and disengaged. How do you handle service?",
+    options: [
+      { label: "A", text: "Subtly adjust — make the quieter partner feel included without forcing it. Maybe address a question directly to them, or recommend something based on their order", scores: { readingOthers: 9, empathy: 7, socialAwareness: 5 } },
+      { label: "B", text: "Focus on matching the booker's enthusiasm — they're the one who planned it", scores: { readingOthers: 4, extraversion: 3 } },
+      { label: "C", text: "Treat them both the same — standard anniversary service", scores: { readingOthers: 3 } },
+      { label: "D", text: "Not my place to read into their relationship — just deliver great service", scores: { readingOthers: 2 } },
+    ],
+  },
+
+  // Q52 — Empathy (MC)
+  {
+    id: 52, type: "mc", layer: "eq", paths: ["experienced", "executive"], dimensionKey: "empathy",
+    text: "A new team member makes the same mistake for the third time. They look deflated. You:",
+    options: [
+      { label: "A", text: "Pull them aside privately. Acknowledge it's tough, ask what's tripping them up, and offer to walk through it differently this time", scores: { empathy: 9, leadership: 5, readingOthers: 4 } },
+      { label: "B", text: "Encourage them — 'Everyone struggles with this at first, you'll get it'", scores: { empathy: 7 } },
+      { label: "C", text: "Show them the correct way again, firmly but fairly", scores: { empathy: 4, conscientiousness: 5 } },
+      { label: "D", text: "Report it to the supervisor — three times is a pattern", scores: { empathy: 2, ruleFollowing: 5 } },
+    ],
+  },
+
+  // Q53 — Empathy (Slider)
+  {
+    id: 53, type: "slider", layer: "eq", paths: ["experienced", "executive"], dimensionKey: "empathy",
+    text: "A colleague tells you they're thinking of leaving the industry entirely. They seem burned out. How much does this affect you?",
+    leftLabel: "It's their decision — I wouldn't take it personally",
+    rightLabel: "I'd feel it deeply — I'd want to understand what's going wrong and if I can help",
+    leftScores: { empathy: 2 },
+    rightScores: { empathy: 9, collaboration: 4 },
+  },
+
+  // Q54 — Empathy (MC)
+  {
+    id: 54, type: "mc", layer: "eq", paths: ["experienced", "executive"], dimensionKey: "empathy",
+    text: "A guest breaks down in tears at their table — you don't know why. Your instinct:",
+    options: [
+      { label: "A", text: "Quietly approach, offer a glass of water or a tissue, and let them know you're there if they need anything — no pressure, no fuss", scores: { empathy: 9, selfRegulation: 6, readingOthers: 5 } },
+      { label: "B", text: "Give them space and privacy — don't draw attention to it", scores: { empathy: 6, socialAwareness: 5 } },
+      { label: "C", text: "Ask if everything is okay with the meal or service", scores: { empathy: 3 } },
+      { label: "D", text: "Alert the manager to handle it", scores: { empathy: 2 } },
+    ],
+  },
+
+  // Q55 — Empathy (MC)
+  {
+    id: 55, type: "mc", layer: "eq", paths: ["experienced", "executive"], dimensionKey: "empathy",
+    text: "A colleague from a different culture handles guest complaints very differently than you would. Their approach seems cold to you, but their guests leave satisfied. You:",
+    options: [
+      { label: "A", text: "Recognise that empathy looks different across cultures — their style works for them and their guests. I learn from it", scores: { empathy: 8, socialAwareness: 9, openness: 6 } },
+      { label: "B", text: "Appreciate the result but gently share my approach in case it helps", scores: { empathy: 6, socialAwareness: 5 } },
+      { label: "C", text: "Stick to my own approach — I know what works", scores: { empathy: 3, socialAwareness: 2 } },
+      { label: "D", text: "Raise it with management — consistency matters", scores: { empathy: 2, ruleFollowing: 5 } },
+    ],
+  },
+
+  // Q56 — Self-Regulation (MC)
+  {
+    id: 56, type: "mc", layer: "eq", paths: ["experienced", "executive"], dimensionKey: "selfRegulation",
+    text: "A guest loudly accuses you of overcharging them — in front of other diners. You know the bill is correct. You:",
+    options: [
+      { label: "A", text: "Stay completely calm, lower your voice, and walk them through the bill line by line in a private area. Kill them with professionalism", scores: { selfRegulation: 9, emotionalStability: 7, readingOthers: 4 } },
+      { label: "B", text: "Stay calm, explain the charges at the table, and offer to get a manager if they'd like a second opinion", scores: { selfRegulation: 7, emotionalStability: 5 } },
+      { label: "C", text: "Get the manager immediately — I don't need to be publicly accused", scores: { selfRegulation: 5 } },
+      { label: "D", text: "I'd stay professional but they'd see I'm annoyed — I'm human", scores: { selfRegulation: 3 } },
+    ],
+  },
+
+  // Q57 — Self-Regulation (Slider)
+  {
+    id: 57, type: "slider", layer: "eq", paths: ["experienced", "executive"], dimensionKey: "selfRegulation",
+    text: "After a confrontation with a difficult guest, how quickly can you reset emotionally before your next interaction?",
+    leftLabel: "It stays with me for the rest of the shift",
+    rightLabel: "I can reset within a minute or two and give the next guest 100%",
+    leftScores: { selfRegulation: 2, emotionalStability: 2 },
+    rightScores: { selfRegulation: 9, emotionalStability: 7 },
+  },
+
+  // Q58 — Self-Regulation (MC)
+  {
+    id: 58, type: "mc", layer: "eq", paths: ["experienced", "executive"], dimensionKey: "selfRegulation",
+    text: "You overhear a colleague gossiping about you to another team member. It's inaccurate and unfair. You:",
+    options: [
+      { label: "A", text: "Wait until I've cooled down, then have a direct, private conversation with them about what I heard", scores: { selfRegulation: 9, integrity: 6, emotionalStability: 5 } },
+      { label: "B", text: "Address it immediately — I'd calmly say 'I overheard that, can we talk?'", scores: { selfRegulation: 7, extraversion: 5 } },
+      { label: "C", text: "Vent to a different colleague about it first, then decide what to do", scores: { selfRegulation: 4 } },
+      { label: "D", text: "Confront them on the spot — they shouldn't get away with it", scores: { selfRegulation: 2, emotionalStability: 2 } },
+    ],
+  },
+
+  // Q59 — Self-Regulation (MC)
+  {
+    id: 59, type: "mc", layer: "eq", paths: ["experienced", "executive"], dimensionKey: "selfRegulation",
+    text: "You're exhausted at the end of a double shift. Your last table of the night is demanding and sends food back twice. Your internal state vs external behaviour:",
+    options: [
+      { label: "A", text: "Inside: drained. Outside: they'd never know — same energy and care as my first table", scores: { selfRegulation: 9, dependability: 6, emotionalStability: 5 } },
+      { label: "B", text: "Inside: frustrated. Outside: polite and professional, but maybe a little less warmth than usual", scores: { selfRegulation: 6 } },
+      { label: "C", text: "Inside: angry. Outside: I'm trying but my patience is visibly thinner", scores: { selfRegulation: 3 } },
+      { label: "D", text: "Inside and outside match — if I'm done, I'm done", scores: { selfRegulation: 1 } },
+    ],
+  },
+
+  // Q60 — Social Awareness (MC)
+  {
+    id: 60, type: "mc", layer: "eq", paths: ["experienced", "executive"], dimensionKey: "socialAwareness",
+    text: "A group of guests from the Middle East arrive at your hotel. You know cultural norms around hospitality differ from Irish norms. You:",
+    options: [
+      { label: "A", text: "Adjust naturally — more formal greeting, anticipate dietary needs, be mindful of gender dynamics in service, and ensure privacy standards are elevated", scores: { socialAwareness: 9, readingOthers: 5, openness: 5 } },
+      { label: "B", text: "Treat them the same as any guest — everyone gets our best standard of service", scores: { socialAwareness: 4 } },
+      { label: "C", text: "Ask them directly if there's anything culturally specific I should be aware of", scores: { socialAwareness: 6, empathy: 5 } },
+      { label: "D", text: "Flag it to management and follow whatever guidance they give", scores: { socialAwareness: 3 } },
+    ],
+  },
+
+  // Q61 — Social Awareness (MC)
+  {
+    id: 61, type: "mc", layer: "eq", paths: ["experienced", "executive"], dimensionKey: "socialAwareness",
+    text: "You notice that a junior colleague is being spoken to harshly by a senior team member — not bullying exactly, but the power dynamic is uncomfortable. You:",
+    options: [
+      { label: "A", text: "Find a natural moment to check in with the junior privately, and if it's a pattern, raise it with management discreetly", scores: { socialAwareness: 9, empathy: 6, integrity: 5 } },
+      { label: "B", text: "Step in casually to diffuse the situation — redirect the conversation", scores: { socialAwareness: 7, selfRegulation: 5 } },
+      { label: "C", text: "Not my business unless it crosses a clear line", scores: { socialAwareness: 3 } },
+      { label: "D", text: "Report it immediately to HR", scores: { socialAwareness: 4, ruleFollowing: 6 } },
+    ],
+  },
+
+  // Q62 — Social Awareness (Ranking)
+  {
+    id: 62, type: "ranking", layer: "eq", paths: ["experienced", "executive"], dimensionKey: "socialAwareness",
+    text: "Rank these from most important to least important when working with an international team:",
+    items: [
+      { text: "Understanding different communication styles (direct vs indirect)", scores: { socialAwareness: 1 } },
+      { text: "Adapting your humour and tone to the room", scores: { socialAwareness: 1, readingOthers: 1 } },
+      { text: "Being aware of religious or cultural observances", scores: { socialAwareness: 1, empathy: 1 } },
+      { text: "Treating everyone exactly the same regardless of background", scores: { agreeableness: 1 } },
+    ],
+  },
 ];
 
 /** Get the filtered question list for a given experience path */
