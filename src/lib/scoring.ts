@@ -95,13 +95,13 @@ export interface ComprehensiveScores {
   agreeableness: number;
   emotionalStability: number;
 
-  // Layer 4: Emotional Intelligence (placeholder)
+  // Layer 4: Emotional Intelligence
   readingOthers: number;
   empathy: number;
   selfRegulation: number;
   socialAwareness: number;
 
-  // Layer 5: Reliability & Risk (placeholder)
+  // Layer 5: Reliability & Risk
   integrity: number;
   ruleFollowing: number;
   safetyConsciousness: number;
@@ -122,40 +122,42 @@ export function calculateComprehensiveScores(
   answers: Record<number, any>,
   pathQuestions: BranchedQuestion[]
 ): ComprehensiveScores {
-  // Start with zeros
-  const raw: Record<string, number> = {};
-  const questionCount: Record<string, number> = {};
-  ALL_DIMENSIONS.forEach(d => { raw[d] = 0; questionCount[d] = 0; });
+  // Initialize raw score accumulators and question counts per dimension
+  const rawScores: Record<string, number> = {};
+  const questionCounts: Record<string, number> = {};
+  ALL_DIMENSIONS.forEach(d => { rawScores[d] = 0; questionCounts[d] = 0; });
 
   // Get Layer 1 scores from existing calculator (keeps archetype scoring identical)
   const archetypeResult = calculateScores(answers);
 
-  // Process non-archetype questions for new dimensions
+  // Process ALL questions (including archetype ones for non-layer-1 dimensions they may contribute to)
   pathQuestions.forEach((q) => {
-    if (q.layer === 'archetype') return; // handled by existing scoring
     const answer = answers[q.id];
-    if (answer === undefined) return;
+    if (answer === undefined || answer === null) return;
 
     if (q.type === "mc" && q.options) {
+      // MC: answer is the selected option label (A/B/C/D)
       const selected = q.options.find(o => o.label === answer);
       if (selected) {
-        Object.entries(selected.scores).forEach(([k, v]) => {
-          if (!LAYER1_DIMS.has(k)) {
-            raw[k] = (raw[k] || 0) + v;
-            questionCount[k] = (questionCount[k] || 0) + 1;
+        Object.entries(selected.scores).forEach(([dim, score]) => {
+          if (!LAYER1_DIMS.has(dim) && rawScores[dim] !== undefined) {
+            rawScores[dim] += score as number;
+            questionCounts[dim]++;
           }
         });
       }
     } else if (q.type === "slider") {
-      const val = (answer as number) / 10;
+      const val = (answer as number) / 10; // 0 to 1
       const left = q.leftScores || {};
       const right = q.rightScores || {};
       const allKeys = new Set([...Object.keys(left), ...Object.keys(right)]);
-      allKeys.forEach(k => {
-        if (!LAYER1_DIMS.has(k)) {
-          const score = (left[k] || 0) * (1 - val) + (right[k] || 0) * val;
-          raw[k] = (raw[k] || 0) + score;
-          questionCount[k] = (questionCount[k] || 0) + 1;
+      allKeys.forEach(dim => {
+        if (!LAYER1_DIMS.has(dim) && rawScores[dim] !== undefined) {
+          const leftVal = (left as any)[dim] || 0;
+          const rightVal = (right as any)[dim] || 0;
+          const interpolated = leftVal + (rightVal - leftVal) * val;
+          rawScores[dim] += interpolated;
+          questionCounts[dim]++;
         }
       });
     } else if (q.type === "ranking" && q.items) {
@@ -165,10 +167,10 @@ export function calculateComprehensiveScores(
         const item = q.items!.find(i => i.text === text);
         if (item) {
           const mult = multipliers[idx] || 0.25;
-          Object.entries(item.scores).forEach(([k, v]) => {
-            if (!LAYER1_DIMS.has(k)) {
-              raw[k] = (raw[k] || 0) + v * mult * 10; // scale ranking scores
-              questionCount[k] = (questionCount[k] || 0) + 1;
+          Object.entries(item.scores).forEach(([dim, baseScore]) => {
+            if (!LAYER1_DIMS.has(dim) && rawScores[dim] !== undefined) {
+              rawScores[dim] += (baseScore as number) * mult * 10; // scale ranking scores
+              questionCounts[dim]++;
             }
           });
         }
@@ -176,18 +178,18 @@ export function calculateComprehensiveScores(
     }
   });
 
-  // Normalize non-Layer-1 dimensions to 0-100
+  // Normalize: Layer 1 from archetype calculator, others averaged and scaled to 0-100
   const scores: Record<string, number> = {};
   ALL_DIMENSIONS.forEach(d => {
     if (LAYER1_DIMS.has(d)) {
       scores[d] = archetypeResult.scores[d as keyof DimensionScores];
     } else {
-      const count = questionCount[d] || 0;
+      const count = questionCounts[d] || 0;
       if (count === 0) {
         scores[d] = 0;
       } else {
-        const maxPossible = count * 10;
-        scores[d] = Math.round(Math.min(100, (raw[d] / maxPossible) * 100));
+        const avg = rawScores[d] / count;
+        scores[d] = Math.min(100, Math.max(0, Math.round(avg * 10)));
       }
     }
   });

@@ -2,6 +2,9 @@ import { supabase } from "@/integrations/supabase/client";
 import type { AssessmentResult } from "./scoring";
 import type { ComprehensiveScores } from "./scoring";
 import type { EntryInfo } from "./storage";
+import type { SectorMatch } from "@/utils/sectorMatching";
+import type { GeographyMatch } from "@/utils/geographyMatching";
+import type { DepartmentFit } from "@/utils/departmentMatching";
 import { sendResultsToHub, storePendingPayload, clearPendingPayload, type HubWebhookPayload } from "@/utils/hubIntegration";
 
 export interface PersistAssessmentParams {
@@ -10,14 +13,17 @@ export interface PersistAssessmentParams {
   entryInfo: EntryInfo;
   comprehensiveScores?: ComprehensiveScores;
   experiencePath?: string;
+  sectorMatches?: SectorMatch[];
+  geographyMatches?: GeographyMatch[];
+  departmentMatches?: DepartmentFit[];
 }
 
-export async function persistAssessment({ result, answers, entryInfo, comprehensiveScores, experiencePath }: PersistAssessmentParams): Promise<string | null> {
+export async function persistAssessment({ result, answers, entryInfo, comprehensiveScores, experiencePath, sectorMatches, geographyMatches, departmentMatches }: PersistAssessmentParams): Promise<string | null> {
   try {
     const { data: userData } = await supabase.auth.getUser();
     const userId = userData?.user?.id || null;
 
-    // Insert assessment
+    // Insert assessment with matching data
     const { data: assessment, error: assessmentError } = await supabase
       .from("assessments")
       .insert({
@@ -28,6 +34,10 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
         archetype: result.primaryArchetype,
         archetype_scores: result.archetypeScores as any,
         dimension_scores: result.scores as any,
+        comprehensive_scores: (comprehensiveScores || {}) as any,
+        sector_matches: (sectorMatches || []) as any,
+        geography_matches: (geographyMatches || []) as any,
+        department_matches: (departmentMatches || []) as any,
       })
       .select("id")
       .single();
@@ -85,6 +95,9 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
           dependability: Math.round(cs?.dependability || 0),
         },
         experience_path: experiencePath || 'experienced',
+        sector_matches: sectorMatches?.slice(0, 3),
+        geography_fit: geographyMatches,
+        department_ranking: departmentMatches?.slice(0, 5),
       };
 
       // Fire and forget — don't block user from seeing results

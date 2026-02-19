@@ -18,6 +18,7 @@ const KEYS = {
   motivators: "dna-motivators",
   assessmentId: "dna-assessment-id",
   experiencePath: "dna_experience_path",
+  matchingResults: "dna-matching-results",
 } as const;
 
 export const storage = {
@@ -56,6 +57,12 @@ export const storage = {
 
   setExperiencePath: (path: ExperiencePath) => localStorage.setItem(KEYS.experiencePath, path),
   getExperiencePath: (): ExperiencePath | null => localStorage.getItem(KEYS.experiencePath) as ExperiencePath | null,
+
+  setMatchingResults: (data: any) => localStorage.setItem(KEYS.matchingResults, JSON.stringify(data)),
+  getMatchingResults: () => {
+    try { return JSON.parse(localStorage.getItem(KEYS.matchingResults) || "null"); }
+    catch { return null; }
+  },
 
   clear: () => Object.values(KEYS).forEach((k) => localStorage.removeItem(k)),
 };
