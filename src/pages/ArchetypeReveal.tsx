@@ -4,11 +4,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Share2, Copy, Linkedin, Twitter, ArrowRight, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { storage } from "@/lib/storage";
-import { calculateScores, calculateComprehensiveScores, type AssessmentResult } from "@/lib/scoring";
+import { calculateScores, calculateComprehensiveScores, type AssessmentResult, type ComprehensiveScores } from "@/lib/scoring";
 import { getQuestionsForPath, type ExperiencePath } from "@/data/questions";
-import { calculateSectorMatches } from "@/utils/sectorMatching";
-import { calculateGeographyMatches } from "@/utils/geographyMatching";
-import { calculateDepartmentMatches } from "@/utils/departmentMatching";
+import { calculateSectorMatches, type SectorMatch } from "@/utils/sectorMatching";
+import { calculateGeographyMatches, type GeographyMatch } from "@/utils/geographyMatching";
+import { calculateDepartmentMatches, type DepartmentFit } from "@/utils/departmentMatching";
 import { archetypeData } from "@/lib/archetypes";
 import {
   RadarChart,
@@ -20,6 +20,11 @@ import {
 } from "recharts";
 import { useToast } from "@/hooks/use-toast";
 import { persistAssessment, markMagicLinkUsed } from "@/lib/persistence";
+import ScrollRevealSection from "@/components/results/ScrollRevealSection";
+import DimensionBreakdown from "@/components/results/DimensionBreakdown";
+import SectorMatches from "@/components/results/SectorMatches";
+import GeographyFit from "@/components/results/GeographyFit";
+import DepartmentRanking from "@/components/results/DepartmentRanking";
 
 const ArchetypeReveal = () => {
   const navigate = useNavigate();
@@ -28,6 +33,11 @@ const ArchetypeReveal = () => {
   const [result, setResult] = useState<AssessmentResult | null>(null);
   const [showRadar, setShowRadar] = useState(false);
   const [hubStatus, setHubStatus] = useState<"idle" | "sending" | "sent" | "failed">("idle");
+  const [comprehensiveScores, setComprehensiveScores] = useState<ComprehensiveScores | null>(null);
+  const [sectorMatches, setSectorMatches] = useState<SectorMatch[]>([]);
+  const [geographyMatches, setGeographyMatches] = useState<GeographyMatch[]>([]);
+  const [departmentMatches, setDepartmentMatches] = useState<DepartmentFit[]>([]);
+  const [showScrollHint, setShowScrollHint] = useState(false);
 
   useEffect(() => {
     const answers = storage.getAnswers();
@@ -43,18 +53,16 @@ const ArchetypeReveal = () => {
     const path = storage.getExperiencePath() || 'experienced';
     const pathQuestions = getQuestionsForPath(path as ExperiencePath);
     const comprehensive = calculateComprehensiveScores(answers, pathQuestions);
-    console.log('📊 Comprehensive scores:', comprehensive);
+    setComprehensiveScores(comprehensive);
 
-    // Compute matching results
-    const sectorMatches = calculateSectorMatches(comprehensive);
-    const geographyMatches = calculateGeographyMatches(comprehensive);
-    const departmentMatches = calculateDepartmentMatches(comprehensive);
-    console.log('🏨 Sector matches:', sectorMatches);
-    console.log('🌍 Geography matches:', geographyMatches);
-    console.log('🏢 Department matches:', departmentMatches);
+    const sMat = calculateSectorMatches(comprehensive);
+    const gMat = calculateGeographyMatches(comprehensive);
+    const dMat = calculateDepartmentMatches(comprehensive);
+    setSectorMatches(sMat);
+    setGeographyMatches(gMat);
+    setDepartmentMatches(dMat);
 
-    // Store matching results in localStorage for results page
-    storage.setMatchingResults({ sectorMatches, geographyMatches, departmentMatches, comprehensiveScores: comprehensive });
+    storage.setMatchingResults({ sectorMatches: sMat, geographyMatches: gMat, departmentMatches: dMat, comprehensiveScores: comprehensive });
 
     // Persist to database and send to Hub
     const entryInfo = storage.getEntryMode();
@@ -87,7 +95,13 @@ const ArchetypeReveal = () => {
     const t1 = setTimeout(() => setPhase("flip"), 2000);
     const t2 = setTimeout(() => setPhase("revealed"), 3000);
     const t3 = setTimeout(() => setShowRadar(true), 3500);
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+    const t4 = setTimeout(() => setShowScrollHint(true), 4500);
+    const t5 = setTimeout(() => setShowScrollHint(false), 7500);
+
+    const onScroll = () => setShowScrollHint(false);
+    window.addEventListener("scroll", onScroll, { once: true });
+
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); clearTimeout(t5); window.removeEventListener("scroll", onScroll); };
   }, [navigate]);
 
   if (!result) return null;
@@ -290,6 +304,54 @@ const ArchetypeReveal = () => {
                     ))}
                   </div>
                 </div>
+
+                {/* Scroll hint */}
+                <AnimatePresence>
+                  {showScrollHint && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="text-center text-xs text-muted-foreground py-2"
+                    >
+                      Scroll for your full DNA profile ↓
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Divider */}
+                <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+
+                {/* NEW: DNA Profile Breakdown */}
+                {comprehensiveScores && (
+                  <ScrollRevealSection>
+                    <DimensionBreakdown comprehensiveScores={comprehensiveScores} />
+                  </ScrollRevealSection>
+                )}
+
+                {/* NEW: Sector Matches */}
+                {sectorMatches.length > 0 && (
+                  <ScrollRevealSection>
+                    <SectorMatches sectorMatches={sectorMatches} />
+                  </ScrollRevealSection>
+                )}
+
+                {/* NEW: Department Alignment */}
+                {departmentMatches.length > 0 && (
+                  <ScrollRevealSection>
+                    <DepartmentRanking departmentMatches={departmentMatches} />
+                  </ScrollRevealSection>
+                )}
+
+                {/* NEW: Geography Fit */}
+                {geographyMatches.length > 0 && (
+                  <ScrollRevealSection>
+                    <GeographyFit geographyMatches={geographyMatches} />
+                  </ScrollRevealSection>
+                )}
+
+                {/* Divider */}
+                <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
 
                 {/* Share Section */}
                 <div className="glass-card p-6 rounded-2xl">
