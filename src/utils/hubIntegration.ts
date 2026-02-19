@@ -21,6 +21,9 @@ export interface HubWebhookPayload {
   archetype: string;
   dimension_scores: Record<string, number>;
   experience_path?: string;
+  sector_matches?: any[];
+  geography_fit?: any[];
+  department_ranking?: any[];
 }
 
 export async function sendResultsToHub(

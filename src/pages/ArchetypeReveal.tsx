@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { storage } from "@/lib/storage";
 import { calculateScores, calculateComprehensiveScores, type AssessmentResult } from "@/lib/scoring";
 import { getQuestionsForPath, type ExperiencePath } from "@/data/questions";
+import { calculateSectorMatches } from "@/utils/sectorMatching";
+import { calculateGeographyMatches } from "@/utils/geographyMatching";
+import { calculateDepartmentMatches } from "@/utils/departmentMatching";
 import { archetypeData } from "@/lib/archetypes";
 import {
   RadarChart,
@@ -42,6 +45,17 @@ const ArchetypeReveal = () => {
     const comprehensive = calculateComprehensiveScores(answers, pathQuestions);
     console.log('📊 Comprehensive scores:', comprehensive);
 
+    // Compute matching results
+    const sectorMatches = calculateSectorMatches(comprehensive);
+    const geographyMatches = calculateGeographyMatches(comprehensive);
+    const departmentMatches = calculateDepartmentMatches(comprehensive);
+    console.log('🏨 Sector matches:', sectorMatches);
+    console.log('🌍 Geography matches:', geographyMatches);
+    console.log('🏢 Department matches:', departmentMatches);
+
+    // Store matching results in localStorage for results page
+    storage.setMatchingResults({ sectorMatches, geographyMatches, departmentMatches, comprehensiveScores: comprehensive });
+
     // Persist to database and send to Hub
     const entryInfo = storage.getEntryMode();
     const isHubMode = entryInfo.mode === 'candidate' || entryInfo.mode === 'team';
@@ -53,6 +67,9 @@ const ArchetypeReveal = () => {
       entryInfo,
       comprehensiveScores: comprehensive,
       experiencePath: path,
+      sectorMatches,
+      geographyMatches,
+      departmentMatches,
     }).then((assessmentId) => {
       if (assessmentId) {
         storage.setAssessmentId(assessmentId);

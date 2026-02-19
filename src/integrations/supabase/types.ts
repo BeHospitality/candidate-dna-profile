@@ -51,11 +51,15 @@ export type Database = {
           archetype: string
           archetype_scores: Json
           completed_at: string
+          comprehensive_scores: Json | null
           created_at: string
+          department_matches: Json | null
           dimension_scores: Json
           entry_mode: string
+          geography_matches: Json | null
           id: string
           org_code: string | null
+          sector_matches: Json | null
           token: string | null
           user_id: string | null
         }
@@ -63,11 +67,15 @@ export type Database = {
           archetype: string
           archetype_scores?: Json
           completed_at?: string
+          comprehensive_scores?: Json | null
           created_at?: string
+          department_matches?: Json | null
           dimension_scores?: Json
           entry_mode?: string
+          geography_matches?: Json | null
           id?: string
           org_code?: string | null
+          sector_matches?: Json | null
           token?: string | null
           user_id?: string | null
         }
@@ -75,11 +83,15 @@ export type Database = {
           archetype?: string
           archetype_scores?: Json
           completed_at?: string
+          comprehensive_scores?: Json | null
           created_at?: string
+          department_matches?: Json | null
           dimension_scores?: Json
           entry_mode?: string
+          geography_matches?: Json | null
           id?: string
           org_code?: string | null
+          sector_matches?: Json | null
           token?: string | null
           user_id?: string | null
         }
