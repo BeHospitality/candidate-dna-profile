@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,14 +9,23 @@ import Assessment from "./pages/Assessment";
 import ArchetypeReveal from "./pages/ArchetypeReveal";
 import CareerCompass from "./pages/CareerCompass";
 import NotFound from "./pages/NotFound";
+import { retryPendingPayload } from "./utils/hubIntegration";
 
 const queryClient = new QueryClient();
+
+const HubRetry = () => {
+  useEffect(() => {
+    retryPendingPayload();
+  }, []);
+  return null;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <HubRetry />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />

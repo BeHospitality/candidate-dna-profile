@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Share2, Copy, Linkedin, Twitter, ArrowRight, Download } from "lucide-react";
@@ -24,6 +24,7 @@ const ArchetypeReveal = () => {
   const [phase, setPhase] = useState<"loading" | "flip" | "revealed">("loading");
   const [result, setResult] = useState<AssessmentResult | null>(null);
   const [showRadar, setShowRadar] = useState(false);
+  const [hubStatus, setHubStatus] = useState<"idle" | "sending" | "sent" | "failed">("idle");
 
   useEffect(() => {
     const answers = storage.getAnswers();
@@ -41,14 +42,27 @@ const ArchetypeReveal = () => {
     const comprehensive = calculateComprehensiveScores(answers, pathQuestions);
     console.log('📊 Comprehensive scores:', comprehensive);
 
-    // Persist to database
+    // Persist to database and send to Hub
     const entryInfo = storage.getEntryMode();
-    persistAssessment({ result: res, answers, entryInfo }).then((assessmentId) => {
+    const isHubMode = entryInfo.mode === 'candidate' || entryInfo.mode === 'team';
+    if (isHubMode) setHubStatus("sending");
+
+    persistAssessment({
+      result: res,
+      answers,
+      entryInfo,
+      comprehensiveScores: comprehensive,
+      experiencePath: path,
+    }).then((assessmentId) => {
       if (assessmentId) {
         storage.setAssessmentId(assessmentId);
-        // Mark magic link as used if candidate mode
         if (entryInfo.mode === "candidate" && entryInfo.token) {
           markMagicLinkUsed(entryInfo.token, assessmentId);
+        }
+        // Hub status — check pending payload to determine success
+        if (isHubMode) {
+          const pending = localStorage.getItem("dna_hub_pending");
+          setHubStatus(pending ? "failed" : "sent");
         }
       }
     });
@@ -301,6 +315,15 @@ const ArchetypeReveal = () => {
                     </Button>
                   </div>
                 </div>
+
+                {/* Hub sync indicator for candidate/team modes */}
+                {(entryInfo.mode === "candidate" || entryInfo.mode === "team") && (
+                  <div className="text-center text-sm text-muted-foreground">
+                    {hubStatus === "sending" && "⏳ Syncing results with your hiring team..."}
+                    {hubStatus === "sent" && "✓ Results shared with your hiring team"}
+                    {hubStatus === "failed" && "⏳ Syncing results with your hiring team..."}
+                  </div>
+                )}
 
                 {/* CTA based on mode */}
                 <div className="pt-4 pb-12 space-y-4">

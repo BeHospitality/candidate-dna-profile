@@ -1,14 +1,18 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { AssessmentResult } from "./scoring";
+import type { ComprehensiveScores } from "./scoring";
 import type { EntryInfo } from "./storage";
+import { sendResultsToHub, storePendingPayload, clearPendingPayload, type HubWebhookPayload } from "@/utils/hubIntegration";
 
 export interface PersistAssessmentParams {
   result: AssessmentResult;
   answers: Record<number, any>;
   entryInfo: EntryInfo;
+  comprehensiveScores?: ComprehensiveScores;
+  experiencePath?: string;
 }
 
-export async function persistAssessment({ result, answers, entryInfo }: PersistAssessmentParams): Promise<string | null> {
+export async function persistAssessment({ result, answers, entryInfo, comprehensiveScores, experiencePath }: PersistAssessmentParams): Promise<string | null> {
   try {
     const { data: userData } = await supabase.auth.getUser();
     const userId = userData?.user?.id || null;
@@ -48,31 +52,50 @@ export async function persistAssessment({ result, answers, entryInfo }: PersistA
       console.error("Failed to persist responses:", responsesError);
     }
 
-    // Send results to Hub if this is a candidate assessment
-    if (entryInfo.mode === 'candidate' && entryInfo.candidateEmail) {
-      try {
-        await fetch('https://buriwmeuvujisgmqnpjr.supabase.co/functions/v1/dna-webhook', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            assessment_id: assessment.id,
-            candidate_email: entryInfo.candidateEmail,
-            archetype: result.primaryArchetype,
-            dimension_scores: {
-              autonomy: result.scores.autonomy,
-              collaboration: result.scores.collaboration,
-              precision: result.scores.precision,
-              leadership: result.scores.leadership,
-              adaptability: result.scores.adaptability,
-            },
-          }),
-        });
-        console.log('Results sent to Hub successfully');
-      } catch (err) {
-        console.error('Failed to send results to Hub:', err);
-      }
+    // Send results to Hub for candidate and team modes (fire-and-forget)
+    if ((entryInfo.mode === 'candidate' || entryInfo.mode === 'team') && entryInfo.candidateEmail) {
+      const cs = comprehensiveScores;
+      const hubPayload: HubWebhookPayload = {
+        assessment_id: assessment.id,
+        candidate_email: entryInfo.candidateEmail,
+        archetype: result.primaryArchetype.toLowerCase(),
+        dimension_scores: {
+          autonomy: Math.round(result.scores.autonomy),
+          collaboration: Math.round(result.scores.collaboration),
+          precision: Math.round(result.scores.precision),
+          leadership: Math.round(result.scores.leadership),
+          adaptability: Math.round(result.scores.adaptability),
+          problemSolving: Math.round(cs?.problemSolving || 0),
+          attentionToDetail: Math.round(cs?.attentionToDetail || 0),
+          learningSpeed: Math.round(cs?.learningSpeed || 0),
+          patternRecognition: Math.round(cs?.patternRecognition || 0),
+          concentration: Math.round(cs?.concentration || 0),
+          extraversion: Math.round(cs?.extraversion || 0),
+          conscientiousness: Math.round(cs?.conscientiousness || 0),
+          openness: Math.round(cs?.openness || 0),
+          agreeableness: Math.round(cs?.agreeableness || 0),
+          emotionalStability: Math.round(cs?.emotionalStability || 0),
+          readingOthers: Math.round(cs?.readingOthers || 0),
+          empathy: Math.round(cs?.empathy || 0),
+          selfRegulation: Math.round(cs?.selfRegulation || 0),
+          socialAwareness: Math.round(cs?.socialAwareness || 0),
+          integrity: Math.round(cs?.integrity || 0),
+          ruleFollowing: Math.round(cs?.ruleFollowing || 0),
+          safetyConsciousness: Math.round(cs?.safetyConsciousness || 0),
+          dependability: Math.round(cs?.dependability || 0),
+        },
+        experience_path: experiencePath || 'experienced',
+      };
+
+      // Fire and forget — don't block user from seeing results
+      sendResultsToHub(hubPayload).then((hubResult) => {
+        if (hubResult.success) {
+          clearPendingPayload();
+        } else {
+          console.warn('[Hub Integration] Failed, storing for retry');
+          storePendingPayload(hubPayload);
+        }
+      });
     }
 
     // Audit log
