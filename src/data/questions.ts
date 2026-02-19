@@ -521,6 +521,122 @@ export const questionBank: BranchedQuestion[] = [
     leftScores: { emotionalStability: 2 },
     rightScores: { emotionalStability: 9, openness: 4 },
   },
+
+  // === LAYER 3: PERSONALITY — BIG 5 continued (Q38-Q47) — ALL paths ===
+
+  // Q38 — Extraversion (MC)
+  {
+    id: 38, type: "mc", layer: "personality", paths: allPaths, dimensionKey: "extraversion",
+    text: "You're asked to give a short welcome speech to a group of 40 new seasonal staff. Your honest reaction:",
+    options: [
+      { label: "A", text: "Brilliant — I'll wing it, feed off the crowd's energy, and make it memorable", scores: { extraversion: 9, leadership: 5 } },
+      { label: "B", text: "Happy to do it, but I'd like to prepare a few bullet points first", scores: { extraversion: 7, conscientiousness: 4 } },
+      { label: "C", text: "I'd do it if asked, but I'd be counting down the seconds until it's over", scores: { extraversion: 4 } },
+      { label: "D", text: "I'd find a way to delegate it to someone who enjoys that sort of thing", scores: { extraversion: 2, autonomy: 4 } },
+    ],
+  },
+
+  // Q39 — Extraversion (MC)
+  {
+    id: 39, type: "mc", layer: "personality", paths: allPaths, dimensionKey: "extraversion",
+    text: "During a quiet midweek shift, you find yourself with 20 minutes of downtime. You naturally gravitate towards:",
+    options: [
+      { label: "A", text: "Finding a colleague to chat with — silence makes me restless", scores: { extraversion: 9 } },
+      { label: "B", text: "Checking in with tables or guests — I'll create conversation", scores: { extraversion: 8, collaboration: 4 } },
+      { label: "C", text: "Restocking, cleaning, or organising something quietly", scores: { extraversion: 3, conscientiousness: 5 } },
+      { label: "D", text: "Enjoying the calm — peace and quiet is rare in this job", scores: { extraversion: 1 } },
+    ],
+  },
+
+  // Q40 — Conscientiousness (MC)
+  {
+    id: 40, type: "mc", layer: "personality", paths: allPaths, dimensionKey: "conscientiousness",
+    text: "Your manager asks you to train a new starter on closing procedures. How do you approach it?",
+    options: [
+      { label: "A", text: "Write a step-by-step checklist, walk them through it twice, then observe them doing it solo", scores: { conscientiousness: 9, leadership: 5, attentionToDetail: 5 } },
+      { label: "B", text: "Show them once thoroughly and tell them to ask if they're stuck", scores: { conscientiousness: 6, leadership: 3 } },
+      { label: "C", text: "Walk through it together casually — they'll pick it up", scores: { conscientiousness: 4 } },
+      { label: "D", text: "Tell them to shadow someone else who's been doing it longer", scores: { conscientiousness: 2 } },
+    ],
+  },
+
+  // Q41 — Conscientiousness (Slider)
+  {
+    id: 41, type: "slider", layer: "personality", paths: allPaths, dimensionKey: "conscientiousness",
+    text: "A task has been assigned to you with a deadline of Friday. It's now Tuesday. When do you start?",
+    leftLabel: "Friday morning — I work best under pressure",
+    rightLabel: "Tuesday afternoon — I like to get ahead of deadlines",
+    leftScores: { conscientiousness: 2, adaptability: 4 },
+    rightScores: { conscientiousness: 9 },
+  },
+
+  // Q42 — Openness (Slider)
+  {
+    id: 42, type: "slider", layer: "personality", paths: allPaths, dimensionKey: "openness",
+    text: "Your hotel launches a cultural exchange programme with a sister property in Dubai. Staff can swap for 3 months. How interested are you?",
+    leftLabel: "Not for me — I'm happy where I am",
+    rightLabel: "I'd be first to sign up — what an experience",
+    leftScores: { openness: 2 },
+    rightScores: { openness: 9, adaptability: 6 },
+  },
+
+  // Q43 — Openness (MC)
+  {
+    id: 43, type: "mc", layer: "personality", paths: allPaths, dimensionKey: "openness",
+    text: "A guest asks for a recommendation you've never been asked before — 'Where can I do something truly unique in the area that no tourist would know about?' You:",
+    options: [
+      { label: "A", text: "Love this challenge — I'd think creatively, maybe suggest a local farmer's market, a hidden walking trail, or a traditional music session in a nearby pub", scores: { openness: 9, problemSolving: 5 } },
+      { label: "B", text: "Check our concierge book and suggest the top-rated local experiences", scores: { openness: 5, conscientiousness: 4 } },
+      { label: "C", text: "Suggest the usual tourist attractions — they're popular for a reason", scores: { openness: 3 } },
+      { label: "D", text: "Refer them to the concierge or front desk — that's their expertise", scores: { openness: 1 } },
+    ],
+  },
+
+  // Q44 — Agreeableness (MC)
+  {
+    id: 44, type: "mc", layer: "personality", paths: allPaths, dimensionKey: "agreeableness",
+    text: "During a team meeting, a colleague suggests an idea you think is genuinely bad. It would create more work and worse guest experience. You:",
+    options: [
+      { label: "A", text: "Say nothing in the meeting, then raise your concerns privately with the manager afterwards", scores: { agreeableness: 7, selfRegulation: 5 } },
+      { label: "B", text: "Respectfully disagree in the meeting, explain your reasoning, and suggest an alternative", scores: { agreeableness: 5, leadership: 6, openness: 4 } },
+      { label: "C", text: "Go along with it — keeping the peace matters more than being right", scores: { agreeableness: 9 } },
+      { label: "D", text: "Directly say it won't work and explain why — the team needs honest feedback", scores: { agreeableness: 3, integrity: 6 } },
+    ],
+  },
+
+  // Q45 — Agreeableness (Slider)
+  {
+    id: 45, type: "slider", layer: "personality", paths: allPaths, dimensionKey: "agreeableness",
+    text: "A guest makes a request that's technically against policy but wouldn't cause any real harm. How far do you bend?",
+    leftLabel: "Policy is policy — I explain why I can't and offer alternatives",
+    rightLabel: "I make it happen — happy guests matter more than rigid rules",
+    leftScores: { agreeableness: 3, ruleFollowing: 8 },
+    rightScores: { agreeableness: 9, ruleFollowing: 2 },
+  },
+
+  // Q46 — Emotional Stability (MC)
+  {
+    id: 46, type: "mc", layer: "personality", paths: allPaths, dimensionKey: "emotionalStability",
+    text: "You make a visible mistake during a busy service — wrong dish to the wrong table, and the entire section noticed. Immediately after fixing it, you:",
+    options: [
+      { label: "A", text: "Shake it off quickly — mistakes happen, I'll be sharper for the rest of the shift", scores: { emotionalStability: 9, adaptability: 5 } },
+      { label: "B", text: "Feel embarrassed for a few minutes but refocus before it affects the next table", scores: { emotionalStability: 7 } },
+      { label: "C", text: "Replay it in my head for the rest of the shift — it rattles my confidence", scores: { emotionalStability: 3 } },
+      { label: "D", text: "Get frustrated with myself and it starts affecting my other tables", scores: { emotionalStability: 1 } },
+    ],
+  },
+
+  // Q47 — Emotional Stability (MC)
+  {
+    id: 47, type: "mc", layer: "personality", paths: allPaths, dimensionKey: "emotionalStability",
+    text: "Your roster gets changed last minute — your day off is cancelled because a colleague called in sick. You:",
+    options: [
+      { label: "A", text: "Annoying, but I understand — I come in and make the best of it", scores: { emotionalStability: 8, agreeableness: 5, dependability: 6 } },
+      { label: "B", text: "Come in but make sure the manager knows this can't keep happening", scores: { emotionalStability: 7, selfRegulation: 5, leadership: 3 } },
+      { label: "C", text: "It throws off my whole week — I come in but I'm visibly frustrated", scores: { emotionalStability: 4 } },
+      { label: "D", text: "I say no — my day off is my day off, roster changes need proper notice", scores: { emotionalStability: 5, autonomy: 7, ruleFollowing: 4 } },
+    ],
+  },
 ];
 
 /** Get the filtered question list for a given experience path */
