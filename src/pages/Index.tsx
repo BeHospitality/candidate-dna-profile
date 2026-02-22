@@ -5,32 +5,6 @@ import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { storage, type EntryMode } from "@/lib/storage";
 import { validateMagicLink } from "@/lib/persistence";
-import { testDbConnection } from "@/utils/dbConnectionTest";
-
-const DbTestPanel = () => {
-  const [results, setResults] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-
-  const run = async () => {
-    setLoading(true);
-    const r = await testDbConnection();
-    setResults(r);
-    setLoading(false);
-  };
-
-  return (
-    <div className="max-w-3xl mx-auto text-center">
-      <Button onClick={run} variant="outline" size="sm" disabled={loading} className="rounded-xl text-xs">
-        {loading ? "Testing..." : "🧪 Test DB Connection"}
-      </Button>
-      {results && (
-        <pre className="mt-3 text-left text-xs bg-black/50 text-green-400 p-4 rounded-xl overflow-auto max-h-60">
-          {JSON.stringify(results, null, 2)}
-        </pre>
-      )}
-    </div>
-  );
-};
 
 const archetypePreviews = [
   {
@@ -179,10 +153,6 @@ const Index = () => {
         </motion.div>
       </div>
 
-      {/* Temporary DB Test */}
-      <div className="px-4 pb-4">
-        <DbTestPanel />
-      </div>
 
       {/* Footer */}
       <footer className="py-6 text-center text-xs text-muted-foreground">
