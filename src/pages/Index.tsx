@@ -110,9 +110,13 @@ const Index = () => {
             <span className="text-gradient-gold">Work DNA</span>
           </h1>
 
-          <p className="text-lg sm:text-xl text-muted-foreground mb-10 max-w-xl mx-auto">
-            12 questions. 5 minutes. Uncover the archetype that drives your
-            career success.
+          <p className="text-lg sm:text-xl text-muted-foreground mb-4 max-w-xl mx-auto">
+            A free 5-minute assessment that reveals your natural strengths,
+            how you work best, and where you'll thrive.
+          </p>
+
+          <p className="text-sm text-muted-foreground/80 mb-10 max-w-md mx-auto">
+            No hospitality experience needed — this works for everyone.
           </p>
 
           <Button
@@ -155,8 +159,13 @@ const Index = () => {
 
 
       {/* Footer */}
-      <footer className="py-6 text-center text-xs text-muted-foreground">
-        Candidate DNA Profile · Powered by Be Connect
+      <footer className="py-6 text-center space-y-1">
+        <p className="text-xs text-muted-foreground">
+          Candidate DNA Profile · Powered by Be Connect
+        </p>
+        <p className="text-[11px] text-muted-foreground/60">
+          Built for hospitality careers, your DNA profile reveals universal workplace traits that apply across any industry.
+        </p>
       </footer>
     </div>
   );

@@ -1279,9 +1279,28 @@ export const questionBank: BranchedQuestion[] = [
   },
 ];
 
+import { entryOverrides } from "./entryOverrides";
+
 /** Get the filtered question list for a given experience path */
 export function getQuestionsForPath(path: ExperiencePath): BranchedQuestion[] {
-  return questionBank.filter(q => q.paths.includes(path));
+  const filtered = questionBank.filter(q => q.paths.includes(path));
+  if (path === 'entry') {
+    return filtered.map(q => {
+      const override = entryOverrides[q.id];
+      if (override) {
+        return {
+          ...q,
+          text: override.text,
+          ...(override.options ? { options: override.options } : {}),
+          ...(override.leftLabel ? { leftLabel: override.leftLabel } : {}),
+          ...(override.rightLabel ? { rightLabel: override.rightLabel } : {}),
+          ...(override.items ? { items: override.items } : {}),
+        };
+      }
+      return q;
+    });
+  }
+  return filtered;
 }
 
 /** Get a human-readable label for the current question's layer */

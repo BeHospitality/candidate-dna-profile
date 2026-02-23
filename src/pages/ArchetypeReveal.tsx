@@ -26,6 +26,8 @@ import DimensionBreakdown from "@/components/results/DimensionBreakdown";
 import SectorMatches from "@/components/results/SectorMatches";
 import GeographyFit from "@/components/results/GeographyFit";
 import DepartmentRanking from "@/components/results/DepartmentRanking";
+import DNASnapshot from "@/components/results/DNASnapshot";
+import CareerCompassSummary from "@/components/results/CareerCompassSummary";
 
 const ArchetypeReveal = () => {
   const navigate = useNavigate();
@@ -268,73 +270,35 @@ const ArchetypeReveal = () => {
                 transition={{ delay: 0.5 }}
                 className="w-full max-w-lg mx-auto space-y-6"
               >
-                {/* Download DNA Profile - Top */}
-                <Button onClick={handleDownloadPDF} variant="outline" className="w-full rounded-xl" size="lg">
-                  <FileText className="mr-2 w-4 h-4" />
-                  Download DNA Profile
-                </Button>
-
-                {/* Strengths */}
-                <div className="glass-card p-6 rounded-2xl">
-                  <h3 className="font-bold text-lg text-foreground mb-3">💪 Strengths</h3>
-                  <ul className="space-y-2">
-                    {archetype.strengths.map((s) => (
-                      <li key={s} className="flex items-start gap-2 text-sm text-muted-foreground">
-                        <span className="text-primary mt-0.5">•</span>
-                        {s}
-                      </li>
-                    ))}
-                  </ul>
+                {/* 1. HERO ACTIONS — Share + Download right under archetype */}
+                <div className="flex gap-3">
+                  <Button onClick={handleDownloadPDF} variant="outline" className="flex-1 rounded-xl" size="sm">
+                    <Download className="mr-2 w-4 h-4" />
+                    Download PDF
+                  </Button>
+                  <Button variant="outline" className="flex-1 rounded-xl" size="sm" onClick={shareableUrl ? copyShareLink : copyLink}>
+                    <Share2 className="mr-2 w-4 h-4" />
+                    Share Result
+                  </Button>
                 </div>
 
-                {/* Work Style */}
-                <div className="glass-card p-6 rounded-2xl">
-                  <h3 className="font-bold text-lg text-foreground mb-3">🏢 Work Style</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {archetype.workStyle}
-                  </p>
-                </div>
+                {/* 2. DNA SNAPSHOT — 4 summary cards */}
+                {comprehensiveScores && (
+                  <ScrollRevealSection>
+                    <DNASnapshot comprehensiveScores={comprehensiveScores} />
+                  </ScrollRevealSection>
+                )}
 
-                {/* Thrives When */}
-                <div className="glass-card p-6 rounded-2xl">
-                  <h3 className="font-bold text-lg text-foreground mb-3">🌟 Thrives When</h3>
-                  <ul className="space-y-2">
-                    {archetype.thrivesWhen.map((s) => (
-                      <li key={s} className="flex items-start gap-2 text-sm text-muted-foreground">
-                        <span className="text-success mt-0.5">✓</span>
-                        {s}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Challenges */}
-                <div className="glass-card p-6 rounded-2xl">
-                  <h3 className="font-bold text-lg text-foreground mb-3">⚡ Challenges</h3>
-                  <ul className="space-y-2">
-                    {archetype.challenges.map((s) => (
-                      <li key={s} className="flex items-start gap-2 text-sm text-muted-foreground">
-                        <span className="text-destructive mt-0.5">!</span>
-                        {s}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Career Paths */}
-                <div className="glass-card p-6 rounded-2xl">
-                  <h3 className="font-bold text-lg text-foreground mb-3">🎯 Career Paths</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {archetype.careerPaths.map((p) => (
-                      <span
-                        key={p}
-                        className="px-3 py-1.5 rounded-lg text-xs font-medium bg-secondary text-secondary-foreground"
-                      >
-                        {p}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+                {/* 3. CAREER COMPASS — top paths, department, geography */}
+                {(sectorMatches.length > 0 || departmentMatches.length > 0 || geographyMatches.length > 0) && (
+                  <ScrollRevealSection>
+                    <CareerCompassSummary
+                      sectorMatches={sectorMatches}
+                      departmentMatches={departmentMatches}
+                      geographyMatches={geographyMatches}
+                    />
+                  </ScrollRevealSection>
+                )}
 
                 {/* Scroll hint */}
                 <AnimatePresence>
@@ -350,95 +314,125 @@ const ArchetypeReveal = () => {
                   )}
                 </AnimatePresence>
 
-                {/* Divider */}
+                {/* 4. DETAILED BREAKDOWN — expandable sections */}
                 <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
 
-                {/* NEW: DNA Profile Breakdown */}
+                {/* Archetype Details — Strengths, Work Style, etc. */}
+                <ScrollRevealSection>
+                  <div className="glass-card p-6 rounded-2xl space-y-4">
+                    <h3 className="font-bold text-lg text-foreground flex items-center gap-2">
+                      {archetype.emoji} About Your Archetype
+                    </h3>
+
+                    <div>
+                      <h4 className="font-semibold text-sm text-foreground mb-2">💪 Strengths</h4>
+                      <ul className="space-y-1">
+                        {archetype.strengths.map((s) => (
+                          <li key={s} className="flex items-start gap-2 text-sm text-muted-foreground">
+                            <span className="text-primary mt-0.5">•</span>{s}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold text-sm text-foreground mb-2">🏢 Work Style</h4>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{archetype.workStyle}</p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold text-sm text-foreground mb-2">🌟 Thrives When</h4>
+                      <ul className="space-y-1">
+                        {archetype.thrivesWhen.map((s) => (
+                          <li key={s} className="flex items-start gap-2 text-sm text-muted-foreground">
+                            <span className="text-success mt-0.5">✓</span>{s}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold text-sm text-foreground mb-2">⚡ Challenges</h4>
+                      <ul className="space-y-1">
+                        {archetype.challenges.map((s) => (
+                          <li key={s} className="flex items-start gap-2 text-sm text-muted-foreground">
+                            <span className="text-destructive mt-0.5">!</span>{s}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold text-sm text-foreground mb-2">🎯 Career Paths</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {archetype.careerPaths.map((p) => (
+                          <span key={p} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-secondary text-secondary-foreground">{p}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </ScrollRevealSection>
+
+                {/* DNA Dimension Breakdown (accordion) */}
                 {comprehensiveScores && (
                   <ScrollRevealSection>
                     <DimensionBreakdown comprehensiveScores={comprehensiveScores} />
                   </ScrollRevealSection>
                 )}
 
-                {/* NEW: Sector Matches */}
+                {/* Detailed Sector Matches */}
                 {sectorMatches.length > 0 && (
                   <ScrollRevealSection>
                     <SectorMatches sectorMatches={sectorMatches} />
                   </ScrollRevealSection>
                 )}
 
-                {/* NEW: Department Alignment */}
+                {/* Detailed Department Alignment */}
                 {departmentMatches.length > 0 && (
                   <ScrollRevealSection>
                     <DepartmentRanking departmentMatches={departmentMatches} />
                   </ScrollRevealSection>
                 )}
 
-                {/* NEW: Geography Fit */}
+                {/* Detailed Geography Fit */}
                 {geographyMatches.length > 0 && (
                   <ScrollRevealSection>
                     <GeographyFit geographyMatches={geographyMatches} />
                   </ScrollRevealSection>
                 )}
 
-                {/* Divider */}
+                {/* 5. ACTIONS */}
                 <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
 
-                {/* Share Section */}
                 <div className="glass-card p-6 rounded-2xl">
                   <h3 className="font-bold text-lg text-foreground mb-4 flex items-center gap-2">
                     <Share2 className="w-5 h-5 text-primary" />
                     Share Your Results
                   </h3>
                   <div className="flex flex-wrap gap-3">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        window.open(
-                          `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.origin)}&summary=${encodeURIComponent(shareText)}`,
-                          "_blank"
-                        )
-                      }
-                      className="rounded-lg"
-                    >
-                      <Linkedin className="w-4 h-4 mr-2" />
-                      LinkedIn
+                    <Button variant="outline" size="sm" onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.origin)}&summary=${encodeURIComponent(shareText)}`, "_blank")} className="rounded-lg">
+                      <Linkedin className="w-4 h-4 mr-2" />LinkedIn
                     </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        window.open(
-                          `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(window.location.origin)}`,
-                          "_blank"
-                        )
-                      }
-                      className="rounded-lg"
-                    >
-                      <Twitter className="w-4 h-4 mr-2" />
-                      Twitter
+                    <Button variant="outline" size="sm" onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(window.location.origin)}`, "_blank")} className="rounded-lg">
+                      <Twitter className="w-4 h-4 mr-2" />Twitter
                     </Button>
                     <Button variant="outline" size="sm" onClick={copyLink} className="rounded-lg">
-                      <Copy className="w-4 h-4 mr-2" />
-                      Copy Link
+                      <Copy className="w-4 h-4 mr-2" />Copy Link
                     </Button>
                     {shareableUrl && (
                       <Button variant="outline" size="sm" onClick={copyShareLink} className="rounded-lg">
-                        <LinkIcon className="w-4 h-4 mr-2" />
-                        Share Profile
+                        <LinkIcon className="w-4 h-4 mr-2" />Share Profile
                       </Button>
                     )}
                   </div>
                   <div className="mt-4">
                     <Button onClick={handleDownloadPDF} variant="outline" size="sm" className="w-full rounded-lg">
-                      <Download className="w-4 h-4 mr-2" />
-                      Download PDF
+                      <Download className="w-4 h-4 mr-2" />Download PDF
                     </Button>
                   </div>
                 </div>
 
-                {/* Hub sync indicator for candidate/team modes */}
+                {/* Hub sync indicator */}
                 {(entryInfo.mode === "candidate" || entryInfo.mode === "team") && (
                   <div className="text-center text-sm text-muted-foreground">
                     {hubStatus === "sending" && "⏳ Syncing results with your hiring team..."}
@@ -447,7 +441,7 @@ const ArchetypeReveal = () => {
                   </div>
                 )}
 
-                {/* CTA — Unlock More */}
+                {/* CTA */}
                 <div className="pt-4 pb-12 space-y-5">
                   <div className="glass-card p-6 rounded-2xl text-center space-y-4">
                     <p className="text-lg font-bold text-foreground">
@@ -457,44 +451,19 @@ const ArchetypeReveal = () => {
                       Continue now to discover:
                     </p>
                     <ul className="text-sm text-muted-foreground text-left inline-block space-y-2">
-                      <li className="flex items-start gap-2">
-                        <span className="text-primary mt-0.5">✓</span>
-                        Your top 3 career paths (with match %)
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-primary mt-0.5">✓</span>
-                        Which departments suit you best
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-primary mt-0.5">✓</span>
-                        Your EQ superpower
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-primary mt-0.5">✓</span>
-                        A downloadable DNA profile you can share
-                      </li>
+                      <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✓</span>Your top 3 career paths (with match %)</li>
+                      <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✓</span>Which departments suit you best</li>
+                      <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✓</span>Your EQ superpower</li>
+                      <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✓</span>A downloadable DNA profile you can share</li>
                     </ul>
                   </div>
 
-                  <Button
-                    onClick={handleContinue}
-                    size="lg"
-                    className="w-full rounded-xl font-bold text-lg py-6"
-                  >
-                    Continue Now
-                    <ArrowRight className="ml-2 w-5 h-5" />
+                  <Button onClick={handleContinue} size="lg" className="w-full rounded-xl font-bold text-lg py-6">
+                    Continue Now<ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
 
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="w-full rounded-xl"
-                    onClick={() => {
-                      toast({ title: "Progress saved!", description: "You can return anytime to continue." });
-                    }}
-                  >
-                    Save & Finish Later
-                    <ArrowRight className="ml-2 w-5 h-5" />
+                  <Button variant="outline" size="lg" className="w-full rounded-xl" onClick={() => { toast({ title: "Progress saved!", description: "You can return anytime to continue." }); }}>
+                    Save & Finish Later<ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
                 </div>
               </motion.div>
