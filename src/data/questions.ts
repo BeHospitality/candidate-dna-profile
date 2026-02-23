@@ -1247,12 +1247,12 @@ export const questionBank: BranchedQuestion[] = [
   // Q99 — Growth Ambition (MC)
   {
     id: 99, type: "mc", layer: "career", paths: ["entry"], dimensionKey: "growthAmbition",
-    text: "What excites you most about starting a career in hospitality?",
+    text: "What excites you most about starting your career?",
     options: [
       { label: "A", text: "The variety — every day is different and I'll never be bored", scores: { adaptability: 7, openness: 6 } },
       { label: "B", text: "The people — I love meeting new faces and building connections", scores: { extraversion: 7, collaboration: 5 } },
-      { label: "C", text: "The career ladder — I can go from entry level to management faster than most industries", scores: { leadership: 5, autonomy: 5 } },
-      { label: "D", text: "The travel potential — hospitality skills work anywhere in the world", scores: { openness: 7, adaptability: 6 } },
+      { label: "C", text: "The career ladder — I can progress from entry level to leadership quickly", scores: { leadership: 5, autonomy: 5 } },
+      { label: "D", text: "The transferability — the skills I learn will work anywhere in the world", scores: { openness: 7, adaptability: 6 } },
     ],
   },
 
@@ -1269,7 +1269,7 @@ export const questionBank: BranchedQuestion[] = [
   // Q101 — First Job Priorities (Ranking)
   {
     id: 101, type: "ranking", layer: "career", paths: ["entry"], dimensionKey: "firstJobPriorities",
-    text: "Rank what matters most to you in your first hospitality role:",
+    text: "Rank what matters most to you in your first professional role:",
     items: [
       { text: "Good training and mentorship", scores: { learningSpeed: 1, openness: 1 } },
       { text: "Friendly, supportive team", scores: { collaboration: 1, agreeableness: 1 } },
