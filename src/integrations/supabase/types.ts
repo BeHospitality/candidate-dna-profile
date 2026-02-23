@@ -171,6 +171,51 @@ export type Database = {
           },
         ]
       }
+      dna_participants: {
+        Row: {
+          assessment_id: string | null
+          assessment_path: string | null
+          completed_at: string | null
+          country: string | null
+          created_at: string | null
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          phone: string | null
+          referral_source: string | null
+          role_title: string | null
+        }
+        Insert: {
+          assessment_id?: string | null
+          assessment_path?: string | null
+          completed_at?: string | null
+          country?: string | null
+          created_at?: string | null
+          email: string
+          first_name: string
+          id?: string
+          last_name: string
+          phone?: string | null
+          referral_source?: string | null
+          role_title?: string | null
+        }
+        Update: {
+          assessment_id?: string | null
+          assessment_path?: string | null
+          completed_at?: string | null
+          country?: string | null
+          created_at?: string | null
+          email?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          phone?: string | null
+          referral_source?: string | null
+          role_title?: string | null
+        }
+        Relationships: []
+      }
       magic_links: {
         Row: {
           assessment_id: string | null

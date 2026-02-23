@@ -14,6 +14,7 @@ import RankingQuestion from "@/components/assessment/RankingQuestion";
 import MilestoneReveal from "@/components/assessment/MilestoneReveal";
 import ExperienceScreener from "@/components/ExperienceScreener";
 import ResumeDialog, { type SavedProgress } from "@/components/assessment/ResumeDialog";
+import ParticipantDetails from "@/components/ParticipantDetails";
 
 const SAVE_KEY = "dna_assessment_progress";
 const MILESTONES_SHOWN_KEY = "dna_milestones_shown";
@@ -22,6 +23,9 @@ const Assessment = () => {
   const navigate = useNavigate();
   const [experiencePath, setExperiencePath] = useState<ExperiencePath | null>(
     () => storage.getExperiencePath()
+  );
+  const [detailsComplete, setDetailsComplete] = useState<boolean>(
+    () => !!storage.getParticipantId()
   );
   const [pathQuestions, setPathQuestions] = useState<BranchedQuestion[]>([]);
   const [resumeData, setResumeData] = useState<SavedProgress | null>(null);
@@ -80,6 +84,7 @@ const Assessment = () => {
     setResumeData(null);
     setShowResume(false);
     setExperiencePath(null);
+    setDetailsComplete(false);
     setInitialIdx(0);
     setInitialAnswers(null);
   };
@@ -98,6 +103,19 @@ const Assessment = () => {
   // Show screener if no path selected
   if (!experiencePath) {
     return <ExperienceScreener onSelect={handlePathSelect} />;
+  }
+
+  // Show details capture if not yet completed
+  if (!detailsComplete) {
+    return (
+      <ParticipantDetails
+        experiencePath={experiencePath}
+        onContinue={(participantId) => {
+          storage.setParticipantId(participantId);
+          setDetailsComplete(true);
+        }}
+      />
+    );
   }
 
   if (pathQuestions.length === 0) return null;

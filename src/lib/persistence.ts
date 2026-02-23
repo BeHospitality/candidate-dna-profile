@@ -2,6 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { AssessmentResult } from "./scoring";
 import type { ComprehensiveScores } from "./scoring";
 import type { EntryInfo } from "./storage";
+import { storage } from "./storage";
 import type { SectorMatch } from "@/utils/sectorMatching";
 import type { GeographyMatch } from "@/utils/geographyMatching";
 import type { DepartmentFit } from "@/utils/departmentMatching";
@@ -123,6 +124,18 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
         org_code: entryInfo.orgCode || null,
       } as any,
     });
+
+    // Link participant record to assessment and mark completed
+    const participantId = storage.getParticipantId();
+    if (participantId && !participantId.startsWith("local-")) {
+      await supabase
+        .from("dna_participants")
+        .update({
+          assessment_id: assessment.id,
+          completed_at: new Date().toISOString(),
+        })
+        .eq("id", participantId);
+    }
 
     return assessment.id;
   } catch (err) {
