@@ -447,66 +447,55 @@ const ArchetypeReveal = () => {
                   </div>
                 )}
 
-                {/* CTA based on mode */}
-                <div className="pt-4 pb-12 space-y-4">
-                  {entryInfo.mode === "public" && (
-                    <>
-                      <Button
-                        onClick={handleContinue}
-                        size="lg"
-                        className="w-full rounded-xl font-bold text-lg py-6"
-                      >
-                        Continue to Career Mapping
-                        <ArrowRight className="ml-2 w-5 h-5" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        className="w-full rounded-xl"
-                      >
-                        <Download className="mr-2 w-4 h-4" />
-                        Download Be Connect App
-                      </Button>
-                    </>
-                  )}
+                {/* CTA — Unlock More */}
+                <div className="pt-4 pb-12 space-y-5">
+                  <div className="glass-card p-6 rounded-2xl text-center space-y-4">
+                    <p className="text-lg font-bold text-foreground">
+                      You've unlocked your archetype — but there's more.
+                    </p>
+                    <p className="text-sm text-muted-foreground font-medium">
+                      Continue now to discover:
+                    </p>
+                    <ul className="text-sm text-muted-foreground text-left inline-block space-y-2">
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5">✓</span>
+                        Your top 3 career paths (with match %)
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5">✓</span>
+                        Which departments suit you best
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5">✓</span>
+                        Your EQ superpower
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5">✓</span>
+                        A downloadable DNA profile you can share
+                      </li>
+                    </ul>
+                  </div>
 
-                  {entryInfo.mode === "candidate" && (
-                    <>
-                      <p className="text-center text-muted-foreground">
-                        Great! Let's map your career goals next.
-                      </p>
-                      <Button
-                        onClick={handleContinue}
-                        size="lg"
-                        className="w-full rounded-xl font-bold text-lg py-6"
-                      >
-                        Continue to Career Goals
-                        <ArrowRight className="ml-2 w-5 h-5" />
-                      </Button>
-                    </>
-                  )}
+                  <Button
+                    onClick={handleContinue}
+                    size="lg"
+                    className="w-full rounded-xl font-bold text-lg py-6"
+                  >
+                    Continue Now
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
 
-                  {entryInfo.mode === "team" && (
-                    <>
-                      <div className="glass-card p-6 rounded-2xl text-center">
-                        <p className="text-success font-semibold text-lg mb-2">
-                          ✓ Your archetype has been recorded
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Thanks for completing the assessment!
-                        </p>
-                      </div>
-                      <Button
-                        onClick={handleContinue}
-                        variant="outline"
-                        size="lg"
-                        className="w-full rounded-xl"
-                      >
-                        Continue to career goals (optional)
-                        <ArrowRight className="ml-2 w-5 h-5" />
-                      </Button>
-                    </>
-                  )}
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="w-full rounded-xl"
+                    onClick={() => {
+                      toast({ title: "Progress saved!", description: "You can return anytime to continue." });
+                    }}
+                  >
+                    Save & Finish Later
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
                 </div>
               </motion.div>
             )}
