@@ -19,6 +19,7 @@ const KEYS = {
   assessmentId: "dna-assessment-id",
   experiencePath: "dna_experience_path",
   matchingResults: "dna-matching-results",
+  participantId: "dna-participant-id",
 } as const;
 
 export const storage = {
@@ -63,6 +64,9 @@ export const storage = {
     try { return JSON.parse(localStorage.getItem(KEYS.matchingResults) || "null"); }
     catch { return null; }
   },
+
+  setParticipantId: (id: string) => localStorage.setItem(KEYS.participantId, id),
+  getParticipantId: (): string | null => localStorage.getItem(KEYS.participantId),
 
   clear: () => Object.values(KEYS).forEach((k) => localStorage.removeItem(k)),
 };
