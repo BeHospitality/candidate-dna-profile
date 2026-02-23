@@ -88,7 +88,7 @@ export const MILESTONES: Milestone[] = [
         { name: "Empathy", score: scores.empathy || 0 },
         { name: "Self-Regulation", score: scores.selfRegulation || 0 },
         { name: "Social Awareness", score: scores.socialAwareness || 0 },
-      ].sort((a, b) => b.score - a.score);
+      ].sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
 
       return {
         headline: `Your EQ superpower: ${eq[0].name}`,
