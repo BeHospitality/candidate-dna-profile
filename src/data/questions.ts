@@ -397,7 +397,7 @@ export const questionBank: BranchedQuestion[] = [
   // Q27 — Concentration (Ranking)
   {
     id: 27, type: "ranking", layer: "cognitive", paths: allPaths, dimensionKey: "concentration",
-    text: "Rank these from easiest to hardest for you to maintain focus on:",
+    text: "Rank these by how well you maintain focus on each:",
     items: [
       { text: "Repetitive tasks (polishing cutlery, folding napkins)", scores: { concentration: 1 } },
       { text: "Long briefings or training sessions", scores: { concentration: 1 } },
@@ -1287,12 +1287,12 @@ export function getQuestionsForPath(path: ExperiencePath): BranchedQuestion[] {
 /** Get a human-readable label for the current question's layer */
 export function getLayerLabel(layer: LayerType): string {
   switch (layer) {
-    case 'archetype': return 'Discovering your archetype...';
-    case 'cognitive': return 'Testing your cognitive strengths...';
-    case 'personality': return 'Exploring your personality...';
-    case 'eq': return 'Measuring emotional intelligence...';
-    case 'reliability': return 'Assessing your reliability & professional standards...';
-    case 'career': return 'Mapping your career compass...';
+    case 'archetype': return 'Section 1 of 5: Your Thinking Style';
+    case 'cognitive': return 'Section 2 of 5: Your Cognitive Strengths';
+    case 'personality': return 'Section 3 of 5: Your Work Style';
+    case 'eq': return 'Section 4 of 5: Your Emotional Intelligence';
+    case 'reliability': return 'Section 5 of 5: Your Values & Reliability';
+    case 'career': return 'Your Career Compass';
     default: return '';
   }
 }

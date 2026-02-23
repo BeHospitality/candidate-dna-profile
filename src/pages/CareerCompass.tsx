@@ -297,7 +297,11 @@ const CareerCompass = () => {
                   <p className="text-muted-foreground">
                     Your {archetype.name} {archetype.emoji} profile is ready.
                   </p>
-                  <Button size="lg" className="rounded-xl font-bold px-8">
+                  <Button
+                    size="lg"
+                    className="rounded-xl font-bold px-8"
+                    onClick={() => window.open('https://app.be.ie/c', '_blank', 'noopener,noreferrer')}
+                  >
                     Join Talent Network
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>

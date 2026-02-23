@@ -43,11 +43,11 @@ export const archetypeData: Record<Archetype, ArchetypeData> = {
     ],
     careerPaths: [
       "General Manager",
-      "Startup Founder",
+      "Hospitality Entrepreneur",
       "Head of Operations",
       "Executive Chef",
       "Regional Director",
-      "Entrepreneur",
+      "Area Director",
     ],
     welcomeMessage: "Lions thrive with ownership. Let's find roles where you can lead.",
     prompts: [
@@ -82,12 +82,12 @@ export const archetypeData: Record<Archetype, ArchetypeData> = {
       "Might undervalue their own contributions",
     ],
     careerPaths: [
-      "HR Director",
+      "People & Culture Director",
       "Team Lead",
-      "Training Manager",
+      "Learning & Development Manager",
       "Guest Relations Manager",
-      "People & Culture Head",
-      "Community Manager",
+      "Guest Experience Manager",
+      "Spa & Wellness Manager",
     ],
     welcomeMessage: "Whales excel in teams. Let's map collaborative paths.",
     prompts: [
@@ -126,8 +126,8 @@ export const archetypeData: Record<Archetype, ArchetypeData> = {
       "Head Sommelier",
       "Financial Controller",
       "Revenue Manager",
-      "Compliance Director",
-      "Technical Specialist",
+      "Events & Catering Manager",
+      "Concierge Manager",
     ],
     welcomeMessage: "Falcons shine in structured roles. Let's plan your precision career.",
     prompts: [
