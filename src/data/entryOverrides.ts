@@ -167,6 +167,32 @@ export const entryOverrides: Record<number, EntryOverride> = {
 
   // === PERSONALITY (Q28-Q47) ===
 
+  // Q29 — Extraversion (Slider)
+  29: {
+    text: "After a long, people-heavy day, how do you recharge?",
+    leftLabel: "Alone time — silence, no people, decompress",
+    rightLabel: "More socialising — I go meet friends or stay out",
+  },
+
+  // Q37 — Emotional Stability (Slider)
+  37: {
+    text: "You receive critical feedback from your teacher or supervisor after a task you thought went well. How does it affect you?",
+    leftLabel: "It ruins my evening — I replay it in my head for days",
+    rightLabel: "I take it on board, process it, and move on fairly quickly",
+  },
+
+  // Q47 — Emotional Stability
+  47: {
+    text: "Your schedule gets changed last minute — your day off is cancelled because a teammate can't make it. You:",
+    options: [
+      { label: "A", text: "Annoying, but I understand — I come in and make the best of it", scores: { emotionalStability: 8, agreeableness: 5, dependability: 6 } },
+      { label: "B", text: "Come in but make sure the person in charge knows this can't keep happening", scores: { emotionalStability: 7, selfRegulation: 5, leadership: 3 } },
+      { label: "C", text: "It throws off my whole week — I come in but I'm visibly frustrated", scores: { emotionalStability: 4 } },
+      { label: "D", text: "I say no — my day off is my day off, schedule changes need proper notice", scores: { emotionalStability: 5, autonomy: 7, ruleFollowing: 4 } },
+    ],
+  },
+
+
   // Q28 — Extraversion
   28: {
     text: "Your school or community group is hosting a big fundraiser tonight. Before the event, you feel:",
