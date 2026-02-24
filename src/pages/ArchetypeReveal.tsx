@@ -21,6 +21,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { persistAssessment, markMagicLinkUsed } from "@/lib/persistence";
 import { generateProfilePDF } from "@/utils/generateProfilePDF";
+import { supabase } from "@/integrations/supabase/client";
 import ScrollRevealSection from "@/components/results/ScrollRevealSection";
 import DimensionBreakdown from "@/components/results/DimensionBreakdown";
 import SectorMatches from "@/components/results/SectorMatches";
@@ -28,6 +29,58 @@ import GeographyFit from "@/components/results/GeographyFit";
 import DepartmentRanking from "@/components/results/DepartmentRanking";
 import DNASnapshot from "@/components/results/DNASnapshot";
 import CareerCompassSummary from "@/components/results/CareerCompassSummary";
+
+/** Fire-and-forget: send DNA results email to the participant */
+async function sendDnaResultsEmail(
+  assessmentId: string,
+  result: AssessmentResult,
+  comprehensive: ComprehensiveScores,
+  experiencePath: string
+) {
+  try {
+    const participantId = storage.getParticipantId();
+    if (!participantId) return;
+
+    const { data: participant } = await supabase
+      .from("dna_participants")
+      .select("first_name, last_name, email")
+      .eq("id", participantId)
+      .single();
+
+    if (!participant?.email) return;
+
+    const archetype = archetypeData[result.primaryArchetype];
+
+    // Derive EQ superpower from comprehensive scores
+    const eqDims = [
+      { key: "readingOthers" as const, label: "Reading Others" },
+      { key: "empathy" as const, label: "Empathy" },
+      { key: "selfRegulation" as const, label: "Self-Regulation" },
+      { key: "socialAwareness" as const, label: "Social Awareness" },
+    ];
+    const topEq = eqDims.reduce((best, d) =>
+      comprehensive[d.key] > comprehensive[best.key] ? d : best
+    , eqDims[0]);
+
+    const resultsUrl = `${window.location.origin}/results/${assessmentId}`;
+
+    await supabase.functions.invoke("send-dna-results", {
+      body: {
+        firstName: participant.first_name,
+        lastName: participant.last_name,
+        email: participant.email,
+        archetype: archetype.name,
+        archetypeDescription: archetype.tagline,
+        topCareerPaths: archetype.careerPaths.slice(0, 3),
+        eqSuperpower: topEq.label,
+        resultsUrl,
+      },
+    });
+  } catch (err) {
+    // Non-blocking — silently fail
+    console.error("DNA results email failed:", err);
+  }
+}
 
 const ArchetypeReveal = () => {
   const navigate = useNavigate();
@@ -92,6 +145,9 @@ const ArchetypeReveal = () => {
           const pending = localStorage.getItem("dna_hub_pending");
           setHubStatus(pending ? "failed" : "sent");
         }
+
+        // Fire-and-forget: send DNA results email
+        sendDnaResultsEmail(assessmentId, res, comprehensive, path);
       }
     });
 

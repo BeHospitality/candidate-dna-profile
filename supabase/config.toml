@@ -2,3 +2,6 @@ project_id = "bxngkvmdvziaxxkbuwia"
 
 [functions.send-resume-email]
 verify_jwt = false
+
+[functions.send-dna-results]
+verify_jwt = false
