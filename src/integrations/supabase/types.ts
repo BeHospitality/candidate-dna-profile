@@ -328,6 +328,65 @@ export type Database = {
         }
         Relationships: []
       }
+      resume_tokens: {
+        Row: {
+          answers: Json
+          assessment_id: string | null
+          created_at: string
+          current_question: number
+          email: string | null
+          experience_path: string
+          expires_at: string
+          id: string
+          participant_id: string | null
+          phase1_results: Json | null
+          token: string
+          total_questions: number
+          used: boolean
+          used_at: string | null
+        }
+        Insert: {
+          answers?: Json
+          assessment_id?: string | null
+          created_at?: string
+          current_question: number
+          email?: string | null
+          experience_path: string
+          expires_at?: string
+          id?: string
+          participant_id?: string | null
+          phase1_results?: Json | null
+          token?: string
+          total_questions: number
+          used?: boolean
+          used_at?: string | null
+        }
+        Update: {
+          answers?: Json
+          assessment_id?: string | null
+          created_at?: string
+          current_question?: number
+          email?: string | null
+          experience_path?: string
+          expires_at?: string
+          id?: string
+          participant_id?: string | null
+          phase1_results?: Json | null
+          token?: string
+          total_questions?: number
+          used?: boolean
+          used_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resume_tokens_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "dna_participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
