@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ArrowLeft } from "lucide-react";
+import { ArrowRight, ArrowLeft, BookmarkPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getQuestionsForPath, getLayerLabel, type ExperiencePath, type BranchedQuestion } from "@/data/questions";
 import { storage } from "@/lib/storage";
@@ -14,6 +14,7 @@ import RankingQuestion from "@/components/assessment/RankingQuestion";
 import MilestoneReveal from "@/components/assessment/MilestoneReveal";
 import ExperienceScreener from "@/components/ExperienceScreener";
 import ResumeDialog, { type SavedProgress } from "@/components/assessment/ResumeDialog";
+import SaveProgressDialog from "@/components/assessment/SaveProgressDialog";
 import ParticipantDetails from "@/components/ParticipantDetails";
 
 const SAVE_KEY = "dna_assessment_progress";
@@ -157,6 +158,7 @@ const AssessmentInner = ({
     headline: string;
     detail: string;
   } | null>(null);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
 
   const question = pathQuestions[currentIdx];
   const answer = question ? answers[question.id] : undefined;
@@ -364,6 +366,15 @@ const AssessmentInner = ({
           )}
           <div className="flex-1" />
           <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowSaveDialog(true)}
+            className="text-muted-foreground hover:text-foreground rounded-xl"
+          >
+            <BookmarkPlus className="w-4 h-4 mr-1.5" />
+            Save & Finish Later
+          </Button>
+          <Button
             onClick={next}
             size="lg"
             disabled={!isAnswered()}
@@ -373,6 +384,21 @@ const AssessmentInner = ({
             <ArrowRight className="ml-2 w-4 h-4" />
           </Button>
         </div>
+
+        {/* Save Progress Dialog */}
+        {showSaveDialog && (
+          <SaveProgressDialog
+            data={{
+              experiencePath,
+              currentQuestion: currentIdx,
+              answers,
+              totalQuestions,
+              email: storage.getEntryMode().candidateEmail,
+              participantId: storage.getParticipantId() || undefined,
+            }}
+            onClose={() => setShowSaveDialog(false)}
+          />
+        )}
       </div>
     </div>
   );
