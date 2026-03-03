@@ -20,6 +20,8 @@ import SectorMatches from "@/components/results/SectorMatches";
 import GeographyFit from "@/components/results/GeographyFit";
 import DepartmentRanking from "@/components/results/DepartmentRanking";
 import { generateProfilePDF } from "@/utils/generateProfilePDF";
+import BrandHeader from "@/components/BrandHeader";
+import DynamicFooter from "@/components/DynamicFooter";
 
 const SharedResults = () => {
   const { assessmentId } = useParams<{ assessmentId: string }>();
@@ -115,7 +117,8 @@ const SharedResults = () => {
   ] : [];
 
   return (
-    <div className="min-h-screen bg-navy-radial">
+    <div className="min-h-screen bg-navy-radial flex flex-col">
+      <BrandHeader />
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -208,6 +211,7 @@ const SharedResults = () => {
           </div>
         </div>
       </motion.div>
+      <DynamicFooter forcePublic />
     </div>
   );
 };

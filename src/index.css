@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,22 +6,22 @@
 
 @layer base {
   :root {
-    --background: 213 100% 16%;
+    --background: 222 47% 11%;
     --foreground: 230 100% 99%;
 
-    --card: 213 80% 12%;
+    --card: 220 36% 15%;
     --card-foreground: 230 100% 99%;
 
-    --popover: 213 80% 14%;
+    --popover: 222 47% 13%;
     --popover-foreground: 230 100% 99%;
 
     --primary: 38 92% 50%;
-    --primary-foreground: 213 100% 10%;
+    --primary-foreground: 222 47% 11%;
 
-    --secondary: 213 60% 25%;
+    --secondary: 220 36% 20%;
     --secondary-foreground: 230 100% 99%;
 
-    --muted: 213 40% 22%;
+    --muted: 220 30% 18%;
     --muted-foreground: 220 20% 65%;
 
     --accent: 38 70% 45%;
@@ -33,19 +33,19 @@
     --success: 160 84% 39%;
     --success-foreground: 230 100% 99%;
 
-    --border: 213 40% 28%;
-    --input: 213 40% 25%;
+    --border: 220 30% 22%;
+    --input: 220 30% 20%;
     --ring: 38 92% 50%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 213 100% 12%;
+    --sidebar-background: 222 47% 11%;
     --sidebar-foreground: 230 100% 99%;
     --sidebar-primary: 38 92% 50%;
-    --sidebar-primary-foreground: 213 100% 10%;
-    --sidebar-accent: 213 60% 20%;
+    --sidebar-primary-foreground: 222 47% 11%;
+    --sidebar-accent: 220 36% 17%;
     --sidebar-accent-foreground: 230 100% 99%;
-    --sidebar-border: 213 40% 25%;
+    --sidebar-border: 220 30% 20%;
     --sidebar-ring: 38 92% 50%;
   }
 }
@@ -57,7 +57,7 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Inter', sans-serif;
   }
 }
 
@@ -70,7 +70,7 @@
 
   .glass-card {
     @apply backdrop-blur-xl border rounded-xl;
-    background: hsl(230 100% 99% / 0.07);
+    background: #1a2332;
     border-color: hsl(230 100% 99% / 0.12);
   }
 
@@ -103,17 +103,17 @@
   .bg-navy-gradient {
     background: linear-gradient(
       180deg,
-      hsl(213 100% 16%) 0%,
-      hsl(213 100% 10%) 100%
+      #0f1729 0%,
+      #0a1120 100%
     );
   }
 
   .bg-navy-radial {
     background: radial-gradient(
       ellipse at 50% 0%,
-      hsl(213 80% 22%) 0%,
-      hsl(213 100% 16%) 50%,
-      hsl(213 100% 10%) 100%
+      #162033 0%,
+      #0f1729 50%,
+      #0a1120 100%
     );
   }
 }

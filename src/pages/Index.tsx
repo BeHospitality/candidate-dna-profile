@@ -1,10 +1,12 @@
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { storage, type EntryMode } from "@/lib/storage";
 import { validateMagicLink } from "@/lib/persistence";
+import BrandHeader from "@/components/BrandHeader";
+import DynamicFooter from "@/components/DynamicFooter";
 
 const archetypePreviews = [
   {
@@ -43,7 +45,6 @@ const Index = () => {
       mode = "candidate";
       token = searchParams.get("token") || undefined;
 
-      // Validate magic link token
       if (token) {
         setValidating(true);
         validateMagicLink(token).then((result) => {
@@ -55,7 +56,7 @@ const Index = () => {
             storage.setEntryMode({ mode, token, orgCode, candidateEmail: result.candidateEmail, candidateName: result.candidateName });
           }
         });
-        return; // Don't set entry mode yet, wait for validation
+        return;
       }
     } else if (location.pathname === "/team") {
       mode = "team";
@@ -92,81 +93,149 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-navy-radial flex flex-col">
-      {/* Hero */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
+      <BrandHeader />
+
+      {/* SECTION 1: HERO */}
+      <section className="flex-1 flex flex-col items-center justify-center px-4 py-16 sm:py-24">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center max-w-2xl mx-auto"
+          className="text-center max-w-3xl mx-auto"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass mb-8 text-sm text-muted-foreground">
-            <Sparkles className="w-4 h-4 text-primary" />
-            Work Archetype Assessment
-          </div>
-
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-6">
-            Discover Your{" "}
-            <span className="text-gradient-gold">Work DNA</span>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 leading-tight">
+            <span className="text-gradient-gold">101 questions. 23 dimensions.</span>
+            <br />
+            <span className="text-foreground">One profile that replaces your resume.</span>
           </h1>
 
-          <p className="text-lg sm:text-xl text-muted-foreground mb-4 max-w-xl mx-auto">
-            A free 5-minute assessment that reveals your natural strengths,
-            how you work best, and where you'll thrive.
-          </p>
-
-          <p className="text-sm text-muted-foreground/80 mb-10 max-w-md mx-auto">
-            No hospitality experience needed — this works for everyone.
+          <p className="text-lg sm:text-xl text-[#9ca3af] mb-8 max-w-xl mx-auto">
+            Are you a Lion, Whale, or Falcon? Find out where you truly belong in hospitality.
           </p>
 
           <Button
             size="lg"
             onClick={handleStart}
-            className="text-lg px-8 py-6 rounded-xl font-bold animate-pulse-gold"
+            className="text-lg px-10 py-7 rounded-xl font-bold animate-pulse-gold"
           >
-            Start Assessment
+            Start Your DNA Assessment
             <ArrowRight className="ml-2 w-5 h-5" />
           </Button>
-        </motion.div>
 
-        {/* Archetype Preview Cards */}
+          <p className="text-sm text-muted-foreground/70 mt-4">
+            Free. No sign-up to start. Your first result in 3 minutes.
+          </p>
+        </motion.div>
+      </section>
+
+      {/* SECTION 2: STAT CARDS */}
+      <section className="px-4 pb-16">
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-16 max-w-3xl mx-auto w-full px-4"
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto"
         >
-          {archetypePreviews.map((a, idx) => (
-            <motion.div
-              key={a.name}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 + idx * 0.15, duration: 0.4 }}
-              className="glass-card p-6 text-center hover:scale-105 transition-transform duration-300"
-            >
-              <div className="text-5xl mb-3">{a.emoji}</div>
-              <h3 className="font-bold text-lg text-foreground mb-1">
-                {a.name}
-              </h3>
-              <p className="text-sm text-primary font-medium mb-2">
-                {a.tagline}
-              </p>
-              <p className="text-xs text-muted-foreground">{a.desc}</p>
-            </motion.div>
+          {[
+            { number: "23", label: "Dimensions Measured", sub: "Cognitive, personality, EQ, reliability & more" },
+            { number: "6", label: "Sectors Matched", sub: "From boutique hotels to cruise lines" },
+            { number: "8", label: "Departments Ranked", sub: "Find your perfect department fit" },
+          ].map((stat) => (
+            <div key={stat.number} className="glass-card p-6 text-center border border-[#1a2332]">
+              <div className="text-4xl font-extrabold text-[#f59e0b] mb-1">{stat.number}</div>
+              <div className="text-sm font-semibold text-foreground mb-1">{stat.label}</div>
+              <div className="text-xs text-[#9ca3af]">{stat.sub}</div>
+            </div>
           ))}
         </motion.div>
-      </div>
+      </section>
 
+      {/* SECTION 3: ARCHETYPE PREVIEW CARDS */}
+      <section className="px-4 pb-16">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="max-w-3xl mx-auto"
+        >
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground text-center mb-8">
+            Three Tribes. Which One Are You?
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {archetypePreviews.map((a, idx) => (
+              <motion.div
+                key={a.name}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 + idx * 0.15, duration: 0.4 }}
+                className="glass-card p-6 text-center hover:scale-105 transition-transform duration-300"
+              >
+                <div className="text-5xl mb-3">{a.emoji}</div>
+                <h3 className="font-bold text-lg text-foreground mb-1">{a.name}</h3>
+                <p className="text-sm text-primary font-medium mb-2">{a.tagline}</p>
+                <p className="text-xs text-muted-foreground">{a.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </section>
 
-      {/* Footer */}
-      <footer className="py-6 text-center space-y-1">
-        <p className="text-xs text-muted-foreground">
-          Candidate DNA Profile · Powered by Be Connect
-        </p>
-        <p className="text-[11px] text-muted-foreground/60">
-          Built for hospitality careers, your DNA profile reveals universal workplace traits that apply across any industry.
-        </p>
-      </footer>
+      {/* SECTION 4: HOW IT WORKS */}
+      <section className="px-4 pb-16">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="max-w-3xl mx-auto"
+        >
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground text-center mb-8">
+            How It Works
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {[
+              { step: "1", title: "Choose Your Path", desc: "Entry, Experienced, or Executive — the assessment adapts to your career stage." },
+              { step: "2", title: "Answer in Chapters", desc: "6 named chapters, each unlocking new insights about yourself. Stop anytime with value." },
+              { step: "3", title: "Get Your DNA Profile", desc: "Archetype, sector matches, department ranking, career pathway — and a shareable DNA Card." },
+            ].map((item) => (
+              <div key={item.step} className="text-center">
+                <div className="w-12 h-12 rounded-full bg-[#f59e0b] text-[#0f1729] flex items-center justify-center text-lg font-bold mx-auto mb-4">
+                  {item.step}
+                </div>
+                <h3 className="font-semibold text-foreground mb-2">{item.title}</h3>
+                <p className="text-sm text-[#9ca3af]">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </section>
+
+      {/* SECTION 5: SECOND CTA */}
+      <section className="px-4 pb-20">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          className="text-center max-w-xl mx-auto"
+        >
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-6">
+            Ready to Discover Your DNA?
+          </h2>
+          <Button
+            size="lg"
+            onClick={handleStart}
+            className="text-lg px-10 py-7 rounded-xl font-bold animate-pulse-gold"
+          >
+            Start Your DNA Assessment
+            <ArrowRight className="ml-2 w-5 h-5" />
+          </Button>
+          <p className="text-sm text-muted-foreground/70 mt-4">
+            Takes 3–18 minutes depending on your path. Every chapter delivers a result.
+          </p>
+        </motion.div>
+      </section>
+
+      {/* SECTION 6: FOOTER */}
+      <DynamicFooter />
     </div>
   );
 };
