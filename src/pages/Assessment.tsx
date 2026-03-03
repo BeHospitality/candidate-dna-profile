@@ -4,14 +4,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowLeft, BookmarkPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getQuestionsForPath, getLayerLabel, type ExperiencePath, type BranchedQuestion } from "@/data/questions";
+import { getChaptersForPath, getChapterForQuestion, getQuestionInChapter, type Chapter } from "@/data/chapters";
 import { storage } from "@/lib/storage";
 import { calculateScores, calculateComprehensiveScores } from "@/lib/scoring";
-import { MILESTONES, getEncouragement } from "@/lib/milestones";
+import { MILESTONES } from "@/lib/milestones";
 import ProgressBar from "@/components/assessment/ProgressBar";
 import MultipleChoice from "@/components/assessment/MultipleChoice";
 import SliderQuestion from "@/components/assessment/SliderQuestion";
 import RankingQuestion from "@/components/assessment/RankingQuestion";
 import MilestoneReveal from "@/components/assessment/MilestoneReveal";
+import ChapterTransition from "@/components/assessment/ChapterTransition";
 import ExperienceScreener from "@/components/ExperienceScreener";
 import ResumeDialog, { type SavedProgress } from "@/components/assessment/ResumeDialog";
 import SaveProgressDialog from "@/components/assessment/SaveProgressDialog";
@@ -20,6 +22,9 @@ import BrandHeader from "@/components/BrandHeader";
 
 const SAVE_KEY = "dna_assessment_progress";
 const MILESTONES_SHOWN_KEY = "dna_milestones_shown";
+
+// Chapter boundary question IDs — milestones at these are replaced by chapter transitions
+const CHAPTER_BOUNDARY_QUESTIONS = new Set([12, 27, 47, 62, 77]);
 
 const Assessment = () => {
   const navigate = useNavigate();
@@ -34,6 +39,7 @@ const Assessment = () => {
   const [showResume, setShowResume] = useState(false);
   const [initialIdx, setInitialIdx] = useState(0);
   const [initialAnswers, setInitialAnswers] = useState<Record<number, any> | null>(null);
+  const [isResuming, setIsResuming] = useState(false);
 
   // Check for saved progress on mount
   useEffect(() => {
@@ -70,12 +76,12 @@ const Assessment = () => {
 
   const handleResume = () => {
     if (!resumeData) return;
-    // Restore state
     storage.setExperiencePath(resumeData.experiencePath as ExperiencePath);
     storage.setAnswers(resumeData.answers);
     setExperiencePath(resumeData.experiencePath as ExperiencePath);
     setInitialIdx(resumeData.currentQuestion);
     setInitialAnswers(resumeData.answers);
+    setIsResuming(true);
     setShowResume(false);
   };
 
@@ -89,9 +95,9 @@ const Assessment = () => {
     setDetailsComplete(false);
     setInitialIdx(0);
     setInitialAnswers(null);
+    setIsResuming(false);
   };
 
-  // Show resume dialog
   if (showResume && resumeData) {
     return (
       <ResumeDialog
@@ -102,12 +108,10 @@ const Assessment = () => {
     );
   }
 
-  // Show screener if no path selected
   if (!experiencePath) {
     return <ExperienceScreener onSelect={handlePathSelect} />;
   }
 
-  // Show details capture if not yet completed
   if (!detailsComplete) {
     return (
       <ParticipantDetails
@@ -130,23 +134,25 @@ const Assessment = () => {
       navigate={navigate}
       initialIdx={initialIdx}
       initialAnswers={initialAnswers}
+      isResuming={isResuming}
     />
   );
 };
 
-// Separated into inner component to use hooks properly
 const AssessmentInner = ({
   pathQuestions,
   experiencePath,
   navigate,
   initialIdx,
   initialAnswers,
+  isResuming,
 }: {
   pathQuestions: BranchedQuestion[];
   experiencePath: ExperiencePath;
   navigate: ReturnType<typeof useNavigate>;
   initialIdx: number;
   initialAnswers: Record<number, any> | null;
+  isResuming: boolean;
 }) => {
   const [currentIdx, setCurrentIdx] = useState(initialIdx);
   const [answers, setAnswers] = useState<Record<number, any>>(
@@ -154,20 +160,40 @@ const AssessmentInner = ({
   );
   const [direction, setDirection] = useState(1);
   const [activeMilestone, setActiveMilestone] = useState<{
-    title: string;
-    emoji: string;
-    headline: string;
-    detail: string;
+    title: string; emoji: string; headline: string; detail: string;
   } | null>(null);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [showChapterTransition, setShowChapterTransition] = useState(!isResuming);
+  const [pendingChapter, setPendingChapter] = useState<Chapter | null>(null);
+  const [completedChapterNumber, setCompletedChapterNumber] = useState<number | undefined>(undefined);
+
+  const pathQuestionIds = useMemo(() => pathQuestions.map(q => q.id), [pathQuestions]);
+  const pathChapters = useMemo(() => getChaptersForPath(experiencePath), [experiencePath]);
 
   const question = pathQuestions[currentIdx];
   const answer = question ? answers[question.id] : undefined;
   const totalQuestions = pathQuestions.length;
-  const remainingQuestions = totalQuestions - currentIdx;
-  const remainingMinutes = Math.max(1, Math.ceil((remainingQuestions * 10) / 60));
-  const layerLabel = question ? getLayerLabel(question.layer) : "";
-  const encouragement = getEncouragement(currentIdx + 1, totalQuestions);
+
+  // Current chapter info
+  const currentChapter = question ? getChapterForQuestion(question.id) : undefined;
+  const currentChapterIndex = currentChapter
+    ? pathChapters.findIndex(ch => ch.id === currentChapter.id)
+    : 0;
+  const chapterProgress = currentChapter && question
+    ? getQuestionInChapter(question.id, currentChapter, pathQuestionIds)
+    : { current: 1, total: 1 };
+
+  // Calculate time remaining in chapter
+  const chapterRemainingQuestions = chapterProgress.total - chapterProgress.current + 1;
+  const chapterTimeEstimate = `~${Math.max(1, Math.ceil((chapterRemainingQuestions * 10) / 60))} min`;
+
+  // For the initial chapter transition, determine the first chapter
+  const firstChapter = pathChapters[0];
+  const firstChapterQuestionCount = firstChapter
+    ? pathQuestionIds.filter(
+        qId => qId >= firstChapter.questionRange.start && qId <= firstChapter.questionRange.end
+      ).length
+    : 0;
 
   // Track shown milestones
   const shownMilestones = useMemo<Set<number>>(() => {
@@ -199,7 +225,7 @@ const AssessmentInner = ({
     }
   }, [answers, currentIdx, experiencePath, totalQuestions]);
 
-  // Auto-initialize slider answers with default value
+  // Auto-initialize slider answers
   useEffect(() => {
     if (question && question.type === "slider" && answers[question.id] === undefined) {
       const updated = { ...answers, [question.id]: 5 };
@@ -226,24 +252,26 @@ const AssessmentInner = ({
   );
 
   const checkMilestone = (questionIdx: number): boolean => {
-    // The question ID at the current index
-    const questionNumber = questionIdx + 1; // 1-based
+    const questionNumber = questionIdx + 1;
+    const currentQ = pathQuestions[questionIdx];
+
+    // Skip milestone reveals at chapter boundaries — chapter transitions handle these
+    if (currentQ && CHAPTER_BOUNDARY_QUESTIONS.has(currentQ.id)) {
+      return false;
+    }
+
     const milestone = MILESTONES.find(
       (m) => m.afterQuestion === questionNumber && !shownMilestones.has(m.afterQuestion)
     );
-
     if (!milestone) return false;
 
-    // Calculate partial scores for milestone content
     const partialScores = calculateComprehensiveScores(answers, pathQuestions);
     const archetypeResult = calculateScores(answers);
     const archetype = archetypeResult.primaryArchetype;
-
     const emoji =
       milestone.afterQuestion === 12
         ? ({ lion: "🦁", whale: "🐋", falcon: "🦅" }[archetype] || "🧬")
         : milestone.emoji;
-
     const { headline, detail } = milestone.content(partialScores, archetype);
     setActiveMilestone({ title: milestone.title, emoji, headline, detail });
     markMilestoneShown(milestone.afterQuestion);
@@ -252,14 +280,34 @@ const AssessmentInner = ({
 
   const next = () => {
     if (currentIdx < totalQuestions - 1) {
-      // Check for milestone before proceeding
-      if (!activeMilestone && checkMilestone(currentIdx)) {
-        return; // Milestone will show instead
+      // Check for chapter boundary
+      const currentQ = pathQuestions[currentIdx];
+      const nextQ = pathQuestions[currentIdx + 1];
+      const currentCh = currentQ ? getChapterForQuestion(currentQ.id) : undefined;
+      const nextCh = nextQ ? getChapterForQuestion(nextQ.id) : undefined;
+
+      if (currentCh && nextCh && currentCh.id !== nextCh.id) {
+        // Chapter boundary — show transition
+        const nextPathChapter = pathChapters.find(ch => ch.id === nextCh.id);
+        if (nextPathChapter) {
+          setCompletedChapterNumber(currentCh.id);
+          setPendingChapter(nextPathChapter);
+          setShowChapterTransition(true);
+          setDirection(1);
+          setCurrentIdx(i => i + 1);
+          return;
+        }
       }
+
+      // Check for non-boundary milestone
+      if (!activeMilestone && checkMilestone(currentIdx)) {
+        return;
+      }
+
       setDirection(1);
-      setCurrentIdx((i) => i + 1);
+      setCurrentIdx(i => i + 1);
     } else {
-      // Assessment complete — clear saved progress
+      // Assessment complete
       localStorage.removeItem(SAVE_KEY);
       localStorage.removeItem(MILESTONES_SHOWN_KEY);
       storage.setAnswers(answers);
@@ -270,13 +318,19 @@ const AssessmentInner = ({
   const handleMilestoneContinue = () => {
     setActiveMilestone(null);
     setDirection(1);
-    setCurrentIdx((i) => i + 1);
+    setCurrentIdx(i => i + 1);
+  };
+
+  const handleChapterStart = () => {
+    setShowChapterTransition(false);
+    setPendingChapter(null);
+    setCompletedChapterNumber(undefined);
   };
 
   const prev = () => {
     if (currentIdx > 0) {
       setDirection(-1);
-      setCurrentIdx((i) => i - 1);
+      setCurrentIdx(i => i - 1);
     }
   };
 
@@ -290,6 +344,7 @@ const AssessmentInner = ({
 
   // Show milestone if active
   if (activeMilestone) {
+    const remainingQuestions = totalQuestions - currentIdx;
     return (
       <div className="min-h-screen bg-navy-radial flex flex-col items-center justify-center px-4">
         <MilestoneReveal
@@ -304,16 +359,55 @@ const AssessmentInner = ({
     );
   }
 
+  // Show chapter transition
+  if (showChapterTransition) {
+    const displayChapter = pendingChapter || firstChapter;
+    if (displayChapter) {
+      const chQCount = pathQuestionIds.filter(
+        qId => qId >= displayChapter.questionRange.start && qId <= displayChapter.questionRange.end
+      ).length;
+      return (
+        <>
+          <BrandHeader />
+          <ChapterTransition
+            chapter={displayChapter}
+            questionCount={chQCount}
+            previousChapterCompleted={!!pendingChapter}
+            completedChapterNumber={completedChapterNumber}
+            onStart={handleChapterStart}
+            onSaveAndExit={pendingChapter ? () => setShowSaveDialog(true) : undefined}
+          />
+          {showSaveDialog && (
+            <SaveProgressDialog
+              data={{
+                experiencePath,
+                currentQuestion: currentIdx,
+                answers,
+                totalQuestions,
+                email: storage.getEntryMode().candidateEmail,
+                participantId: storage.getParticipantId() || undefined,
+              }}
+              onClose={() => setShowSaveDialog(false)}
+            />
+          )}
+        </>
+      );
+    }
+  }
+
   return (
     <div className="min-h-screen bg-navy-radial flex flex-col">
       <BrandHeader />
-      <ProgressBar
-        current={currentIdx + 1}
-        total={totalQuestions}
-        layerLabel={layerLabel}
-        timeEstimate={`~${remainingMinutes} min remaining`}
-        encouragement={encouragement}
-      />
+      {currentChapter && (
+        <ProgressBar
+          chapterQuestionCurrent={chapterProgress.current}
+          chapterQuestionTotal={chapterProgress.total}
+          chapter={currentChapter}
+          allChapters={pathChapters}
+          currentChapterIndex={currentChapterIndex}
+          timeEstimate={chapterTimeEstimate}
+        />
+      )}
 
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-8">
         <AnimatePresence mode="wait" custom={direction}>
@@ -387,7 +481,6 @@ const AssessmentInner = ({
           </Button>
         </div>
 
-        {/* Save Progress Dialog */}
         {showSaveDialog && (
           <SaveProgressDialog
             data={{
