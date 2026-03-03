@@ -127,7 +127,7 @@ const DNACard = forwardRef<HTMLDivElement, DNACardProps>(
 
         {/* FOOTER */}
         <div style={{ position: "absolute", bottom: 16, left: 0, right: 0, textAlign: "center", color: "rgba(255,255,255,0.25)", fontSize: 10 }}>
-          be-connect-dna.lovable.app
+          be-connect-dna.be.ie
         </div>
       </div>
     );
