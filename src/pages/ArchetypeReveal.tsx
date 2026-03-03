@@ -29,6 +29,8 @@ import GeographyFit from "@/components/results/GeographyFit";
 import DepartmentRanking from "@/components/results/DepartmentRanking";
 import DNASnapshot from "@/components/results/DNASnapshot";
 import CareerCompassSummary from "@/components/results/CareerCompassSummary";
+import BrandHeader from "@/components/BrandHeader";
+import DynamicFooter from "@/components/DynamicFooter";
 
 /** Fire-and-forget: send DNA results email to the participant */
 async function sendDnaResultsEmail(
@@ -210,7 +212,8 @@ const ArchetypeReveal = () => {
   };
 
   return (
-    <div className="min-h-screen bg-navy-radial">
+    <div className="min-h-screen bg-navy-radial flex flex-col">
+      <BrandHeader />
       <AnimatePresence mode="wait">
         {/* Loading phase */}
         {phase === "loading" && (
@@ -497,36 +500,123 @@ const ArchetypeReveal = () => {
                   </div>
                 )}
 
-                {/* CTA */}
-                <div className="pt-4 pb-12 space-y-5">
-                  <div className="glass-card p-6 rounded-2xl text-center space-y-4">
-                    <p className="text-lg font-bold text-foreground">
-                      You've unlocked your archetype — but there's more.
-                    </p>
-                    <p className="text-sm text-muted-foreground font-medium">
-                      Continue now to discover:
-                    </p>
-                    <ul className="text-sm text-muted-foreground text-left inline-block space-y-2">
-                      <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✓</span>Your top 3 career paths (with match %)</li>
-                      <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✓</span>Which departments suit you best</li>
-                      <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✓</span>Your EQ superpower</li>
-                      <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✓</span>A downloadable DNA profile you can share</li>
-                    </ul>
+                {/* Entry-mode-aware CTA */}
+                {entryInfo.mode === "candidate" && (
+                  <div className="glass-card p-6 rounded-2xl text-center space-y-3">
+                    <p className="text-sm text-foreground font-medium">Your DNA profile has been sent to your property.</p>
+                    <div className="flex gap-3">
+                      <Button onClick={handleDownloadPDF} variant="outline" className="flex-1 rounded-xl" size="sm">
+                        <Download className="mr-2 w-4 h-4" />Download PDF
+                      </Button>
+                    </div>
                   </div>
+                )}
 
-                  <Button onClick={handleContinue} size="lg" className="w-full rounded-xl font-bold text-lg py-6">
-                    Continue Now<ArrowRight className="ml-2 w-5 h-5" />
-                  </Button>
+                {entryInfo.mode === "team" && (
+                  <div className="glass-card p-6 rounded-2xl text-center space-y-3">
+                    <p className="text-sm text-foreground font-medium">Your DNA profile has been shared with your team.</p>
+                    <div className="flex gap-3">
+                      <Button onClick={handleDownloadPDF} variant="outline" className="flex-1 rounded-xl" size="sm">
+                        <Download className="mr-2 w-4 h-4" />Download PDF
+                      </Button>
+                    </div>
+                  </div>
+                )}
 
-                  <Button variant="outline" size="lg" className="w-full rounded-xl" onClick={() => { toast({ title: "Progress saved!", description: "You can return anytime to continue." }); }}>
-                    Save & Finish Later<ArrowRight className="ml-2 w-5 h-5" />
-                  </Button>
-                </div>
+                {entryInfo.mode === "public" && (
+                  <>
+                    {/* Share section */}
+                    <div className="glass-card p-6 rounded-2xl">
+                      <h3 className="font-bold text-lg text-foreground mb-4 flex items-center gap-2">
+                        <Share2 className="w-5 h-5 text-primary" />
+                        Share Your Results
+                      </h3>
+                      <div className="flex flex-wrap gap-3">
+                        <Button variant="outline" size="sm" onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareableUrl || window.location.origin)}&summary=${encodeURIComponent(shareText)}`, "_blank")} className="rounded-lg">
+                          <Linkedin className="w-4 h-4 mr-2" />LinkedIn
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareableUrl || window.location.origin)}`, "_blank")} className="rounded-lg">
+                          <Twitter className="w-4 h-4 mr-2" />Twitter
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={shareableUrl ? copyShareLink : copyLink} className="rounded-lg">
+                          <Copy className="w-4 h-4 mr-2" />Copy Link
+                        </Button>
+                      </div>
+                      <div className="mt-4">
+                        <Button onClick={handleDownloadPDF} variant="outline" size="sm" className="w-full rounded-lg">
+                          <Download className="w-4 h-4 mr-2" />Download PDF
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Join the Network CTA */}
+                    <div className="text-center">
+                      <a
+                        href="https://ecosystem.be.ie"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#f59e0b] font-semibold hover:underline"
+                      >
+                        Join the Network →
+                      </a>
+                    </div>
+                  </>
+                )}
+
+                {/* Share buttons for candidate/team too */}
+                {(entryInfo.mode === "candidate" || entryInfo.mode === "team") && (
+                  <div className="glass-card p-6 rounded-2xl">
+                    <h3 className="font-bold text-lg text-foreground mb-4 flex items-center gap-2">
+                      <Share2 className="w-5 h-5 text-primary" />
+                      Share Your Results
+                    </h3>
+                    <div className="flex flex-wrap gap-3">
+                      <Button variant="outline" size="sm" onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareableUrl || window.location.origin)}&summary=${encodeURIComponent(shareText)}`, "_blank")} className="rounded-lg">
+                        <Linkedin className="w-4 h-4 mr-2" />LinkedIn
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareableUrl || window.location.origin)}`, "_blank")} className="rounded-lg">
+                        <Twitter className="w-4 h-4 mr-2" />Twitter
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={shareableUrl ? copyShareLink : copyLink} className="rounded-lg">
+                        <Copy className="w-4 h-4 mr-2" />Copy Link
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* CTA — only for public */}
+                {entryInfo.mode === "public" && (
+                  <div className="pt-4 pb-4 space-y-5">
+                    <div className="glass-card p-6 rounded-2xl text-center space-y-4">
+                      <p className="text-lg font-bold text-foreground">
+                        You've unlocked your archetype — but there's more.
+                      </p>
+                      <p className="text-sm text-muted-foreground font-medium">
+                        Continue now to discover:
+                      </p>
+                      <ul className="text-sm text-muted-foreground text-left inline-block space-y-2">
+                        <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✓</span>Your top 3 career paths (with match %)</li>
+                        <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✓</span>Which departments suit you best</li>
+                        <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✓</span>Your EQ superpower</li>
+                        <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✓</span>A downloadable DNA profile you can share</li>
+                      </ul>
+                    </div>
+
+                    <Button onClick={handleContinue} size="lg" className="w-full rounded-xl font-bold text-lg py-6">
+                      Continue Now<ArrowRight className="ml-2 w-5 h-5" />
+                    </Button>
+
+                    <Button variant="outline" size="lg" className="w-full rounded-xl" onClick={() => { toast({ title: "Progress saved!", description: "You can return anytime to continue." }); }}>
+                      Save & Finish Later<ArrowRight className="ml-2 w-5 h-5" />
+                    </Button>
+                  </div>
+                )}
               </motion.div>
             )}
           </motion.div>
         )}
       </AnimatePresence>
+      <DynamicFooter />
     </div>
   );
 };

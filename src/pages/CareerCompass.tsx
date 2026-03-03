@@ -9,6 +9,8 @@ import { storage } from "@/lib/storage";
 import { archetypeData } from "@/lib/archetypes";
 import type { Archetype, AssessmentResult } from "@/lib/scoring";
 import { persistCareerProfile } from "@/lib/persistence";
+import BrandHeader from "@/components/BrandHeader";
+import DynamicFooter from "@/components/DynamicFooter";
 
 interface Milestone {
   id: string;
@@ -79,7 +81,9 @@ const CareerCompass = () => {
   };
 
   return (
-    <div className="min-h-screen bg-navy-radial px-4 py-8">
+    <div className="min-h-screen bg-navy-radial flex flex-col">
+      <BrandHeader />
+      <div className="flex-1 px-4 py-8">
       <div className="max-w-lg mx-auto">
         <AnimatePresence mode="wait">
           {/* Welcome */}
@@ -333,6 +337,8 @@ const CareerCompass = () => {
           )}
         </AnimatePresence>
       </div>
+      </div>
+      <DynamicFooter />
     </div>
   );
 };
