@@ -115,8 +115,8 @@ export const MILESTONES: Milestone[] = [
             ? "Highly Reliable Professional"
             : avg >= 50
             ? "Solid Foundation"
-            : "Room to Grow",
-        detail: "Your reliability profile helps properties understand your professional standards.",
+            : "Building Your Professional Standards",
+        detail: "Your reliability profile reveals how properties can best support and invest in your professional development.",
       };
     },
   },

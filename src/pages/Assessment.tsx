@@ -14,6 +14,8 @@ import SliderQuestion from "@/components/assessment/SliderQuestion";
 import RankingQuestion from "@/components/assessment/RankingQuestion";
 import MilestoneReveal from "@/components/assessment/MilestoneReveal";
 import ChapterTransition from "@/components/assessment/ChapterTransition";
+import MicroReward from "@/components/assessment/MicroReward";
+import { getMicroReward, type MicroRewardContent } from "@/utils/microRewardEngine";
 import ExperienceScreener from "@/components/ExperienceScreener";
 import ResumeDialog, { type SavedProgress } from "@/components/assessment/ResumeDialog";
 import SaveProgressDialog from "@/components/assessment/SaveProgressDialog";
@@ -166,6 +168,14 @@ const AssessmentInner = ({
   const [showChapterTransition, setShowChapterTransition] = useState(!isResuming);
   const [pendingChapter, setPendingChapter] = useState<Chapter | null>(null);
   const [completedChapterNumber, setCompletedChapterNumber] = useState<number | undefined>(undefined);
+  const [firedPositions] = useState<Set<number>>(() => {
+    if (isResuming && initialIdx > 0) {
+      const positions = [7, 17, 27, 37, 47, 57, 67].filter(p => p < initialIdx);
+      return new Set(positions);
+    }
+    return new Set();
+  });
+  const [microReward, setMicroReward] = useState<MicroRewardContent | null>(null);
 
   const pathQuestionIds = useMemo(() => pathQuestions.map(q => q.id), [pathQuestions]);
   const pathChapters = useMemo(() => getChaptersForPath(experiencePath), [experiencePath]);
@@ -304,6 +314,19 @@ const AssessmentInner = ({
         return;
       }
 
+      // Check for micro-reward
+      const partialScores = calculateComprehensiveScores(answers, pathQuestions);
+      const reward = getMicroReward(
+        partialScores as unknown as Record<string, number>,
+        currentIdx,
+        firedPositions
+      );
+      if (reward) {
+        firedPositions.add(currentIdx);
+        setMicroReward(reward);
+        return;
+      }
+
       setDirection(1);
       setCurrentIdx(i => i + 1);
     } else {
@@ -313,6 +336,12 @@ const AssessmentInner = ({
       storage.setAnswers(answers);
       navigate("/reveal");
     }
+  };
+
+  const handleMicroRewardDismiss = () => {
+    setMicroReward(null);
+    setDirection(1);
+    setCurrentIdx(i => i + 1);
   };
 
   const handleMilestoneContinue = () => {
@@ -357,6 +386,11 @@ const AssessmentInner = ({
         />
       </div>
     );
+  }
+
+  // Show micro-reward overlay
+  if (microReward) {
+    return <MicroReward content={microReward} onDismiss={handleMicroRewardDismiss} />;
   }
 
   // Show chapter transition

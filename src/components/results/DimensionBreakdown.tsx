@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import type { ComprehensiveScores } from "@/lib/scoring";
+import { getNarrativeForScore } from "@/data/dimensionNarratives";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface DimensionBreakdownProps {
@@ -68,21 +69,51 @@ function getBarGlow(score: number): string {
   return "";
 }
 
-const DimensionBar = ({ label, score }: { label: string; score: number }) => (
-  <div className="flex items-center gap-3">
-    <span className="text-xs text-muted-foreground w-[130px] shrink-0 truncate">{label}</span>
-    <div className="flex-1 h-2.5 rounded-full bg-muted/50 overflow-hidden">
-      <motion.div
-        initial={{ width: 0 }}
-        whileInView={{ width: `${score}%` }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className={`h-full rounded-full ${getBarColor(score)} ${getBarGlow(score)}`}
-      />
+const DimensionBar = ({ dimKey, label, score }: { dimKey: string; label: string; score: number }) => {
+  const narrative = getNarrativeForScore(dimKey, score);
+
+  return (
+    <div className="space-y-1.5">
+      {narrative && (
+        <div className="flex items-baseline gap-2">
+          <span className="text-[11px] font-bold text-primary uppercase tracking-wider">
+            {narrative.label}
+          </span>
+        </div>
+      )}
+      {narrative && (
+        <p className="text-sm font-semibold text-foreground leading-snug">
+          {narrative.headline}
+        </p>
+      )}
+      <div className="flex items-center gap-3">
+        <span className="text-xs text-muted-foreground w-[130px] shrink-0 truncate">{label}</span>
+        <div className="flex-1 h-2.5 rounded-full bg-muted/50 overflow-hidden">
+          <motion.div
+            initial={{ width: 0 }}
+            whileInView={{ width: `${score}%` }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className={`h-full rounded-full ${getBarColor(score)} ${getBarGlow(score)}`}
+          />
+        </div>
+        <span className="text-xs font-semibold text-foreground w-8 text-right">{score}</span>
+      </div>
+      {narrative && (
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          {narrative.detail}
+        </p>
+      )}
+      {narrative && (
+        <div className="border-l-2 border-primary/30 pl-3 py-1.5 bg-muted/20 rounded-r-lg">
+          <p className="text-[11px] text-muted-foreground leading-relaxed italic">
+            {narrative.hospitality_context}
+          </p>
+        </div>
+      )}
     </div>
-    <span className="text-xs font-semibold text-foreground w-8 text-right">{score}</span>
-  </div>
-);
+  );
+};
 
 const LayerGroup = ({ layer, scores, defaultOpen }: { layer: LayerConfig; scores: ComprehensiveScores; defaultOpen: boolean }) => {
   const [open, setOpen] = useState(defaultOpen);
@@ -108,9 +139,9 @@ const LayerGroup = ({ layer, scores, defaultOpen }: { layer: LayerConfig; scores
             transition={{ duration: 0.25 }}
             className="overflow-hidden"
           >
-            <div className="space-y-3 pb-4 px-1">
+            <div className="space-y-5 pb-4 px-1">
               {layer.dimensions.map((d) => (
-                <DimensionBar key={d.key} label={d.label} score={scores[d.key]} />
+                <DimensionBar key={d.key} dimKey={d.key} label={d.label} score={scores[d.key]} />
               ))}
             </div>
           </motion.div>

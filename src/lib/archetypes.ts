@@ -37,9 +37,9 @@ export const archetypeData: Record<Archetype, ArchetypeData> = {
       "Leading teams toward a compelling vision",
     ],
     challenges: [
-      "May overlook team input in pursuit of speed",
-      "Can struggle with highly structured, process-heavy environments",
-      "Might take on too much responsibility alone",
+      "Your drive for speed means you may move past team input — the trade-off of decisive leadership",
+      "Highly structured, process-heavy environments feel less energising for you",
+      "You naturally take on more responsibility than most — channelling that is your superpower",
     ],
     careerPaths: [
       "General Manager",
@@ -77,9 +77,9 @@ export const archetypeData: Record<Archetype, ArchetypeData> = {
       "Navigating change alongside trusted colleagues",
     ],
     challenges: [
-      "May avoid necessary conflict or difficult decisions",
-      "Can prioritize harmony over efficiency",
-      "Might undervalue their own contributions",
+      "Your preference for harmony means you approach conflict differently — navigating it is your growth edge",
+      "You naturally prioritise relationships, which can mean efficiency takes a different path",
+      "You tend to credit others before yourself — recognising your own impact is the opportunity",
     ],
     careerPaths: [
       "People & Culture Director",
@@ -117,9 +117,9 @@ export const archetypeData: Record<Archetype, ArchetypeData> = {
       "Optimizing processes for peak efficiency",
     ],
     challenges: [
-      "May resist change if processes are already working",
-      "Can be overly critical of work that doesn't meet their standards",
-      "Might struggle in highly ambiguous, unstructured environments",
+      "Your commitment to proven methods means rapid change feels less energising — you trade novelty for depth",
+      "Your high standards mean you notice when others don't meet them — channelling that constructively is the skill",
+      "Highly ambiguous environments draw less on your natural strengths — you're optimised for clarity and structure",
     ],
     careerPaths: [
       "Quality Assurance Manager",
