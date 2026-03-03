@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Share2, Copy, Linkedin, Twitter, ArrowRight, Download, FileText, Link as LinkIcon } from "lucide-react";
@@ -10,6 +10,9 @@ import { calculateSectorMatches, type SectorMatch } from "@/utils/sectorMatching
 import { calculateGeographyMatches, type GeographyMatch } from "@/utils/geographyMatching";
 import { calculateDepartmentMatches, type DepartmentFit } from "@/utils/departmentMatching";
 import { archetypeData } from "@/lib/archetypes";
+import { getSignatureCombination } from "@/utils/signatureMatch";
+import { getNarrativeForScore } from "@/data/dimensionNarratives";
+import { exportDNACard } from "@/utils/dnaCardExport";
 import {
   RadarChart,
   PolarGrid,
@@ -29,6 +32,8 @@ import GeographyFit from "@/components/results/GeographyFit";
 import DepartmentRanking from "@/components/results/DepartmentRanking";
 import DNASnapshot from "@/components/results/DNASnapshot";
 import CareerCompassSummary from "@/components/results/CareerCompassSummary";
+import SignatureCard from "@/components/results/SignatureCard";
+import DNACard from "@/components/results/DNACard";
 import BrandHeader from "@/components/BrandHeader";
 import DynamicFooter from "@/components/DynamicFooter";
 
@@ -53,7 +58,6 @@ async function sendDnaResultsEmail(
 
     const archetype = archetypeData[result.primaryArchetype];
 
-    // Derive EQ superpower from comprehensive scores
     const eqDims = [
       { key: "readingOthers" as const, label: "Reading Others" },
       { key: "empathy" as const, label: "Empathy" },
@@ -79,10 +83,22 @@ async function sendDnaResultsEmail(
       },
     });
   } catch (err) {
-    // Non-blocking — silently fail
     console.error("DNA results email failed:", err);
   }
 }
+
+// Dimension label map for display
+const DIMENSION_LABELS: Record<string, string> = {
+  autonomy: "Autonomy", collaboration: "Collaboration", precision: "Precision",
+  leadership: "Leadership", adaptability: "Adaptability", problemSolving: "Problem Solving",
+  attentionToDetail: "Attention to Detail", learningSpeed: "Learning Speed",
+  patternRecognition: "Pattern Recognition", concentration: "Concentration",
+  extraversion: "Extraversion", conscientiousness: "Conscientiousness",
+  openness: "Openness", agreeableness: "Agreeableness", emotionalStability: "Emotional Stability",
+  readingOthers: "Reading Others", empathy: "Empathy", selfRegulation: "Self-Regulation",
+  socialAwareness: "Social Awareness", integrity: "Integrity", ruleFollowing: "Rule-Following",
+  safetyConsciousness: "Safety", dependability: "Dependability",
+};
 
 const ArchetypeReveal = () => {
   const navigate = useNavigate();
@@ -96,6 +112,10 @@ const ArchetypeReveal = () => {
   const [geographyMatches, setGeographyMatches] = useState<GeographyMatch[]>([]);
   const [departmentMatches, setDepartmentMatches] = useState<DepartmentFit[]>([]);
   const [showScrollHint, setShowScrollHint] = useState(false);
+  const [cardFormat, setCardFormat] = useState<"linkedin" | "instagram">("linkedin");
+
+  const linkedinCardRef = useRef<HTMLDivElement>(null);
+  const instagramCardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const answers = storage.getAnswers();
@@ -107,7 +127,6 @@ const ArchetypeReveal = () => {
     setResult(res);
     storage.setResults(res);
 
-    // Compute comprehensive scores for new dimensions
     const path = storage.getExperiencePath() || 'experienced';
     const pathQuestions = getQuestionsForPath(path as ExperiencePath);
     const comprehensive = calculateComprehensiveScores(answers, pathQuestions);
@@ -122,7 +141,6 @@ const ArchetypeReveal = () => {
 
     storage.setMatchingResults({ sectorMatches: sMat, geographyMatches: gMat, departmentMatches: dMat, comprehensiveScores: comprehensive });
 
-    // Persist to database and send to Hub
     const entryInfo = storage.getEntryMode();
     const isHubMode = entryInfo.mode === 'candidate' || entryInfo.mode === 'team';
     if (isHubMode) setHubStatus("sending");
@@ -142,13 +160,10 @@ const ArchetypeReveal = () => {
         if (entryInfo.mode === "candidate" && entryInfo.token) {
           markMagicLinkUsed(entryInfo.token, assessmentId);
         }
-        // Hub status — check pending payload to determine success
         if (isHubMode) {
           const pending = localStorage.getItem("dna_hub_pending");
           setHubStatus(pending ? "failed" : "sent");
         }
-
-        // Fire-and-forget: send DNA results email
         sendDnaResultsEmail(assessmentId, res, comprehensive, path);
       }
     });
@@ -169,6 +184,23 @@ const ArchetypeReveal = () => {
 
   const archetype = archetypeData[result.primaryArchetype];
   const entryInfo = storage.getEntryMode();
+
+  // Signature combination
+  const signatureCombination = comprehensiveScores
+    ? getSignatureCombination(comprehensiveScores as unknown as Record<string, number>)
+    : null;
+
+  // Top 5 dimensions for DNA card
+  const topDimensions = comprehensiveScores
+    ? Object.entries(comprehensiveScores as unknown as Record<string, number>)
+        .filter(([key]) => DIMENSION_LABELS[key])
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 5)
+        .map(([key, score]) => {
+          const narrative = getNarrativeForScore(key, score);
+          return { label: narrative?.label || DIMENSION_LABELS[key] || key, score };
+        })
+    : [];
 
   const radarData = [
     { dimension: "Autonomy", score: result.scores.autonomy },
@@ -211,11 +243,54 @@ const ArchetypeReveal = () => {
     }
   };
 
+  const handleDownloadCard = (format: "linkedin" | "instagram") => {
+    const ref = format === "linkedin" ? linkedinCardRef : instagramCardRef;
+    if (ref.current) {
+      exportDNACard(
+        ref.current,
+        format,
+        `be-connect-dna-${format}.png`
+      );
+    }
+  };
+
+  const bestSector = sectorMatches[0]?.sector || "Hospitality";
+  const bestGeography = geographyMatches[0]?.region || "Global";
+  const bestDepartment = departmentMatches[0]?.department || "Operations";
+
   return (
     <div className="min-h-screen bg-navy-radial flex flex-col">
       <BrandHeader />
+
+      {/* Off-screen DNA Cards for export */}
+      <div style={{ position: "absolute", left: -9999, top: 0 }}>
+        <DNACard
+          ref={linkedinCardRef}
+          archetypeEmoji={archetype.emoji}
+          archetypeName={archetype.name}
+          archetypeTagline={archetype.tagline}
+          signatureName={signatureCombination?.name || "The Rising Force"}
+          topDimensions={topDimensions}
+          bestSector={bestSector}
+          bestGeography={bestGeography}
+          topDepartment={bestDepartment}
+          format="linkedin"
+        />
+        <DNACard
+          ref={instagramCardRef}
+          archetypeEmoji={archetype.emoji}
+          archetypeName={archetype.name}
+          archetypeTagline={archetype.tagline}
+          signatureName={signatureCombination?.name || "The Rising Force"}
+          topDimensions={topDimensions}
+          bestSector={bestSector}
+          bestGeography={bestGeography}
+          topDepartment={bestDepartment}
+          format="instagram"
+        />
+      </div>
+
       <AnimatePresence mode="wait">
-        {/* Loading phase */}
         {phase === "loading" && (
           <motion.div
             key="loading"
@@ -235,7 +310,6 @@ const ArchetypeReveal = () => {
           </motion.div>
         )}
 
-        {/* Flip / Revealed */}
         {(phase === "flip" || phase === "revealed") && (
           <motion.div
             key="result"
@@ -252,7 +326,6 @@ const ArchetypeReveal = () => {
                 style={{ transformStyle: "preserve-3d" }}
                 className="relative"
               >
-                {/* Front */}
                 <div
                   className="relative rounded-2xl overflow-hidden border-2 border-primary/50 gold-glow p-8 text-center"
                   style={{ backfaceVisibility: "hidden", background: "linear-gradient(160deg, hsl(213 80% 14%), hsl(213 100% 10%))" }}
@@ -271,10 +344,7 @@ const ArchetypeReveal = () => {
                     </p>
                     <div className="flex flex-wrap justify-center gap-2">
                       {archetype.traits.map((t) => (
-                        <span
-                          key={t}
-                          className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/15 text-primary border border-primary/30"
-                        >
+                        <span key={t} className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/15 text-primary border border-primary/30">
                           {t}
                         </span>
                       ))}
@@ -298,24 +368,9 @@ const ArchetypeReveal = () => {
                 <ResponsiveContainer width="100%" height={280}>
                   <RadarChart data={radarData} cx="50%" cy="50%" outerRadius="65%">
                     <PolarGrid stroke="hsl(213 40% 28%)" />
-                    <PolarAngleAxis
-                      dataKey="dimension"
-                      tick={{ fill: "hsl(220 20% 65%)", fontSize: 10 }}
-                    />
-                    <PolarRadiusAxis
-                      angle={90}
-                      domain={[0, 100]}
-                      tick={false}
-                      axisLine={false}
-                    />
-                    <Radar
-                      name="Score"
-                      dataKey="score"
-                      stroke="hsl(38 92% 50%)"
-                      fill="hsl(38 92% 50%)"
-                      fillOpacity={0.2}
-                      strokeWidth={2}
-                    />
+                    <PolarAngleAxis dataKey="dimension" tick={{ fill: "hsl(220 20% 65%)", fontSize: 10 }} />
+                    <PolarRadiusAxis angle={90} domain={[0, 100]} tick={false} axisLine={false} />
+                    <Radar name="Score" dataKey="score" stroke="hsl(38 92% 50%)" fill="hsl(38 92% 50%)" fillOpacity={0.2} strokeWidth={2} />
                   </RadarChart>
                 </ResponsiveContainer>
               </motion.div>
@@ -329,26 +384,93 @@ const ArchetypeReveal = () => {
                 transition={{ delay: 0.5 }}
                 className="w-full max-w-lg mx-auto space-y-6"
               >
-                {/* 1. HERO ACTIONS — Share + Download right under archetype */}
+                {/* Hero Actions */}
                 <div className="flex gap-3">
                   <Button onClick={handleDownloadPDF} variant="outline" className="flex-1 rounded-xl" size="sm">
-                    <Download className="mr-2 w-4 h-4" />
-                    Download PDF
+                    <Download className="mr-2 w-4 h-4" />Download PDF
                   </Button>
                   <Button variant="outline" className="flex-1 rounded-xl" size="sm" onClick={shareableUrl ? copyShareLink : copyLink}>
-                    <Share2 className="mr-2 w-4 h-4" />
-                    Share Result
+                    <Share2 className="mr-2 w-4 h-4" />Share Result
                   </Button>
                 </div>
 
-                {/* 2. DNA SNAPSHOT — 4 summary cards */}
+                {/* DNA Snapshot */}
                 {comprehensiveScores && (
                   <ScrollRevealSection>
                     <DNASnapshot comprehensiveScores={comprehensiveScores} />
                   </ScrollRevealSection>
                 )}
 
-                {/* 3. CAREER COMPASS — top paths, department, geography */}
+                {/* Signature Card (Phase 7) */}
+                {signatureCombination && (
+                  <ScrollRevealSection>
+                    <SignatureCard combination={signatureCombination} />
+                  </ScrollRevealSection>
+                )}
+
+                {/* DNA Card Section (Phase 9) */}
+                <ScrollRevealSection>
+                  <div className="glass-card p-6 rounded-2xl space-y-4">
+                    <h3 className="font-bold text-lg text-foreground flex items-center gap-2">
+                      🎴 Your DNA Card
+                    </h3>
+
+                    {/* Preview card inline */}
+                    <div className="flex justify-center">
+                      <div
+                        className="max-w-[480px] w-full rounded-xl overflow-hidden"
+                        style={{ boxShadow: "0 0 24px rgba(245,158,11,0.15)" }}
+                      >
+                        <DNACard
+                          archetypeEmoji={archetype.emoji}
+                          archetypeName={archetype.name}
+                          archetypeTagline={archetype.tagline}
+                          signatureName={signatureCombination?.name || "The Rising Force"}
+                          topDimensions={topDimensions}
+                          bestSector={bestSector}
+                          bestGeography={bestGeography}
+                          topDepartment={bestDepartment}
+                          format="linkedin"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3 justify-center">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDownloadCard("linkedin")}
+                        className="rounded-lg border-primary/40 text-primary hover:bg-primary/10"
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        LinkedIn
+                        <span className="text-[10px] ml-1 text-muted-foreground">1200×630</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDownloadCard("instagram")}
+                        className="rounded-lg border-primary/40 text-primary hover:bg-primary/10"
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        Instagram
+                        <span className="text-[10px] ml-1 text-muted-foreground">1080×1080</span>
+                      </Button>
+                    </div>
+
+                    <p className="text-center text-xs text-muted-foreground">
+                      Share your DNA and tag @beconnectie
+                    </p>
+
+                    {(entryInfo.mode === "candidate" || entryInfo.mode === "team") && (
+                      <p className="text-center text-xs text-muted-foreground">
+                        Share your profile with your network →
+                      </p>
+                    )}
+                  </div>
+                </ScrollRevealSection>
+
+                {/* Career Compass */}
                 {(sectorMatches.length > 0 || departmentMatches.length > 0 || geographyMatches.length > 0) && (
                   <ScrollRevealSection>
                     <CareerCompassSummary
@@ -362,27 +484,20 @@ const ArchetypeReveal = () => {
                 {/* Scroll hint */}
                 <AnimatePresence>
                   {showScrollHint && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="text-center text-xs text-muted-foreground py-2"
-                    >
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center text-xs text-muted-foreground py-2">
                       Scroll for your full DNA profile ↓
                     </motion.div>
                   )}
                 </AnimatePresence>
 
-                {/* 4. DETAILED BREAKDOWN — expandable sections */}
                 <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
 
-                {/* Archetype Details — Strengths, Work Style, etc. */}
+                {/* Archetype Details */}
                 <ScrollRevealSection>
                   <div className="glass-card p-6 rounded-2xl space-y-4">
                     <h3 className="font-bold text-lg text-foreground flex items-center gap-2">
                       {archetype.emoji} About Your Archetype
                     </h3>
-
                     <div>
                       <h4 className="font-semibold text-sm text-foreground mb-2">💪 Strengths</h4>
                       <ul className="space-y-1">
@@ -393,12 +508,10 @@ const ArchetypeReveal = () => {
                         ))}
                       </ul>
                     </div>
-
                     <div>
                       <h4 className="font-semibold text-sm text-foreground mb-2">🏢 Work Style</h4>
                       <p className="text-sm text-muted-foreground leading-relaxed">{archetype.workStyle}</p>
                     </div>
-
                     <div>
                       <h4 className="font-semibold text-sm text-foreground mb-2">🌟 Thrives When</h4>
                       <ul className="space-y-1">
@@ -409,18 +522,16 @@ const ArchetypeReveal = () => {
                         ))}
                       </ul>
                     </div>
-
                     <div>
-                      <h4 className="font-semibold text-sm text-foreground mb-2">⚡ Challenges</h4>
+                      <h4 className="font-semibold text-sm text-foreground mb-2">⚡ Trade-offs</h4>
                       <ul className="space-y-1">
                         {archetype.challenges.map((s) => (
                           <li key={s} className="flex items-start gap-2 text-sm text-muted-foreground">
-                            <span className="text-destructive mt-0.5">!</span>{s}
+                            <span className="text-primary mt-0.5">↔</span>{s}
                           </li>
                         ))}
                       </ul>
                     </div>
-
                     <div>
                       <h4 className="font-semibold text-sm text-foreground mb-2">🎯 Career Paths</h4>
                       <div className="flex flex-wrap gap-2">
@@ -432,50 +543,46 @@ const ArchetypeReveal = () => {
                   </div>
                 </ScrollRevealSection>
 
-                {/* DNA Dimension Breakdown (accordion) */}
+                {/* DNA Dimension Breakdown */}
                 {comprehensiveScores && (
                   <ScrollRevealSection>
                     <DimensionBreakdown comprehensiveScores={comprehensiveScores} />
                   </ScrollRevealSection>
                 )}
 
-                {/* Detailed Sector Matches */}
                 {sectorMatches.length > 0 && (
                   <ScrollRevealSection>
                     <SectorMatches sectorMatches={sectorMatches} />
                   </ScrollRevealSection>
                 )}
 
-                {/* Detailed Department Alignment */}
                 {departmentMatches.length > 0 && (
                   <ScrollRevealSection>
                     <DepartmentRanking departmentMatches={departmentMatches} />
                   </ScrollRevealSection>
                 )}
 
-                {/* Detailed Geography Fit */}
                 {geographyMatches.length > 0 && (
                   <ScrollRevealSection>
                     <GeographyFit geographyMatches={geographyMatches} />
                   </ScrollRevealSection>
                 )}
 
-                {/* 5. ACTIONS */}
                 <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
 
+                {/* Share section */}
                 <div className="glass-card p-6 rounded-2xl">
                   <h3 className="font-bold text-lg text-foreground mb-4 flex items-center gap-2">
-                    <Share2 className="w-5 h-5 text-primary" />
-                    Share Your Results
+                    <Share2 className="w-5 h-5 text-primary" />Share Your Results
                   </h3>
                   <div className="flex flex-wrap gap-3">
-                    <Button variant="outline" size="sm" onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.origin)}&summary=${encodeURIComponent(shareText)}`, "_blank")} className="rounded-lg">
+                    <Button variant="outline" size="sm" onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareableUrl || window.location.origin)}&summary=${encodeURIComponent(shareText)}`, "_blank")} className="rounded-lg">
                       <Linkedin className="w-4 h-4 mr-2" />LinkedIn
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(window.location.origin)}`, "_blank")} className="rounded-lg">
+                    <Button variant="outline" size="sm" onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareableUrl || window.location.origin)}`, "_blank")} className="rounded-lg">
                       <Twitter className="w-4 h-4 mr-2" />Twitter
                     </Button>
-                    <Button variant="outline" size="sm" onClick={copyLink} className="rounded-lg">
+                    <Button variant="outline" size="sm" onClick={shareableUrl ? copyShareLink : copyLink} className="rounded-lg">
                       <Copy className="w-4 h-4 mr-2" />Copy Link
                     </Button>
                     {shareableUrl && (
@@ -500,116 +607,54 @@ const ArchetypeReveal = () => {
                   </div>
                 )}
 
-                {/* Entry-mode-aware CTA */}
+                {/* Entry-mode CTAs */}
                 {entryInfo.mode === "candidate" && (
                   <div className="glass-card p-6 rounded-2xl text-center space-y-3">
                     <p className="text-sm text-foreground font-medium">Your DNA profile has been sent to your property.</p>
-                    <div className="flex gap-3">
-                      <Button onClick={handleDownloadPDF} variant="outline" className="flex-1 rounded-xl" size="sm">
-                        <Download className="mr-2 w-4 h-4" />Download PDF
-                      </Button>
-                    </div>
+                    <Button onClick={handleDownloadPDF} variant="outline" className="rounded-xl" size="sm">
+                      <Download className="mr-2 w-4 h-4" />Download PDF
+                    </Button>
                   </div>
                 )}
 
                 {entryInfo.mode === "team" && (
                   <div className="glass-card p-6 rounded-2xl text-center space-y-3">
                     <p className="text-sm text-foreground font-medium">Your DNA profile has been shared with your team.</p>
-                    <div className="flex gap-3">
-                      <Button onClick={handleDownloadPDF} variant="outline" className="flex-1 rounded-xl" size="sm">
-                        <Download className="mr-2 w-4 h-4" />Download PDF
-                      </Button>
-                    </div>
+                    <Button onClick={handleDownloadPDF} variant="outline" className="rounded-xl" size="sm">
+                      <Download className="mr-2 w-4 h-4" />Download PDF
+                    </Button>
                   </div>
                 )}
 
                 {entryInfo.mode === "public" && (
                   <>
-                    {/* Share section */}
-                    <div className="glass-card p-6 rounded-2xl">
-                      <h3 className="font-bold text-lg text-foreground mb-4 flex items-center gap-2">
-                        <Share2 className="w-5 h-5 text-primary" />
-                        Share Your Results
-                      </h3>
-                      <div className="flex flex-wrap gap-3">
-                        <Button variant="outline" size="sm" onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareableUrl || window.location.origin)}&summary=${encodeURIComponent(shareText)}`, "_blank")} className="rounded-lg">
-                          <Linkedin className="w-4 h-4 mr-2" />LinkedIn
-                        </Button>
-                        <Button variant="outline" size="sm" onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareableUrl || window.location.origin)}`, "_blank")} className="rounded-lg">
-                          <Twitter className="w-4 h-4 mr-2" />Twitter
-                        </Button>
-                        <Button variant="outline" size="sm" onClick={shareableUrl ? copyShareLink : copyLink} className="rounded-lg">
-                          <Copy className="w-4 h-4 mr-2" />Copy Link
-                        </Button>
-                      </div>
-                      <div className="mt-4">
-                        <Button onClick={handleDownloadPDF} variant="outline" size="sm" className="w-full rounded-lg">
-                          <Download className="w-4 h-4 mr-2" />Download PDF
-                        </Button>
-                      </div>
-                    </div>
-
-                    {/* Join the Network CTA */}
                     <div className="text-center">
-                      <a
-                        href="https://ecosystem.be.ie"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[#f59e0b] font-semibold hover:underline"
-                      >
+                      <a href="https://ecosystem.be.ie" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">
                         Join the Network →
                       </a>
                     </div>
+
+                    <div className="pt-4 pb-4 space-y-5">
+                      <div className="glass-card p-6 rounded-2xl text-center space-y-4">
+                        <p className="text-lg font-bold text-foreground">You've unlocked your archetype — but there's more.</p>
+                        <p className="text-sm text-muted-foreground font-medium">Continue now to discover:</p>
+                        <ul className="text-sm text-muted-foreground text-left inline-block space-y-2">
+                          <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✓</span>Your top 3 career paths (with match %)</li>
+                          <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✓</span>Which departments suit you best</li>
+                          <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✓</span>Your EQ superpower</li>
+                          <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✓</span>A downloadable DNA profile you can share</li>
+                        </ul>
+                      </div>
+
+                      <Button onClick={handleContinue} size="lg" className="w-full rounded-xl font-bold text-lg py-6">
+                        Continue Now<ArrowRight className="ml-2 w-5 h-5" />
+                      </Button>
+
+                      <Button variant="outline" size="lg" className="w-full rounded-xl" onClick={() => { toast({ title: "Progress saved!", description: "You can return anytime to continue." }); }}>
+                        Save & Finish Later<ArrowRight className="ml-2 w-5 h-5" />
+                      </Button>
+                    </div>
                   </>
-                )}
-
-                {/* Share buttons for candidate/team too */}
-                {(entryInfo.mode === "candidate" || entryInfo.mode === "team") && (
-                  <div className="glass-card p-6 rounded-2xl">
-                    <h3 className="font-bold text-lg text-foreground mb-4 flex items-center gap-2">
-                      <Share2 className="w-5 h-5 text-primary" />
-                      Share Your Results
-                    </h3>
-                    <div className="flex flex-wrap gap-3">
-                      <Button variant="outline" size="sm" onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareableUrl || window.location.origin)}&summary=${encodeURIComponent(shareText)}`, "_blank")} className="rounded-lg">
-                        <Linkedin className="w-4 h-4 mr-2" />LinkedIn
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareableUrl || window.location.origin)}`, "_blank")} className="rounded-lg">
-                        <Twitter className="w-4 h-4 mr-2" />Twitter
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={shareableUrl ? copyShareLink : copyLink} className="rounded-lg">
-                        <Copy className="w-4 h-4 mr-2" />Copy Link
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
-                {/* CTA — only for public */}
-                {entryInfo.mode === "public" && (
-                  <div className="pt-4 pb-4 space-y-5">
-                    <div className="glass-card p-6 rounded-2xl text-center space-y-4">
-                      <p className="text-lg font-bold text-foreground">
-                        You've unlocked your archetype — but there's more.
-                      </p>
-                      <p className="text-sm text-muted-foreground font-medium">
-                        Continue now to discover:
-                      </p>
-                      <ul className="text-sm text-muted-foreground text-left inline-block space-y-2">
-                        <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✓</span>Your top 3 career paths (with match %)</li>
-                        <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✓</span>Which departments suit you best</li>
-                        <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✓</span>Your EQ superpower</li>
-                        <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✓</span>A downloadable DNA profile you can share</li>
-                      </ul>
-                    </div>
-
-                    <Button onClick={handleContinue} size="lg" className="w-full rounded-xl font-bold text-lg py-6">
-                      Continue Now<ArrowRight className="ml-2 w-5 h-5" />
-                    </Button>
-
-                    <Button variant="outline" size="lg" className="w-full rounded-xl" onClick={() => { toast({ title: "Progress saved!", description: "You can return anytime to continue." }); }}>
-                      Save & Finish Later<ArrowRight className="ml-2 w-5 h-5" />
-                    </Button>
-                  </div>
                 )}
               </motion.div>
             )}
