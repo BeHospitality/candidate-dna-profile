@@ -11,7 +11,7 @@ export function getSignatureCombination(
     );
     const lowMatch =
       combo.low_dims.length === 0 ||
-      combo.low_dims.some((dim) => (dimensionScores[dim] ?? 100) <= 39);
+      combo.low_dims.some((dim) => (dimensionScores[dim] ?? 100) <= 49);
 
     if (highMatch && lowMatch) return combo;
   }
