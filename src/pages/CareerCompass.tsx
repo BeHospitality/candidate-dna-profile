@@ -1,16 +1,23 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Trash2, CheckCircle2, ArrowRight, Calendar } from "lucide-react";
+import { Plus, Trash2, CheckCircle2, ArrowRight, ArrowLeft, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { storage } from "@/lib/storage";
 import { archetypeData } from "@/lib/archetypes";
+import { calculateComprehensiveScores, type ComprehensiveScores } from "@/lib/scoring";
 import type { Archetype, AssessmentResult } from "@/lib/scoring";
+import { getQuestionsForPath, type ExperiencePath } from "@/data/questions";
+import { calculateSectorMatches, type SectorMatch } from "@/utils/sectorMatching";
+import { calculateDepartmentMatches, type DepartmentFit } from "@/utils/departmentMatching";
+import { calculateGeographyMatches, type GeographyMatch } from "@/utils/geographyMatching";
+import { getSignatureCombination } from "@/utils/signatureMatch";
 import { persistCareerProfile } from "@/lib/persistence";
 import BrandHeader from "@/components/BrandHeader";
 import DynamicFooter from "@/components/DynamicFooter";
+import CareerMapStep from "@/components/career-compass/CareerMapStep";
 
 interface Milestone {
   id: string;
@@ -22,13 +29,21 @@ interface Milestone {
 const CareerCompass = () => {
   const navigate = useNavigate();
   const [result, setResult] = useState<AssessmentResult | null>(null);
-  const [step, setStep] = useState<"welcome" | "milestones" | "motivators" | "complete">("welcome");
+  const [step, setStep] = useState<"welcome" | "milestones" | "motivators" | "career-map" | "complete">("welcome");
   const [milestones, setMilestones] = useState<Milestone[]>(
     storage.getMilestones().length > 0
       ? storage.getMilestones()
       : [{ id: crypto.randomUUID(), title: "", targetDate: "", whyMatters: "" }]
   );
   const [motivators, setMotivators] = useState<Record<string, string>>(storage.getMotivators());
+
+  // Matching data
+  const [comprehensiveScores, setComprehensiveScores] = useState<ComprehensiveScores | null>(null);
+  const [sectorMatches, setSectorMatches] = useState<SectorMatch[]>([]);
+  const [departmentMatches, setDepartmentMatches] = useState<DepartmentFit[]>([]);
+  const [geographyMatches, setGeographyMatches] = useState<GeographyMatch[]>([]);
+  const [signatureName, setSignatureName] = useState("Your Signature");
+  const [userName, setUserName] = useState<string | undefined>();
 
   useEffect(() => {
     const res = storage.getResults();
@@ -37,12 +52,48 @@ const CareerCompass = () => {
       return;
     }
     setResult(res);
+
+    // Load matching results from storage (calculated on /reveal)
+    const cached = storage.getMatchingResults();
+    let compScores: ComprehensiveScores | null = null;
+    if (cached) {
+      setSectorMatches(cached.sectorMatches || []);
+      setDepartmentMatches(cached.departmentMatches || []);
+      setGeographyMatches(cached.geographyMatches || []);
+      if (cached.comprehensiveScores) {
+        compScores = cached.comprehensiveScores;
+        setComprehensiveScores(cached.comprehensiveScores);
+      }
+    } else {
+      // Fallback: recalculate
+      const answers = storage.getAnswers();
+      const path = storage.getExperiencePath() || "experienced";
+      const pathQuestions = getQuestionsForPath(path as ExperiencePath);
+      compScores = calculateComprehensiveScores(answers, pathQuestions);
+      setComprehensiveScores(compScores);
+      setSectorMatches(calculateSectorMatches(compScores));
+      setDepartmentMatches(calculateDepartmentMatches(compScores));
+      setGeographyMatches(calculateGeographyMatches(compScores));
+    }
+
+    // Signature
+    if (compScores) {
+      const sig = getSignatureCombination(compScores as unknown as Record<string, number>);
+      if (sig) setSignatureName(sig.name);
+    }
+
+    // Try to get user name from entry info
+    try {
+      const info = storage.getEntryMode();
+      if (info.candidateName) setUserName(info.candidateName);
+    } catch {}
   }, [navigate]);
 
   if (!result) return null;
 
   const archetype = archetypeData[result.primaryArchetype];
   const entryInfo = storage.getEntryMode();
+  const firstName = userName?.split(" ")[0];
 
   const motivatorQuestions = [
     "What excites you most about your work?",
@@ -67,11 +118,16 @@ const CareerCompass = () => {
     setMilestones(milestones.map((m) => (m.id === id ? { ...m, [field]: value } : m)));
   };
 
+  const handleMotivatorsDone = () => {
+    storage.setMilestones(milestones);
+    storage.setMotivators(motivators);
+    setStep("career-map");
+  };
+
   const handleComplete = async () => {
     storage.setMilestones(milestones);
     storage.setMotivators(motivators);
 
-    // Persist to database
     const assessmentId = storage.getAssessmentId();
     if (assessmentId) {
       await persistCareerProfile(assessmentId, milestones, motivators);
@@ -79,6 +135,10 @@ const CareerCompass = () => {
 
     setStep("complete");
   };
+
+  const bestSector = sectorMatches[0]?.sector || "Hospitality";
+  const bestGeography = geographyMatches[0]?.region || "Global";
+  const bestDepartment = departmentMatches[0]?.department || "Operations";
 
   return (
     <div className="min-h-screen bg-navy-radial flex flex-col">
@@ -138,7 +198,6 @@ const CareerCompass = () => {
               </p>
 
               <div className="relative space-y-4">
-                {/* Timeline line */}
                 <div className="absolute left-5 top-8 bottom-8 w-0.5 bg-border" />
 
                 {milestones.map((m, idx) => (
@@ -149,7 +208,6 @@ const CareerCompass = () => {
                     transition={{ delay: idx * 0.05 }}
                     className="relative pl-12"
                   >
-                    {/* Timeline dot */}
                     <div className="absolute left-3.5 top-4 w-3 h-3 rounded-full bg-primary border-2 border-primary" />
 
                     <div className="glass-card p-4 rounded-xl space-y-3">
@@ -264,15 +322,34 @@ const CareerCompass = () => {
                   Back
                 </Button>
                 <Button
-                  onClick={handleComplete}
+                  onClick={handleMotivatorsDone}
                   size="lg"
                   className="flex-1 rounded-xl font-bold"
                 >
-                  Complete Profile
-                  <CheckCircle2 className="ml-2 w-4 h-4" />
+                  See Your Career Map
+                  <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
               </div>
             </motion.div>
+          )}
+
+          {/* Career Map — NEW STEP */}
+          {step === "career-map" && comprehensiveScores && (
+            <CareerMapStep
+              archetypeName={archetype.name}
+              archetypeEmoji={archetype.emoji}
+              archetypeTagline={archetype.tagline}
+              signatureName={signatureName}
+              userName={userName}
+              sectorMatches={sectorMatches}
+              departmentMatches={departmentMatches}
+              comprehensiveScores={comprehensiveScores}
+              bestSector={bestSector}
+              bestGeography={bestGeography}
+              bestDepartment={bestDepartment}
+              onComplete={handleComplete}
+              onBackToResults={() => navigate("/reveal")}
+            />
           )}
 
           {/* Complete */}
@@ -293,46 +370,30 @@ const CareerCompass = () => {
               </motion.div>
 
               <h1 className="text-3xl font-extrabold text-foreground mb-4">
-                Profile Complete!
+                You're All Set{firstName ? `, ${firstName}` : ""}
               </h1>
 
-              {entryInfo.mode === "public" && (
-                <div className="space-y-4">
-                  <p className="text-muted-foreground">
-                    Your {archetype.name} {archetype.emoji} profile is ready.
-                  </p>
-                  <Button
-                    size="lg"
-                    className="rounded-xl font-bold px-8"
-                    onClick={() => window.open('https://app.be.ie/c', '_blank', 'noopener,noreferrer')}
-                  >
-                    Join Talent Network
-                    <ArrowRight className="ml-2 w-5 h-5" />
-                  </Button>
-                </div>
-              )}
+              <p className="text-muted-foreground mb-8 max-w-sm mx-auto">
+                Your DNA profile has been saved. The Be Connect team will be in touch about roles that match your profile.
+              </p>
 
-              {entryInfo.mode === "candidate" && (
-                <div className="space-y-4">
-                  <p className="text-muted-foreground">
-                    The Be Connect team will be in touch about next steps.
-                  </p>
-                  <div className="glass-card p-6 rounded-2xl inline-block">
-                    <p className="text-primary font-semibold">Thank you!</p>
-                  </div>
-                </div>
-              )}
+              <div className="space-y-4">
+                <Button
+                  size="lg"
+                  className="rounded-xl font-bold px-8"
+                  onClick={() => window.open('https://app.be.ie/c', '_blank', 'noopener,noreferrer')}
+                >
+                  Join Talent Network
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
 
-              {entryInfo.mode === "team" && (
-                <div className="space-y-4">
-                  <p className="text-muted-foreground">
-                    Your goals have been shared with leadership.
-                  </p>
-                  <div className="glass-card p-6 rounded-2xl inline-block">
-                    <p className="text-primary font-semibold">Thanks for completing your career profile!</p>
-                  </div>
-                </div>
-              )}
+                <button
+                  onClick={() => navigate("/reveal")}
+                  className="block mx-auto text-sm text-primary hover:underline mt-4"
+                >
+                  ← View your full DNA results
+                </button>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
