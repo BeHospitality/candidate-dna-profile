@@ -104,22 +104,38 @@ const Index = () => {
           className="text-center max-w-3xl mx-auto"
         >
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 leading-tight">
-            <span className="text-gradient-gold">101 questions. 23 dimensions.</span>
-            <br />
-            <span className="text-foreground">One profile that replaces your resume.</span>
+            <span className="text-gradient-gold">Are you a Lion, a Whale, or a Falcon?</span>
           </h1>
 
-          <p className="text-lg sm:text-xl text-[#9ca3af] mb-8 max-w-xl mx-auto">
-            Are you a Lion, Whale, or Falcon? Find out where you truly belong in hospitality.
+          <p className="text-lg sm:text-xl text-[#9ca3af] mb-4 max-w-xl mx-auto">
+            One profile that changes how you see your career.
           </p>
+          <p className="text-lg sm:text-xl text-[#9ca3af] mb-8 max-w-xl mx-auto">
+            Find out where you truly belong in hospitality.
+          </p>
+
+          {/* Archetype icons above CTA */}
+          <div className="flex items-center justify-center gap-6 sm:gap-10 mb-8">
+            {archetypePreviews.map((a, idx) => (
+              <motion.div
+                key={a.name}
+                initial={{ opacity: 0, scale: 0.7 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 + idx * 0.12, duration: 0.4 }}
+                className="flex flex-col items-center"
+              >
+                <span className="text-5xl sm:text-6xl mb-1">{a.emoji}</span>
+                <span className="text-xs sm:text-sm font-semibold text-foreground">{a.name}</span>
+              </motion.div>
+            ))}
+          </div>
 
           <Button
             size="lg"
             onClick={handleStart}
             className="text-lg px-10 py-7 rounded-xl font-bold animate-pulse-gold"
           >
-            Start Your DNA Assessment
-            <ArrowRight className="ml-2 w-5 h-5" />
+            Start Your DNA Discovery →
           </Button>
 
           <p className="text-sm text-muted-foreground/70 mt-4">
