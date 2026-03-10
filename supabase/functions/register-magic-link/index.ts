@@ -61,10 +61,14 @@ serve(async (req) => {
     }
 
     // Audit log (non-critical)
-    await supabase.from('audit_log').insert({
-      event_type: 'magic_link_registered_from_hub',
-      metadata: { token: token.substring(0, 8) + '...', candidate_email, org_code, source: 'hub_integration' }
-    }).catch(err => console.warn('Audit log failed (non-critical):', err))
+    try {
+      await supabase.from('audit_log').insert({
+        event_type: 'magic_link_registered_from_hub',
+        metadata: { token: token.substring(0, 8) + '...', candidate_email, org_code, source: 'hub_integration' }
+      })
+    } catch (err) {
+      console.warn('Audit log failed (non-critical):', err)
+    }
 
     console.log('Magic link registered:', { token: token.substring(0, 8) + '...', candidate_email, expires: expiryDate })
 
