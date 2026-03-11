@@ -63,7 +63,8 @@ const ParticipantDetails = ({ experiencePath, onContinue }: ParticipantDetailsPr
     roleTitle: "",
     referralSource: "",
   });
-  const [errors, setErrors] = useState<Partial<Record<keyof ParticipantData, string>>>({});
+  const [gdprConsent, setGdprConsent] = useState(false);
+  const [errors, setErrors] = useState<Partial<Record<keyof ParticipantData | "consent", string>>>({});
   const [submitting, setSubmitting] = useState(false);
 
   const validate = (): boolean => {
