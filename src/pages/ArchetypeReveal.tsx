@@ -45,16 +45,13 @@ async function sendDnaResultsEmail(
   experiencePath: string
 ) {
   try {
-    const participantId = storage.getParticipantId();
-    if (!participantId) return;
+    // Get participant info from localStorage (RLS blocks SELECT on dna_participants)
+    const entryInfo = storage.getEntryMode();
+    const email = entryInfo.candidateEmail;
+    const firstName = entryInfo.candidateName?.split(' ')[0] || '';
+    const lastName = entryInfo.candidateName?.split(' ').slice(1).join(' ') || '';
 
-    const { data: participant } = await supabase
-      .from("dna_participants")
-      .select("first_name, last_name, email")
-      .eq("id", participantId)
-      .single();
-
-    if (!participant?.email) return;
+    if (!email) return;
 
     const archetype = archetypeData[result.primaryArchetype];
 
