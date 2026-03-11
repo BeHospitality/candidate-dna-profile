@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { storage } from "@/lib/storage";
 import type { ExperiencePath } from "@/data/questions";
 
 export interface ParticipantData {
