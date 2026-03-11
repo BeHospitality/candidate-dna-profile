@@ -72,6 +72,7 @@ const ParticipantDetails = ({ experiencePath, onContinue }: ParticipantDetailsPr
     if (form.firstName.trim().length < 2) newErrors.firstName = "Min 2 characters";
     if (form.lastName.trim().length < 2) newErrors.lastName = "Min 2 characters";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) newErrors.email = "Valid email required";
+    if (!gdprConsent) newErrors.consent = "You must consent to data processing to continue";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
