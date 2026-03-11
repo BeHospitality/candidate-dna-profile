@@ -118,6 +118,7 @@ const ParticipantDetails = ({ experiencePath, onContinue }: ParticipantDetailsPr
   const updateField = (field: keyof ParticipantData, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
+    if (field === "consent" as any) setErrors((prev) => ({ ...prev, consent: undefined }));
   };
 
   return (
