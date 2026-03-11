@@ -69,9 +69,9 @@ async function sendDnaResultsEmail(
 
     await supabase.functions.invoke("send-dna-results", {
       body: {
-        firstName: participant.first_name,
-        lastName: participant.last_name,
-        email: participant.email,
+        firstName,
+        lastName,
+        email,
         archetype: archetype.name,
         archetypeDescription: archetype.tagline,
         topCareerPaths: archetype.careerPaths.slice(0, 3),
