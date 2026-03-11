@@ -176,10 +176,12 @@ export type Database = {
           assessment_id: string | null
           assessment_path: string | null
           completed_at: string | null
+          consent_given_at: string | null
           country: string | null
           created_at: string | null
           email: string
           first_name: string
+          gdpr_consent: boolean
           id: string
           last_name: string
           phone: string | null
@@ -190,10 +192,12 @@ export type Database = {
           assessment_id?: string | null
           assessment_path?: string | null
           completed_at?: string | null
+          consent_given_at?: string | null
           country?: string | null
           created_at?: string | null
           email: string
           first_name: string
+          gdpr_consent?: boolean
           id?: string
           last_name: string
           phone?: string | null
@@ -204,10 +208,12 @@ export type Database = {
           assessment_id?: string | null
           assessment_path?: string | null
           completed_at?: string | null
+          consent_given_at?: string | null
           country?: string | null
           created_at?: string | null
           email?: string
           first_name?: string
+          gdpr_consent?: boolean
           id?: string
           last_name?: string
           phone?: string | null
