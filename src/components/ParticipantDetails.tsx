@@ -98,6 +98,8 @@ const ParticipantDetails = ({ experiencePath, onContinue }: ParticipantDetailsPr
           role_title: form.roleTitle.trim() || null,
           referral_source: form.referralSource || null,
           assessment_path: experiencePath,
+          gdpr_consent: true,
+          consent_given_at: new Date().toISOString(),
         })
         .select("id")
         .single();
