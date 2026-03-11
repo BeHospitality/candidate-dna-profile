@@ -4,6 +4,7 @@ import { ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -62,7 +63,8 @@ const ParticipantDetails = ({ experiencePath, onContinue }: ParticipantDetailsPr
     roleTitle: "",
     referralSource: "",
   });
-  const [errors, setErrors] = useState<Partial<Record<keyof ParticipantData, string>>>({});
+  const [gdprConsent, setGdprConsent] = useState(false);
+  const [errors, setErrors] = useState<Partial<Record<keyof ParticipantData | "consent", string>>>({});
   const [submitting, setSubmitting] = useState(false);
 
   const validate = (): boolean => {
@@ -70,6 +72,7 @@ const ParticipantDetails = ({ experiencePath, onContinue }: ParticipantDetailsPr
     if (form.firstName.trim().length < 2) newErrors.firstName = "Min 2 characters";
     if (form.lastName.trim().length < 2) newErrors.lastName = "Min 2 characters";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) newErrors.email = "Valid email required";
+    if (!gdprConsent) newErrors.consent = "You must consent to data processing to continue";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -77,7 +80,8 @@ const ParticipantDetails = ({ experiencePath, onContinue }: ParticipantDetailsPr
   const isValid =
     form.firstName.trim().length >= 2 &&
     form.lastName.trim().length >= 2 &&
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) &&
+    gdprConsent;
 
   const handleSubmit = async () => {
     if (!validate()) return;
@@ -94,6 +98,8 @@ const ParticipantDetails = ({ experiencePath, onContinue }: ParticipantDetailsPr
           role_title: form.roleTitle.trim() || null,
           referral_source: form.referralSource || null,
           assessment_path: experiencePath,
+          gdpr_consent: true,
+          consent_given_at: new Date().toISOString(),
         })
         .select("id")
         .single();
@@ -112,6 +118,7 @@ const ParticipantDetails = ({ experiencePath, onContinue }: ParticipantDetailsPr
   const updateField = (field: keyof ParticipantData, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
+    if (field === "consent" as any) setErrors((prev) => ({ ...prev, consent: undefined }));
   };
 
   return (
@@ -243,6 +250,35 @@ const ParticipantDetails = ({ experiencePath, onContinue }: ParticipantDetailsPr
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          {/* GDPR Consent */}
+          <div className="space-y-2 pt-2">
+            <div className="flex items-start space-x-3">
+              <Checkbox
+                id="gdprConsent"
+                checked={gdprConsent}
+                onCheckedChange={(checked) => {
+                  setGdprConsent(checked === true);
+                  if (checked) setErrors((prev) => ({ ...prev, consent: undefined }));
+                }}
+                className="mt-0.5"
+              />
+              <Label htmlFor="gdprConsent" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
+                I consent to processing my personal data for career assessment and matching purposes.{" "}
+                <a
+                  href="/privacy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary underline hover:text-primary/80 font-medium"
+                >
+                  Privacy Policy
+                </a>
+              </Label>
+            </div>
+            {errors.consent && (
+              <p className="text-xs text-destructive ml-7">{errors.consent}</p>
+            )}
           </div>
 
           {/* Submit */}
