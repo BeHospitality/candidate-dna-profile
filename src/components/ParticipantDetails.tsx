@@ -106,6 +106,13 @@ const ParticipantDetails = ({ experiencePath, onContinue }: ParticipantDetailsPr
         .single();
 
       if (error) throw error;
+      // Store email/name in localStorage so results email can access it (RLS blocks SELECT)
+      const currentEntry = storage.getEntryMode();
+      storage.setEntryMode({
+        ...currentEntry,
+        candidateEmail: form.email.trim().toLowerCase(),
+        candidateName: `${form.firstName.trim()} ${form.lastName.trim()}`,
+      });
       onContinue(data.id);
     } catch (err) {
       console.error("Failed to save participant:", err);
