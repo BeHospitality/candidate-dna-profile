@@ -252,6 +252,35 @@ const ParticipantDetails = ({ experiencePath, onContinue }: ParticipantDetailsPr
             </Select>
           </div>
 
+          {/* GDPR Consent */}
+          <div className="space-y-2 pt-2">
+            <div className="flex items-start space-x-3">
+              <Checkbox
+                id="gdprConsent"
+                checked={gdprConsent}
+                onCheckedChange={(checked) => {
+                  setGdprConsent(checked === true);
+                  if (checked) setErrors((prev) => ({ ...prev, consent: undefined }));
+                }}
+                className="mt-0.5"
+              />
+              <Label htmlFor="gdprConsent" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
+                I consent to processing my personal data for career assessment and matching purposes.{" "}
+                <a
+                  href="/privacy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary underline hover:text-primary/80 font-medium"
+                >
+                  Privacy Policy
+                </a>
+              </Label>
+            </div>
+            {errors.consent && (
+              <p className="text-xs text-destructive ml-7">{errors.consent}</p>
+            )}
+          </div>
+
           {/* Submit */}
           <Button
             onClick={handleSubmit}
