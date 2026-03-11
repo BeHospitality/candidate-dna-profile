@@ -80,7 +80,8 @@ const ParticipantDetails = ({ experiencePath, onContinue }: ParticipantDetailsPr
   const isValid =
     form.firstName.trim().length >= 2 &&
     form.lastName.trim().length >= 2 &&
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) &&
+    gdprConsent;
 
   const handleSubmit = async () => {
     if (!validate()) return;
