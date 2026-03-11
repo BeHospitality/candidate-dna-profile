@@ -39,6 +39,7 @@ const App = () => (
           <Route path="/results/:assessmentId" element={<SharedResults />} />
           <Route path="/resume/:token" element={<ResumeAssessment />} />
           <Route path="/career-compass" element={<CareerCompass />} />
+          <Route path="/privacy" element={<Privacy />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
