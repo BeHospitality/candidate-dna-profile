@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.register-magic-link]
 verify_jwt = false
+
+[functions.hub-relay]
+verify_jwt = false
