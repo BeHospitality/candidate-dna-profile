@@ -148,9 +148,9 @@ const ArchetypeReveal = () => {
       entryInfo,
       comprehensiveScores: comprehensive,
       experiencePath: path,
-      sectorMatches,
-      geographyMatches,
-      departmentMatches,
+      sectorMatches: sMat,
+      geographyMatches: gMat,
+      departmentMatches: dMat,
     }).then((assessmentId) => {
       if (assessmentId) {
         storage.setAssessmentId(assessmentId);
