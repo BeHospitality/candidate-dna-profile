@@ -102,6 +102,10 @@ const Assessment = () => {
     setIsResuming(false);
   };
 
+  if (!consentGiven) {
+    return <ConsentGate onConsent={() => setConsentGiven(true)} />;
+  }
+
   if (showResume && resumeData) {
     return (
       <ResumeDialog
