@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowLeft, BookmarkPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ConsentGate, { hasConsented } from "@/components/ConsentGate";
 import { getQuestionsForPath, getLayerLabel, type ExperiencePath, type BranchedQuestion } from "@/data/questions";
 import { getChaptersForPath, getChapterForQuestion, getQuestionInChapter, type Chapter } from "@/data/chapters";
 import { storage } from "@/lib/storage";
@@ -30,6 +31,7 @@ const CHAPTER_BOUNDARY_QUESTIONS = new Set([12, 27, 47, 62, 77]);
 
 const Assessment = () => {
   const navigate = useNavigate();
+  const [consentGiven, setConsentGiven] = useState(() => hasConsented());
   const [experiencePath, setExperiencePath] = useState<ExperiencePath | null>(
     () => storage.getExperiencePath()
   );
@@ -99,6 +101,10 @@ const Assessment = () => {
     setInitialAnswers(null);
     setIsResuming(false);
   };
+
+  if (!consentGiven) {
+    return <ConsentGate onConsent={() => setConsentGiven(true)} />;
+  }
 
   if (showResume && resumeData) {
     return (
