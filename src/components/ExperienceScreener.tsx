@@ -51,9 +51,27 @@ interface ExperienceScreenerProps {
   onSelect: (path: ExperiencePath) => void;
 }
 
+const SEGMENT_MAP: Record<string, ExperiencePath> = {
+  "starting-out": "entry",
+  "experienced": "experienced",
+  "executive": "executive",
+};
+
 const ExperienceScreener = ({ onSelect }: ExperienceScreenerProps) => {
   const [selected, setSelected] = useState<ExperiencePath | null>(null);
   const [confirmed, setConfirmed] = useState(false);
+  const autoSkipped = useRef(false);
+
+  // Auto-skip if ?segment= is present in URL
+  useEffect(() => {
+    if (autoSkipped.current) return;
+    const params = new URLSearchParams(window.location.search);
+    const segment = params.get("segment");
+    if (segment && SEGMENT_MAP[segment]) {
+      autoSkipped.current = true;
+      onSelect(SEGMENT_MAP[segment]);
+    }
+  }, [onSelect]);
 
   const selectedOption = pathOptions.find((p) => p.id === selected);
 
