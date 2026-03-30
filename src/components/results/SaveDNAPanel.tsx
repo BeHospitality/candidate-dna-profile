@@ -4,6 +4,51 @@ import { storage } from "@/lib/storage";
 import { supabase } from "@/integrations/supabase/client";
 import { archetypeData } from "@/lib/archetypes";
 import type { AssessmentResult } from "@/lib/scoring";
+
+function getOrCreateSessionId(): string {
+  let sid = localStorage.getItem("beconnect-session-id");
+  if (!sid) {
+    sid = crypto.randomUUID();
+    localStorage.setItem("beconnect-session-id", sid);
+  }
+  return sid;
+}
+
+function fireHubRelay(candidateEmail: string) {
+  try {
+    const rawResults = localStorage.getItem("dna-results");
+    const parsed = rawResults ? JSON.parse(rawResults) : null;
+    const rawMatching = localStorage.getItem("dna-matching-results");
+    const matchingResults = rawMatching ? JSON.parse(rawMatching) : null;
+    const path = sessionStorage.getItem("beconnect-path") || null;
+
+    const payload = {
+      email: candidateEmail,
+      archetype: parsed?.primaryArchetype || null,
+      archetype_type: parsed?.primaryArchetype
+        ? archetypeData[parsed.primaryArchetype as keyof typeof archetypeData]?.name || null
+        : null,
+      scores: parsed?.dimensionScores || parsed?.comprehensiveScores || null,
+      matching_results: matchingResults,
+      path,
+      session_id: getOrCreateSessionId(),
+      source: "dna-assessment",
+      completed_at: new Date().toISOString(),
+    };
+
+    supabase.functions
+      .invoke("hub-relay", { body: payload })
+      .then(({ data, error }) => {
+        if (error) {
+          console.error("[hub-relay] Failed to relay to Hub:", error);
+        } else {
+          console.log("[hub-relay] Successfully relayed to Hub:", data);
+        }
+      });
+  } catch (err) {
+    console.error("[hub-relay] Error building payload:", err);
+  }
+}
 import ScrollRevealSection from "./ScrollRevealSection";
 
 interface SaveDNAPanelProps {
