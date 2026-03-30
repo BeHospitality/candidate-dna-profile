@@ -25,7 +25,7 @@ import { useToast } from "@/hooks/use-toast";
 import { persistAssessment, markMagicLinkUsed } from "@/lib/persistence";
 import { generateProfilePDF } from "@/utils/generateProfilePDF";
 import { supabase } from "@/integrations/supabase/client";
-import ScrollRevealSection from "@/components/results/ScrollRevealSection";
+import SaveDNAPanel from "@/components/results/SaveDNAPanel";
 import DimensionBreakdown from "@/components/results/DimensionBreakdown";
 import SectorMatches from "@/components/results/SectorMatches";
 import GeographyFit from "@/components/results/GeographyFit";
