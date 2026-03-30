@@ -119,6 +119,9 @@ const SaveDNAPanel = ({
         }
       }
 
+      // Fire hub-relay in background — never blocks UI
+      fireHubRelay(email.trim().toLowerCase());
+
       setSubmitted(true);
     } catch (err) {
       console.error("Save DNA panel error:", err);
