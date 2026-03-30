@@ -31,7 +31,7 @@ const CHAPTER_BOUNDARY_QUESTIONS = new Set([12, 27, 47, 62, 77]);
 
 const Assessment = () => {
   const navigate = useNavigate();
-  const [consentGiven, setConsentGiven] = useState(() => hasConsented());
+  const [consentGiven, setConsentGiven] = useState(() => hasGdprConsent());
   const [experiencePath, setExperiencePath] = useState<ExperiencePath | null>(
     () => storage.getExperiencePath()
   );
