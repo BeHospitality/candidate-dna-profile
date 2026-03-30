@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Clock, BarChart3, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ExperiencePath } from "@/data/questions";
-
 interface PathOption {
   id: ExperiencePath;
   emoji: string;
