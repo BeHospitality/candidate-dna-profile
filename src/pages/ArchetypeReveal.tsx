@@ -468,6 +468,17 @@ const ArchetypeReveal = () => {
                   </div>
                 </ScrollRevealSection>
 
+                {/* Save DNA Panel — post-result email capture */}
+                {entryInfo.mode === "public" && comprehensiveScores && (
+                  <SaveDNAPanel
+                    result={result}
+                    comprehensiveScores={comprehensiveScores as unknown as Record<string, number>}
+                    sectorMatches={sectorMatches}
+                    geographyMatches={geographyMatches}
+                    departmentMatches={departmentMatches}
+                  />
+                )}
+
                 {/* Career Compass */}
                 {(sectorMatches.length > 0 || departmentMatches.length > 0 || geographyMatches.length > 0) && (
                   <ScrollRevealSection>
