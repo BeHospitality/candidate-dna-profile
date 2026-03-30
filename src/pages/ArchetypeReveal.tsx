@@ -26,6 +26,7 @@ import { persistAssessment, markMagicLinkUsed } from "@/lib/persistence";
 import { generateProfilePDF } from "@/utils/generateProfilePDF";
 import { supabase } from "@/integrations/supabase/client";
 import ScrollRevealSection from "@/components/results/ScrollRevealSection";
+import SaveDNAPanel from "@/components/results/SaveDNAPanel";
 import DimensionBreakdown from "@/components/results/DimensionBreakdown";
 import SectorMatches from "@/components/results/SectorMatches";
 import GeographyFit from "@/components/results/GeographyFit";
@@ -466,6 +467,17 @@ const ArchetypeReveal = () => {
                     )}
                   </div>
                 </ScrollRevealSection>
+
+                {/* Save DNA Panel — post-result email capture */}
+                {entryInfo.mode === "public" && comprehensiveScores && (
+                  <SaveDNAPanel
+                    result={result}
+                    comprehensiveScores={comprehensiveScores as unknown as Record<string, number>}
+                    sectorMatches={sectorMatches}
+                    geographyMatches={geographyMatches}
+                    departmentMatches={departmentMatches}
+                  />
+                )}
 
                 {/* Career Compass */}
                 {(sectorMatches.length > 0 || departmentMatches.length > 0 || geographyMatches.length > 0) && (
