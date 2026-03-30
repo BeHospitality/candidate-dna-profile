@@ -171,6 +171,36 @@ export type Database = {
           },
         ]
       }
+      consent_log: {
+        Row: {
+          consent_type: string
+          consented_at: string
+          created_at: string
+          id: string
+          path: string | null
+          session_id: string
+          user_agent: string | null
+        }
+        Insert: {
+          consent_type?: string
+          consented_at?: string
+          created_at?: string
+          id?: string
+          path?: string | null
+          session_id: string
+          user_agent?: string | null
+        }
+        Update: {
+          consent_type?: string
+          consented_at?: string
+          created_at?: string
+          id?: string
+          path?: string | null
+          session_id?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       dna_participants: {
         Row: {
           assessment_id: string | null
