@@ -215,7 +215,7 @@ const ArchetypeReveal = () => {
     toast({ title: "Link copied!", description: "Share it with your network." });
   };
 
-  const handleContinue = () => navigate("/career-compass");
+  const handleContinue = () => { window.location.href = "https://career.be.ie"; };
 
   const handleDownloadPDF = () => {
     const path = storage.getExperiencePath() || 'experienced';
@@ -638,7 +638,7 @@ const ArchetypeReveal = () => {
                 {entryInfo.mode === "public" && (
                   <>
                     <div className="text-center">
-                      <a href="https://ecosystem.be.ie" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">
+                      <a href="https://career.be.ie" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">
                         Join the Network →
                       </a>
                     </div>
