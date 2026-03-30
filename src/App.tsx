@@ -18,8 +18,15 @@ import { retryPendingPayload } from "./utils/hubIntegration";
 const queryClient = new QueryClient();
 
 const HubRetry = () => {
+  const tested = useRef(false);
   useEffect(() => {
     retryPendingPayload();
+    if (import.meta.env.DEV && !tested.current) {
+      tested.current = true;
+      testHubRelay().then(result => {
+        console.log('[bridge-test] Result:', result);
+      });
+    }
   }, []);
   return null;
 };
