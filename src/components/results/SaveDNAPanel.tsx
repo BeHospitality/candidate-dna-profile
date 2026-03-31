@@ -69,12 +69,14 @@ const SaveDNAPanel = ({
   geographyMatches,
   departmentMatches,
 }: SaveDNAPanelProps) => {
+  const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const canSubmit = firstName.trim().length > 0 && isValidEmail;
 
   const handleSubmit = async () => {
     if (!isValidEmail || submitting) return;
