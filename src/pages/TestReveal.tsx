@@ -55,12 +55,11 @@ const FALCON_DEPTS: DepartmentFit[] = [
 ];
 
 const WHALE_SIGNATURE = {
+  id: "empathic_conductor",
   name: "The Empathic Conductor",
   tagline: "You orchestrate harmony through human connection",
   description: "Your natural empathy and collaborative instinct make you the person teams gravitate toward. You read rooms, bridge gaps, and create environments where everyone can do their best work.",
   teams_need_you: "you sense what others miss and bring people together before friction becomes conflict.",
-  primary: "whale" as Archetype,
-  secondary: "lion" as Archetype,
   high_dims: ["collaboration", "empathy", "socialAwareness"],
   low_dims: [],
 };
