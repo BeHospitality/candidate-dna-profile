@@ -31,27 +31,27 @@ const FALCON_SCORES: ComprehensiveScores = {
 };
 
 const WHALE_SECTORS: SectorMatch[] = [
-  { sector: "Luxury Hotels & Resorts", fitScore: 94, stars: 5, topStrengths: ["Exceptional team collaboration", "Guest empathy"], growthAreas: [] },
-  { sector: "Event Management", fitScore: 88, stars: 4, topStrengths: ["People-first coordination", "Adaptive planning"], growthAreas: [] },
-  { sector: "Corporate Hospitality", fitScore: 82, stars: 4, topStrengths: ["Relationship building", "Emotional intelligence"], growthAreas: ["Technical precision"] },
+  { sector: "Luxury Hotels & Resorts", description: "Premium hospitality", fitScore: 94, stars: 5, topStrengths: ["Exceptional team collaboration", "Guest empathy"], growthAreas: [] },
+  { sector: "Event Management", description: "Live experiences", fitScore: 88, stars: 4, topStrengths: ["People-first coordination", "Adaptive planning"], growthAreas: [] },
+  { sector: "Corporate Hospitality", description: "Business services", fitScore: 82, stars: 4, topStrengths: ["Relationship building", "Emotional intelligence"], growthAreas: ["Technical precision"] },
 ];
 
 const FALCON_SECTORS: SectorMatch[] = [
-  { sector: "Fine Dining", fitScore: 96, stars: 5, topStrengths: ["Meticulous attention to detail", "Quality consistency"], growthAreas: [] },
-  { sector: "Revenue Management", fitScore: 91, stars: 5, topStrengths: ["Data-driven precision", "Pattern recognition"], growthAreas: [] },
-  { sector: "Corporate Hospitality", fitScore: 85, stars: 4, topStrengths: ["Process optimization", "Reliability"], growthAreas: ["Flexibility under ambiguity"] },
+  { sector: "Fine Dining", description: "Culinary excellence", fitScore: 96, stars: 5, topStrengths: ["Meticulous attention to detail", "Quality consistency"], growthAreas: [] },
+  { sector: "Revenue Management", description: "Financial optimization", fitScore: 91, stars: 5, topStrengths: ["Data-driven precision", "Pattern recognition"], growthAreas: [] },
+  { sector: "Corporate Hospitality", description: "Business services", fitScore: 85, stars: 4, topStrengths: ["Process optimization", "Reliability"], growthAreas: ["Flexibility under ambiguity"] },
 ];
 
 const WHALE_DEPTS: DepartmentFit[] = [
-  { department: "Guest Relations", emoji: "🤝", fitScore: 95, stars: 5, topReasons: ["Empathy-driven service", "Conflict resolution"], growthAreas: [] },
-  { department: "People & Culture", emoji: "👥", fitScore: 90, stars: 5, topReasons: ["Team development", "Inclusive leadership"], growthAreas: [] },
-  { department: "Food & Beverage", emoji: "🍽️", fitScore: 84, stars: 4, topReasons: ["Collaborative service delivery"], growthAreas: [] },
+  { department: "Guest Relations", emoji: "🤝", fitScore: 95, stars: 5, rank: 1, topReasons: ["Empathy-driven service", "Conflict resolution"] },
+  { department: "People & Culture", emoji: "👥", fitScore: 90, stars: 5, rank: 2, topReasons: ["Team development", "Inclusive leadership"] },
+  { department: "Food & Beverage", emoji: "🍽️", fitScore: 84, stars: 4, rank: 3, topReasons: ["Collaborative service delivery"] },
 ];
 
 const FALCON_DEPTS: DepartmentFit[] = [
-  { department: "Finance & Revenue", emoji: "📊", fitScore: 96, stars: 5, topReasons: ["Analytical precision", "Data mastery"], growthAreas: [] },
-  { department: "Quality Assurance", emoji: "✅", fitScore: 93, stars: 5, topReasons: ["Standards enforcement", "Process improvement"], growthAreas: [] },
-  { department: "Events & Catering", emoji: "🎪", fitScore: 86, stars: 4, topReasons: ["Logistical precision", "Detail management"], growthAreas: [] },
+  { department: "Finance & Revenue", emoji: "📊", fitScore: 96, stars: 5, rank: 1, topReasons: ["Analytical precision", "Data mastery"] },
+  { department: "Quality Assurance", emoji: "✅", fitScore: 93, stars: 5, rank: 2, topReasons: ["Standards enforcement", "Process improvement"] },
+  { department: "Events & Catering", emoji: "🎪", fitScore: 86, stars: 4, rank: 3, topReasons: ["Logistical precision", "Detail management"] },
 ];
 
 const WHALE_SIGNATURE = {
