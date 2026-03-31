@@ -14,6 +14,14 @@ import type { ComprehensiveScores } from "@/lib/scoring";
 import type { SectorMatch } from "@/utils/sectorMatching";
 import type { DepartmentFit } from "@/utils/departmentMatching";
 
+const LION_SCORES: ComprehensiveScores = {
+  autonomy: 92, collaboration: 50, precision: 60, leadership: 94, adaptability: 72,
+  problemSolving: 85, attentionToDetail: 58, learningSpeed: 78, patternRecognition: 70, concentration: 65,
+  extraversion: 88, conscientiousness: 75, openness: 80, agreeableness: 55, emotionalStability: 82,
+  readingOthers: 70, empathy: 60, selfRegulation: 80, socialAwareness: 72,
+  integrity: 85, ruleFollowing: 55, safetyConsciousness: 65, dependability: 78,
+};
+
 const WHALE_SCORES: ComprehensiveScores = {
   autonomy: 45, collaboration: 92, precision: 55, leadership: 60, adaptability: 78,
   problemSolving: 65, attentionToDetail: 50, learningSpeed: 70, patternRecognition: 60, concentration: 55,
@@ -30,6 +38,12 @@ const FALCON_SCORES: ComprehensiveScores = {
   integrity: 90, ruleFollowing: 88, safetyConsciousness: 92, dependability: 94,
 };
 
+const LION_SECTORS: SectorMatch[] = [
+  { sector: "Luxury Hotels & Resorts", description: "Premium hospitality leadership", fitScore: 96, stars: 5, topStrengths: ["Decisive leadership", "Vision-driven management"], growthAreas: [] },
+  { sector: "Food & Beverage", description: "Restaurant & bar leadership", fitScore: 90, stars: 5, topStrengths: ["Ownership mentality", "Bold decision-making"], growthAreas: [] },
+  { sector: "Event Management", description: "Live experiences", fitScore: 84, stars: 4, topStrengths: ["High-pressure composure", "Strategic planning"], growthAreas: ["Delegation"] },
+];
+
 const WHALE_SECTORS: SectorMatch[] = [
   { sector: "Luxury Hotels & Resorts", description: "Premium hospitality", fitScore: 94, stars: 5, topStrengths: ["Exceptional team collaboration", "Guest empathy"], growthAreas: [] },
   { sector: "Event Management", description: "Live experiences", fitScore: 88, stars: 4, topStrengths: ["People-first coordination", "Adaptive planning"], growthAreas: [] },
@@ -40,6 +54,12 @@ const FALCON_SECTORS: SectorMatch[] = [
   { sector: "Fine Dining", description: "Culinary excellence", fitScore: 96, stars: 5, topStrengths: ["Meticulous attention to detail", "Quality consistency"], growthAreas: [] },
   { sector: "Revenue Management", description: "Financial optimization", fitScore: 91, stars: 5, topStrengths: ["Data-driven precision", "Pattern recognition"], growthAreas: [] },
   { sector: "Corporate Hospitality", description: "Business services", fitScore: 85, stars: 4, topStrengths: ["Process optimization", "Reliability"], growthAreas: ["Flexibility under ambiguity"] },
+];
+
+const LION_DEPTS: DepartmentFit[] = [
+  { department: "General Management", emoji: "👑", fitScore: 96, stars: 5, rank: 1, topReasons: ["Natural leadership", "Strategic vision"] },
+  { department: "Operations", emoji: "⚙️", fitScore: 92, stars: 5, rank: 2, topReasons: ["Decisive action", "Ownership mentality"] },
+  { department: "Food & Beverage", emoji: "🍽️", fitScore: 86, stars: 4, rank: 3, topReasons: ["High-pressure leadership"] },
 ];
 
 const WHALE_DEPTS: DepartmentFit[] = [
@@ -53,6 +73,16 @@ const FALCON_DEPTS: DepartmentFit[] = [
   { department: "Quality Assurance", emoji: "✅", fitScore: 93, stars: 5, rank: 2, topReasons: ["Standards enforcement", "Process improvement"] },
   { department: "Events & Catering", emoji: "🎪", fitScore: 86, stars: 4, rank: 3, topReasons: ["Logistical precision", "Detail management"] },
 ];
+
+const LION_SIGNATURE = {
+  id: "bold_strategist",
+  name: "The Bold Strategist",
+  tagline: "You lead with vision and courage",
+  description: "Your natural authority and independent spirit make you the person who steps up when direction is needed. You see the big picture, make tough calls, and inspire teams to follow.",
+  teams_need_you: "you provide clarity when others hesitate and drive momentum when it matters most.",
+  high_dims: ["autonomy", "leadership", "extraversion"],
+  low_dims: [],
+};
 
 const WHALE_SIGNATURE = {
   id: "empathic_conductor",
