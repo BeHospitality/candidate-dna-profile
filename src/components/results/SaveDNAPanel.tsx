@@ -22,8 +22,11 @@ function fireHubRelay(candidateEmail: string) {
     const matchingResults = rawMatching ? JSON.parse(rawMatching) : null;
     const path = sessionStorage.getItem("beconnect-path") || null;
 
+    const firstName = localStorage.getItem("beconnect-candidate-name") || null;
+
     const payload = {
       email: candidateEmail,
+      first_name: firstName,
       archetype: parsed?.primaryArchetype || null,
       archetype_type: parsed?.primaryArchetype
         ? archetypeData[parsed.primaryArchetype as keyof typeof archetypeData]?.name || null
@@ -66,16 +69,21 @@ const SaveDNAPanel = ({
   geographyMatches,
   departmentMatches,
 }: SaveDNAPanelProps) => {
+  const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const canSubmit = firstName.trim().length > 0 && isValidEmail;
 
   const handleSubmit = async () => {
-    if (!isValidEmail || submitting) return;
+    if (!canSubmit || submitting) return;
     setSubmitting(true);
+
+    // Persist first name
+    localStorage.setItem("beconnect-candidate-name", firstName.trim());
 
     try {
       // 1. Update entry mode with real email
@@ -166,6 +174,24 @@ const SaveDNAPanel = ({
 
         <div className="space-y-3">
           <input
+            type="text"
+            placeholder="Your first name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            className="w-full outline-none placeholder:text-white/30 transition-colors duration-200"
+            style={{
+              fontFamily: "DM Sans, sans-serif",
+              fontSize: 15,
+              background: "rgba(255,255,255,0.06)",
+              border: "1px solid rgba(255,255,255,0.12)",
+              borderRadius: 8,
+              padding: "12px 16px",
+              color: "white",
+            }}
+            onFocus={(e) => (e.target.style.borderColor = "#f59e0b")}
+            onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.12)")}
+          />
+          <input
             type="email"
             placeholder="your@email.com"
             value={email}
@@ -210,21 +236,21 @@ const SaveDNAPanel = ({
 
         <button
           onClick={handleSubmit}
-          disabled={!isValidEmail || submitting}
+          disabled={!canSubmit || submitting}
           className="w-full transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           style={{
             fontFamily: "DM Sans, sans-serif",
             fontSize: 15,
             fontWeight: 600,
-            background: isValidEmail ? "#f59e0b" : "rgba(245,158,11,0.4)",
+            background: canSubmit ? "#f59e0b" : "rgba(245,158,11,0.4)",
             color: "#0f1729",
             borderRadius: 8,
             padding: 14,
             border: "none",
-            cursor: isValidEmail ? "pointer" : "default",
+            cursor: canSubmit ? "pointer" : "default",
           }}
-          onMouseEnter={(e) => { if (isValidEmail) (e.target as HTMLElement).style.background = "#e58e00"; }}
-          onMouseLeave={(e) => { if (isValidEmail) (e.target as HTMLElement).style.background = "#f59e0b"; }}
+          onMouseEnter={(e) => { if (canSubmit) (e.target as HTMLElement).style.background = "#e58e00"; }}
+          onMouseLeave={(e) => { if (canSubmit) (e.target as HTMLElement).style.background = "#f59e0b"; }}
         >
           {submitting ? "Sending..." : "Send me my DNA profile →"}
         </button>
