@@ -65,12 +65,11 @@ const WHALE_SIGNATURE = {
 };
 
 const FALCON_SIGNATURE = {
+  id: "master_craftsperson",
   name: "The Master Craftsperson",
   tagline: "You set the standard others aspire to",
   description: "Your relentless attention to detail and systematic thinking produce work of exceptional quality. You build processes that last and standards that elevate entire teams.",
   teams_need_you: "you catch what others overlook and build systems that prevent problems before they start.",
-  primary: "falcon" as Archetype,
-  secondary: "lion" as Archetype,
   high_dims: ["precision", "attentionToDetail", "conscientiousness"],
   low_dims: [],
 };
