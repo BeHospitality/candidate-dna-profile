@@ -236,21 +236,21 @@ const SaveDNAPanel = ({
 
         <button
           onClick={handleSubmit}
-          disabled={!isValidEmail || submitting}
+          disabled={!canSubmit || submitting}
           className="w-full transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           style={{
             fontFamily: "DM Sans, sans-serif",
             fontSize: 15,
             fontWeight: 600,
-            background: isValidEmail ? "#f59e0b" : "rgba(245,158,11,0.4)",
+            background: canSubmit ? "#f59e0b" : "rgba(245,158,11,0.4)",
             color: "#0f1729",
             borderRadius: 8,
             padding: 14,
             border: "none",
-            cursor: isValidEmail ? "pointer" : "default",
+            cursor: canSubmit ? "pointer" : "default",
           }}
-          onMouseEnter={(e) => { if (isValidEmail) (e.target as HTMLElement).style.background = "#e58e00"; }}
-          onMouseLeave={(e) => { if (isValidEmail) (e.target as HTMLElement).style.background = "#f59e0b"; }}
+          onMouseEnter={(e) => { if (canSubmit) (e.target as HTMLElement).style.background = "#e58e00"; }}
+          onMouseLeave={(e) => { if (canSubmit) (e.target as HTMLElement).style.background = "#f59e0b"; }}
         >
           {submitting ? "Sending..." : "Send me my DNA profile →"}
         </button>
