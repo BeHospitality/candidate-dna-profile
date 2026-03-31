@@ -222,7 +222,7 @@ function RevealColumn({ type }: { type: "lion" | "whale" | "falcon" }) {
 }
 
 const TestReveal = () => {
-  const [view, setView] = useState<"both" | "whale" | "falcon">("both");
+  const [view, setView] = useState<"all" | "lion" | "whale" | "falcon">("all");
 
   return (
     <div className="min-h-screen bg-navy-radial flex flex-col">
@@ -231,8 +231,8 @@ const TestReveal = () => {
         <div className="text-center mb-6">
           <p className="text-xs font-bold text-primary uppercase tracking-widest mb-2">⚠️ TEST PAGE — REMOVE BEFORE LAUNCH</p>
           <h1 className="text-2xl font-bold text-foreground mb-4">Archetype Reveal Preview</h1>
-          <div className="flex justify-center gap-2">
-            {(["both", "whale", "falcon"] as const).map((v) => (
+          <div className="flex justify-center gap-2 flex-wrap">
+            {(["all", "lion", "whale", "falcon"] as const).map((v) => (
               <button
                 key={v}
                 onClick={() => setView(v)}
@@ -240,22 +240,22 @@ const TestReveal = () => {
                   view === v ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"
                 }`}
               >
-                {v === "both" ? "Side by Side" : v === "whale" ? "🐋 Whale" : "🦅 Falcon"}
+                {v === "all" ? "All Three" : v === "lion" ? "🦁 Lion" : v === "whale" ? "🐋 Whale" : "🦅 Falcon"}
               </button>
             ))}
           </div>
         </div>
 
-        {view === "both" ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            <div>
-              <h2 className="text-center text-lg font-bold text-foreground mb-4">🐋 Whale — The Collaborative Anchor</h2>
-              <RevealColumn type="whale" />
-            </div>
-            <div>
-              <h2 className="text-center text-lg font-bold text-foreground mb-4">🦅 Falcon — The Precision Specialist</h2>
-              <RevealColumn type="falcon" />
-            </div>
+        {view === "all" ? (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+            {(["lion", "whale", "falcon"] as const).map((t) => (
+              <div key={t}>
+                <h2 className="text-center text-lg font-bold text-foreground mb-4">
+                  {archetypeData[t].emoji} {archetypeData[t].name} — {archetypeData[t].tagline}
+                </h2>
+                <RevealColumn type={t} />
+              </div>
+            ))}
           </div>
         ) : (
           <RevealColumn type={view} />
