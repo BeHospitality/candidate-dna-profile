@@ -79,8 +79,11 @@ const SaveDNAPanel = ({
   const canSubmit = firstName.trim().length > 0 && isValidEmail;
 
   const handleSubmit = async () => {
-    if (!isValidEmail || submitting) return;
+    if (!canSubmit || submitting) return;
     setSubmitting(true);
+
+    // Persist first name
+    localStorage.setItem("beconnect-candidate-name", firstName.trim());
 
     try {
       // 1. Update entry mode with real email
