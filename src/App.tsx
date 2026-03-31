@@ -1,5 +1,4 @@
-import { useEffect, useRef } from "react";
-import { testHubRelay } from "@/utils/testHubRelay";
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,15 +17,8 @@ import { retryPendingPayload } from "./utils/hubIntegration";
 const queryClient = new QueryClient();
 
 const HubRetry = () => {
-  const tested = useRef(false);
   useEffect(() => {
     retryPendingPayload();
-    if (!tested.current) {
-      tested.current = true;
-      testHubRelay().then(result => {
-        console.log('[bridge-test] Result:', result);
-      });
-    }
   }, []);
   return null;
 };
