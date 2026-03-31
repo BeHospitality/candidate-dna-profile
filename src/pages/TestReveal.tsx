@@ -104,12 +104,16 @@ const FALCON_SIGNATURE = {
   low_dims: [],
 };
 
-function RevealColumn({ type }: { type: "whale" | "falcon" }) {
+function RevealColumn({ type }: { type: "lion" | "whale" | "falcon" }) {
   const archetype = archetypeData[type];
-  const scores = type === "whale" ? WHALE_SCORES : FALCON_SCORES;
-  const sectors = type === "whale" ? WHALE_SECTORS : FALCON_SECTORS;
-  const depts = type === "whale" ? WHALE_DEPTS : FALCON_DEPTS;
-  const signature = type === "whale" ? WHALE_SIGNATURE : FALCON_SIGNATURE;
+  const scoresMap = { lion: LION_SCORES, whale: WHALE_SCORES, falcon: FALCON_SCORES };
+  const sectorsMap = { lion: LION_SECTORS, whale: WHALE_SECTORS, falcon: FALCON_SECTORS };
+  const deptsMap = { lion: LION_DEPTS, whale: WHALE_DEPTS, falcon: FALCON_DEPTS };
+  const sigMap = { lion: LION_SIGNATURE, whale: WHALE_SIGNATURE, falcon: FALCON_SIGNATURE };
+  const scores = scoresMap[type];
+  const sectors = sectorsMap[type];
+  const depts = deptsMap[type];
+  const signature = sigMap[type];
 
   const radarData = [
     { dimension: "Autonomy", score: scores.autonomy },
