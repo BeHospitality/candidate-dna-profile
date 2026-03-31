@@ -174,6 +174,24 @@ const SaveDNAPanel = ({
 
         <div className="space-y-3">
           <input
+            type="text"
+            placeholder="Your first name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            className="w-full outline-none placeholder:text-white/30 transition-colors duration-200"
+            style={{
+              fontFamily: "DM Sans, sans-serif",
+              fontSize: 15,
+              background: "rgba(255,255,255,0.06)",
+              border: "1px solid rgba(255,255,255,0.12)",
+              borderRadius: 8,
+              padding: "12px 16px",
+              color: "white",
+            }}
+            onFocus={(e) => (e.target.style.borderColor = "#f59e0b")}
+            onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.12)")}
+          />
+          <input
             type="email"
             placeholder="your@email.com"
             value={email}
