@@ -22,8 +22,11 @@ function fireHubRelay(candidateEmail: string) {
     const matchingResults = rawMatching ? JSON.parse(rawMatching) : null;
     const path = sessionStorage.getItem("beconnect-path") || null;
 
+    const firstName = localStorage.getItem("beconnect-candidate-name") || null;
+
     const payload = {
       email: candidateEmail,
+      first_name: firstName,
       archetype: parsed?.primaryArchetype || null,
       archetype_type: parsed?.primaryArchetype
         ? archetypeData[parsed.primaryArchetype as keyof typeof archetypeData]?.name || null
