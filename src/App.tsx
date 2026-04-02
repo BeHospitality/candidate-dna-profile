@@ -37,9 +37,7 @@ const App = () => (
           <Route path="/reveal" element={<ArchetypeReveal />} />
           <Route path="/results/:assessmentId" element={<SharedResults />} />
           <Route path="/resume/:token" element={<ResumeAssessment />} />
-          <Route path="/career-compass" element={<CareerCompass />} />
           <Route path="/privacy" element={<Privacy />} />
-          <Route path="/test-reveal" element={<TestReveal />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
