@@ -437,6 +437,7 @@ const AssessmentInner = ({
   }
 
   return (
+    <>
     <div className="min-h-screen bg-navy-radial flex flex-col">
       <BrandHeader />
       {currentChapter && (
