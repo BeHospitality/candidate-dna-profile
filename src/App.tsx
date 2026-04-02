@@ -7,12 +7,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Assessment from "./pages/Assessment";
 import ArchetypeReveal from "./pages/ArchetypeReveal";
-import CareerCompass from "./pages/CareerCompass";
 import SharedResults from "./pages/SharedResults";
 import ResumeAssessment from "./pages/ResumeAssessment";
 import NotFound from "./pages/NotFound";
 import Privacy from "./pages/Privacy";
-import TestReveal from "./pages/TestReveal";
 import { retryPendingPayload } from "./utils/hubIntegration";
 
 const queryClient = new QueryClient();
@@ -39,9 +37,7 @@ const App = () => (
           <Route path="/reveal" element={<ArchetypeReveal />} />
           <Route path="/results/:assessmentId" element={<SharedResults />} />
           <Route path="/resume/:token" element={<ResumeAssessment />} />
-          <Route path="/career-compass" element={<CareerCompass />} />
           <Route path="/privacy" element={<Privacy />} />
-          <Route path="/test-reveal" element={<TestReveal />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

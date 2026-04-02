@@ -22,6 +22,7 @@ import ResumeDialog, { type SavedProgress } from "@/components/assessment/Resume
 import SaveProgressDialog from "@/components/assessment/SaveProgressDialog";
 import ParticipantDetails from "@/components/ParticipantDetails";
 import BrandHeader from "@/components/BrandHeader";
+import DynamicFooter from "@/components/DynamicFooter";
 
 const SAVE_KEY = "dna_assessment_progress";
 const MILESTONES_SHOWN_KEY = "dna_milestones_shown";
@@ -436,6 +437,7 @@ const AssessmentInner = ({
   }
 
   return (
+    <>
     <div className="min-h-screen bg-navy-radial flex flex-col">
       <BrandHeader />
       {currentChapter && (
@@ -536,6 +538,8 @@ const AssessmentInner = ({
         )}
       </div>
     </div>
+    <DynamicFooter />
+    </>
   );
 };
 
