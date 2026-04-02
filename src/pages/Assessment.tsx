@@ -536,6 +536,8 @@ const AssessmentInner = ({
         )}
       </div>
     </div>
+    <DynamicFooter />
+    </>
   );
 };
 

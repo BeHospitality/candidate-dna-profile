@@ -61,6 +61,15 @@ const DynamicFooter = ({ forcePublic }: DynamicFooterProps) => {
           </>
         )}
 
+        <a
+          href="https://be.ie/privacy"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[11px] underline"
+          style={{ color: "#008C72" }}
+        >
+          Privacy Notice
+        </a>
         <p className="text-xs text-[#6b7280]">© 2026 Be Connect</p>
       </div>
     </footer>
