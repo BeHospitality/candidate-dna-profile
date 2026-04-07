@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { getQuestionsForPath } from "@/data/questions";
 
 /**
  * TEMPORARY — injects fake completed assessment data into localStorage
@@ -19,13 +20,20 @@ const TestSetup = () => {
     localStorage.setItem("beconnect-email", "test@example.com");
     localStorage.setItem("beconnect-gdpr-consent", "true");
 
-    // Fake answers that produce a Whale archetype (collaboration-heavy)
+    // Build realistic answers from actual questions
+    const questions = getQuestionsForPath("entry");
     const answers: Record<number, any> = {};
-    for (let i = 1; i <= 60; i++) {
-      answers[i] = "b"; // default MC answer
+    for (const q of questions) {
+      if (q.type === "mc" && q.options) {
+        // Pick option "B" (collaboration-heavy → Whale)
+        answers[q.id] = "B";
+      } else if (q.type === "slider") {
+        answers[q.id] = 7;
+      } else if (q.type === "ranking" && q.items) {
+        answers[q.id] = q.items.map((item: any) => item.text);
+      }
     }
-    // Slider answers
-    [4,9,14,19,24,29,34,39,44,49,54,59].forEach(id => { answers[id] = 7; });
+
     localStorage.setItem("dna-answers", JSON.stringify(answers));
     localStorage.setItem("dna_experience_path", "entry");
     localStorage.setItem("dna-entry-mode", JSON.stringify({
