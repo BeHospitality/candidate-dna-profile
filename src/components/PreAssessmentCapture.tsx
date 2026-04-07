@@ -112,13 +112,15 @@ const PreAssessmentCapture = ({ onContinue }: PreAssessmentCaptureProps) => {
         await supabase.functions.invoke('hub-relay', {
           body: {
             candidate_email: trimmedEmail,
-            candidate_name: trimmedFirst,
-            candidate_path: path,
-            profile_created_at: new Date().toISOString(),
+            first_name: trimmedFirst,
+            path,
+            source: 'dna-assessment',
+            completed_at: new Date().toISOString(),
           },
         });
+        console.log('[registration] hub-relay fired for:', trimmedEmail);
       } catch (relayErr) {
-        console.error('[registration] hub-relay:', relayErr);
+        console.error('[registration] hub-relay failed (non-critical):', relayErr);
       }
     } catch (err) {
       console.error("Pre-assessment capture insert failed:", err);
