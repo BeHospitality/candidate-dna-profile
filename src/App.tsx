@@ -62,8 +62,8 @@ const App = () => (
           <Route path="/results/:assessmentId" element={<SharedResults />} />
           <Route path="/resume/:token" element={<ResumeAssessment />} />
           <Route path="/privacy" element={<Privacy />} />
-          
-          
+          <Route path="/test-seed" element={<TestSeed />} />
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
