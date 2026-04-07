@@ -78,6 +78,7 @@ async function sendDnaResultsEmail(
         topCareerPaths: archetype.careerPaths.slice(0, 3),
         eqSuperpower: topEq.label,
         resultsUrl,
+        candidatePath: localStorage.getItem("beconnect-path") || "growing",
       },
     });
   } catch (err) {
