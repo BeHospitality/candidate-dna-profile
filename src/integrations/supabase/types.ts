@@ -201,6 +201,33 @@ export type Database = {
         }
         Relationships: []
       }
+      dna_candidates: {
+        Row: {
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          path: string | null
+          session_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          first_name: string
+          id?: string
+          path?: string | null
+          session_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          path?: string | null
+          session_id?: string | null
+        }
+        Relationships: []
+      }
       dna_participants: {
         Row: {
           assessment_id: string | null
