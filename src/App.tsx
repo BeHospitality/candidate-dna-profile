@@ -62,7 +62,7 @@ const App = () => (
           <Route path="/resume/:token" element={<ResumeAssessment />} />
           <Route path="/privacy" element={<Privacy />} />
           
-          
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
