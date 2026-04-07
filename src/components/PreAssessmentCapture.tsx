@@ -107,6 +107,19 @@ const PreAssessmentCapture = ({ onContinue }: PreAssessmentCaptureProps) => {
         path,
         session_id: sid,
       });
+      // Fire profile to Hub pipeline (non-blocking)
+      try {
+        await supabase.functions.invoke('hub-relay', {
+          body: {
+            candidate_email: trimmedEmail,
+            candidate_name: trimmedFirst,
+            candidate_path: path,
+            profile_created_at: new Date().toISOString(),
+          },
+        });
+      } catch (relayErr) {
+        console.error('[registration] hub-relay:', relayErr);
+      }
     } catch (err) {
       console.error("Pre-assessment capture insert failed:", err);
     }
