@@ -15,6 +15,28 @@ import { retryPendingPayload } from "./utils/hubIntegration";
 
 const queryClient = new QueryClient();
 
+/** On mount: read ?path= and ?token= from URL, persist to localStorage */
+const InitParams = () => {
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+
+    // Path param
+    const pathParam = params.get("path");
+    const validPaths = ["starting", "growing", "returning", "advancing"];
+    localStorage.setItem(
+      "beconnect-path",
+      validPaths.includes(pathParam || "") ? pathParam! : "growing"
+    );
+
+    // Token param (Hub magic-link flow)
+    const token = params.get("token");
+    if (token) {
+      localStorage.setItem("beconnect-token", token);
+    }
+  }, []);
+  return null;
+};
+
 const HubRetry = () => {
   useEffect(() => {
     retryPendingPayload();
@@ -27,6 +49,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <InitParams />
       <HubRetry />
       <BrowserRouter>
         <Routes>

@@ -34,6 +34,7 @@ function fireHubRelay(candidateEmail: string) {
       scores: parsed?.dimensionScores || parsed?.comprehensiveScores || null,
       matching_results: matchingResults,
       path,
+      candidate_path: localStorage.getItem("beconnect-path") || "growing",
       session_id: getOrCreateSessionId(),
       source: "dna-assessment",
       completed_at: new Date().toISOString(),
@@ -111,6 +112,7 @@ const SaveDNAPanel = ({
             eqSuperpower: "Empathy",
             resultsUrl,
             whatsapp: whatsapp.trim() || undefined,
+            candidatePath: localStorage.getItem("beconnect-path") || "growing",
           },
         }).catch((err) => console.error("Results email failed:", err));
 
