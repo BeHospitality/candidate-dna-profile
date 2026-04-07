@@ -649,12 +649,6 @@ const ArchetypeReveal = () => {
 
                 {entryInfo.mode === "public" && (
                   <>
-                    <div className="text-center">
-                      <a href="https://career.be.ie" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">
-                        Join the Network →
-                      </a>
-                    </div>
-
                     <div className="pt-4 pb-4 space-y-5">
                       <div className="glass-card p-6 rounded-2xl text-center space-y-4">
                         <p className="text-lg font-bold text-foreground">You've unlocked your archetype — but there's more.</p>
@@ -668,8 +662,29 @@ const ArchetypeReveal = () => {
                       </div>
 
                       <Button onClick={handleContinue} size="lg" className="w-full rounded-xl font-bold text-lg py-6">
-                        Continue Now<ArrowRight className="ml-2 w-5 h-5" />
+                        Meet your career agent →<ArrowRight className="ml-2 w-5 h-5" />
                       </Button>
+
+                      {localStorage.getItem("beconnect-path") === "returning" && (
+                        <button
+                          onClick={() => navigate("/reveal")}
+                          className="w-full transition-colors duration-200"
+                          style={{
+                            fontFamily: "DM Sans, sans-serif",
+                            fontSize: 13,
+                            fontWeight: 500,
+                            background: "transparent",
+                            border: "1px solid #d97706",
+                            color: "#d97706",
+                            borderRadius: 8,
+                            padding: 12,
+                            marginTop: 8,
+                            cursor: "pointer",
+                          }}
+                        >
+                          View my previous results →
+                        </button>
+                      )}
 
                       <Button variant="outline" size="lg" className="w-full rounded-xl" onClick={() => { toast({ title: "Progress saved!", description: "You can return anytime to continue." }); }}>
                         Save & Finish Later<ArrowRight className="ml-2 w-5 h-5" />
