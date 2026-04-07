@@ -337,9 +337,19 @@ const ArchetypeReveal = () => {
                     <h1 className="text-4xl font-extrabold text-foreground mb-2">
                       {archetype.name}
                     </h1>
-                    <p className="text-lg text-primary font-semibold mb-6">
-                      {archetype.tagline}
-                    </p>
+                     <p className="text-lg text-primary font-semibold mb-2">
+                       {archetype.tagline}
+                     </p>
+                     {/* Persona context line */}
+                     {(() => {
+                       const pPath = localStorage.getItem("beconnect-path");
+                       const pName = localStorage.getItem("beconnect-firstname");
+                       if (pPath === "starting") return <p style={{ fontFamily: "DM Sans, sans-serif", fontSize: 12, color: "#008C72", marginTop: 8, textAlign: "center" }}>Your first step in hospitality just got a whole lot clearer.</p>;
+                       if (pPath === "growing") return <p style={{ fontFamily: "DM Sans, sans-serif", fontSize: 12, color: "#008C72", marginTop: 8, textAlign: "center" }}>Now let's find where in the world this takes you.</p>;
+                       if (pPath === "returning") return <p style={{ fontFamily: "DM Sans, sans-serif", fontSize: 12, color: "#d97706", marginTop: 8, textAlign: "center" }}>Some things don't change. Welcome back{pName ? `, ${pName}` : ""}.</p>;
+                       if (pPath === "advancing") return <p style={{ fontFamily: "DM Sans, sans-serif", fontSize: 12, color: "#a78bfa", marginTop: 8, textAlign: "center" }}>This is the intelligence that shapes your next strategic move.</p>;
+                       return null;
+                     })()}
                     <div className="flex flex-wrap justify-center gap-2">
                       {archetype.traits.map((t) => (
                         <span key={t} className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/15 text-primary border border-primary/30">
