@@ -13,6 +13,7 @@ import { archetypeData } from "@/lib/archetypes";
 import { getSignatureCombination } from "@/utils/signatureMatch";
 import { getNarrativeForScore } from "@/data/dimensionNarratives";
 import { exportDNACard } from "@/utils/dnaCardExport";
+import { buildConciergeURL } from "@/utils/buildConciergeURL";
 import {
   RadarChart,
   PolarGrid,
@@ -216,7 +217,7 @@ const ArchetypeReveal = () => {
     toast({ title: "Link copied!", description: "Share it with your network." });
   };
 
-  const handleContinue = () => { window.location.href = "https://career.be.ie"; };
+  const handleContinue = () => { window.location.href = buildConciergeURL(); };
 
   const handleDownloadPDF = () => {
     const path = storage.getExperiencePath() || 'experienced';
