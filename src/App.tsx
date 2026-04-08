@@ -11,6 +11,7 @@ import SharedResults from "./pages/SharedResults";
 import ResumeAssessment from "./pages/ResumeAssessment";
 import NotFound from "./pages/NotFound";
 import Privacy from "./pages/Privacy";
+import TestReveal from "./pages/TestReveal";
 import { retryPendingPayload } from "./utils/hubIntegration";
 
 const queryClient = new QueryClient();
