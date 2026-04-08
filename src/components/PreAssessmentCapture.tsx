@@ -197,7 +197,30 @@ const PreAssessmentCapture = ({ onContinue }: PreAssessmentCaptureProps) => {
             )}
           </div>
 
-          {/* Email */}
+          {/* Last Name */}
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ fontFamily: "DM Sans, sans-serif", fontSize: 11, color: "#6b7280", letterSpacing: 1, textTransform: "uppercase", display: "block", marginBottom: 4 }}>
+              LAST NAME
+            </label>
+            <input
+              type="text"
+              placeholder="Your last name"
+              value={lastName}
+              onChange={(e) => { setLastName(e.target.value); setErrors(prev => ({ ...prev, lastName: undefined })); }}
+              style={{
+                width: "100%", boxSizing: "border-box",
+                background: "#1a2640", border: `1px solid ${errors.lastName ? "#E11048" : "#374151"}`,
+                borderRadius: 8, height: 48, padding: "0 14px",
+                fontFamily: "DM Sans, sans-serif", fontSize: 14, color: "#fff", outline: "none",
+              }}
+              onFocus={(e) => (e.target.style.borderColor = "#f59e0b")}
+              onBlur={(e) => (e.target.style.borderColor = errors.lastName ? "#E11048" : "#374151")}
+            />
+            {errors.lastName && (
+              <p style={{ fontFamily: "DM Sans, sans-serif", fontSize: 11, color: "#E11048", marginTop: 4 }}>{errors.lastName}</p>
+            )}
+          </div>
+
           <div style={{ marginBottom: 8 }}>
             <label style={{ fontFamily: "DM Sans, sans-serif", fontSize: 11, color: "#6b7280", letterSpacing: 1, textTransform: "uppercase", display: "block", marginBottom: 4 }}>
               EMAIL ADDRESS
