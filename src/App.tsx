@@ -11,6 +11,7 @@ import SharedResults from "./pages/SharedResults";
 import ResumeAssessment from "./pages/ResumeAssessment";
 import NotFound from "./pages/NotFound";
 import Privacy from "./pages/Privacy";
+import TestReveal from "./pages/TestReveal";
 import { retryPendingPayload } from "./utils/hubIntegration";
 
 const queryClient = new QueryClient();
@@ -61,7 +62,8 @@ const App = () => (
           <Route path="/results/:assessmentId" element={<SharedResults />} />
           <Route path="/resume/:token" element={<ResumeAssessment />} />
           <Route path="/privacy" element={<Privacy />} />
-          
+          <Route path="/test-reveal" element={<TestReveal />} />
+
 
           <Route path="*" element={<NotFound />} />
         </Routes>
