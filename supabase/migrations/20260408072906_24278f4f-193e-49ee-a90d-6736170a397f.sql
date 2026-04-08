@@ -1,0 +1,1 @@
+ALTER TABLE public.dna_candidates ADD COLUMN last_name text;
