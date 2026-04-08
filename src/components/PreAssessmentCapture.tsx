@@ -50,8 +50,9 @@ interface PreAssessmentCaptureProps {
 
 const PreAssessmentCapture = ({ onContinue }: PreAssessmentCaptureProps) => {
   const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [errors, setErrors] = useState<{ firstName?: string; email?: string }>({});
+  const [errors, setErrors] = useState<{ firstName?: string; lastName?: string; email?: string }>({});
   const [submitting, setSubmitting] = useState(false);
   const [welcomeBack, setWelcomeBack] = useState<string | null>(null);
 
@@ -61,6 +62,7 @@ const PreAssessmentCapture = ({ onContinue }: PreAssessmentCaptureProps) => {
   const validate = (): boolean => {
     const e: typeof errors = {};
     if (!firstName.trim()) e.firstName = "First name is required";
+    if (!lastName.trim()) e.lastName = "Last name is required";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = "Please enter a valid email";
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -71,6 +73,7 @@ const PreAssessmentCapture = ({ onContinue }: PreAssessmentCaptureProps) => {
     setSubmitting(true);
 
     const trimmedFirst = firstName.trim();
+    const trimmedLast = lastName.trim();
     const trimmedEmail = email.trim().toLowerCase();
 
     // Returning path: check for existing record
@@ -103,16 +106,18 @@ const PreAssessmentCapture = ({ onContinue }: PreAssessmentCaptureProps) => {
       }
       await supabase.from("dna_candidates").insert({
         first_name: trimmedFirst,
+        last_name: trimmedLast,
         email: trimmedEmail,
         path,
         session_id: sid,
-      });
+      } as any);
       // Fire profile to Hub pipeline (non-blocking)
       try {
         await supabase.functions.invoke('hub-relay', {
           body: {
             candidate_email: trimmedEmail,
             first_name: trimmedFirst,
+            last_name: trimmedLast,
             path,
             source: 'dna-assessment',
             completed_at: new Date().toISOString(),
@@ -126,11 +131,12 @@ const PreAssessmentCapture = ({ onContinue }: PreAssessmentCaptureProps) => {
       console.error("Pre-assessment capture insert failed:", err);
     }
 
-    finishCapture(trimmedFirst, trimmedEmail);
+    finishCapture(trimmedFirst, trimmedLast, trimmedEmail);
   };
 
-  const finishCapture = (name: string, emailVal: string) => {
+  const finishCapture = (name: string, last: string, emailVal: string) => {
     localStorage.setItem("beconnect-firstname", name);
+    localStorage.setItem("beconnect-lastname", last);
     localStorage.setItem("beconnect-email", emailVal);
     const participantId = "local-" + Date.now();
     localStorage.setItem("beconnect-participant-id", participantId);
