@@ -22,6 +22,7 @@ export function buildConciergeURL(): string {
 
       if (parsed.primaryArchetype) {
         params.set("archetype", parsed.primaryArchetype);
+        params.set("dna_verified", "true");
       }
 
       if (parsed.eqSuperpower) {
