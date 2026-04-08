@@ -103,8 +103,8 @@ const SaveDNAPanel = ({
 
         supabase.functions.invoke("send-dna-results", {
           body: {
-            firstName: "",
-            lastName: "",
+            firstName: localStorage.getItem("beconnect-firstname") || "",
+            lastName: localStorage.getItem("beconnect-lastname") || "",
             email: email.trim().toLowerCase(),
             archetype: archetype.name,
             archetypeDescription: archetype.tagline,
