@@ -89,7 +89,7 @@ const PreAssessmentCapture = ({ onContinue }: PreAssessmentCaptureProps) => {
           localStorage.setItem("beconnect-firstname", data.first_name);
           localStorage.setItem("beconnect-email", trimmedEmail);
           setWelcomeBack(data.first_name);
-          setTimeout(() => finishCapture(data.first_name, trimmedEmail), 1500);
+          setTimeout(() => finishCapture(data.first_name, "", trimmedEmail), 1500);
           return;
         }
       } catch {
