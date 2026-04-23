@@ -15,6 +15,14 @@ function getOrCreateSessionId(): string {
 }
 
 function fireHubRelay(candidateEmail: string) {
+  const logMeta = {
+    timestamp: new Date().toISOString(),
+    entry_mode: (() => {
+      try { return storage.getEntryMode().mode ?? null; } catch { return null; }
+    })(),
+    candidate_email: candidateEmail,
+  };
+
   try {
     const rawResults = localStorage.getItem("dna-results");
     const parsed = rawResults ? JSON.parse(rawResults) : null;
@@ -40,17 +48,21 @@ function fireHubRelay(candidateEmail: string) {
       completed_at: new Date().toISOString(),
     };
 
+    console.log("[hub-relay] attempt", logMeta);
     supabase.functions
       .invoke("hub-relay", { body: payload })
       .then(({ data, error }) => {
         if (error) {
-          console.error("[hub-relay] Failed to relay to Hub:", error);
+          console.warn("[hub-relay] failed", { ...logMeta, error: error.message ?? String(error) });
         } else {
-          console.log("[hub-relay] Successfully relayed to Hub:", data);
+          console.log("[hub-relay] success", { ...logMeta, status: (data as any)?.hubStatus ?? 200, response: data });
         }
+      })
+      .catch((err) => {
+        console.warn("[hub-relay] threw", { ...logMeta, error: err instanceof Error ? err.message : String(err) });
       });
   } catch (err) {
-    console.error("[hub-relay] Error building payload:", err);
+    console.warn("[hub-relay] payload build error", { ...logMeta, error: err instanceof Error ? err.message : String(err) });
   }
 }
 import ScrollRevealSection from "./ScrollRevealSection";
