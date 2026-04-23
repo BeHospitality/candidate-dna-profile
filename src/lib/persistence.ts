@@ -116,15 +116,24 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
         department_ranking: departmentMatches?.slice(0, 5),
       };
 
-      // Fire and forget — don't block user from seeing results
-      sendResultsToHub(hubPayload).then((hubResult) => {
-        if (hubResult.success) {
-          clearPendingPayload();
-        } else {
-          console.warn('[Hub Integration] Failed, storing for retry');
-          storePendingPayload(hubPayload);
-        }
-      });
+      // Fire and forget — non-blocking, never breaks the result screen
+      console.log(`${logPrefix} attempt`, logMeta);
+      sendResultsToHub(hubPayload)
+        .then((hubResult) => {
+          if (hubResult.success) {
+            clearPendingPayload();
+            console.log(`${logPrefix} success`, { ...logMeta, status: 200 });
+          } else {
+            console.warn(`${logPrefix} failed`, { ...logMeta, error: hubResult.error });
+            storePendingPayload(hubPayload);
+          }
+        })
+        .catch((err) => {
+          // sendResultsToHub already catches network errors, but belt-and-braces:
+          console.warn(`${logPrefix} threw`, { ...logMeta, error: err instanceof Error ? err.message : String(err) });
+        });
+    } else {
+      console.log(`${logPrefix} skipped — no candidate email yet`, logMeta);
     }
 
     // Audit log
