@@ -63,12 +63,27 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
       console.error("Failed to persist responses:", responsesError);
     }
 
-    // Send results to Hub for candidate and team modes (fire-and-forget)
-    if ((entryInfo.mode === 'candidate' || entryInfo.mode === 'team') && entryInfo.candidateEmail) {
+    // Send results to Hub for ALL completed assessments (fire-and-forget).
+    // Public B2C traffic without an email yet will fire again from SaveDNAPanel
+    // once the candidate provides their email post-result.
+    const candidateEmail =
+      entryInfo.candidateEmail ||
+      (typeof localStorage !== 'undefined' ? localStorage.getItem('beconnect-email') : null) ||
+      null;
+
+    const logPrefix = '[Hub Integration]';
+    const logMeta = {
+      timestamp: new Date().toISOString(),
+      entry_mode: entryInfo.mode ?? null,
+      assessment_id: assessment.id,
+      candidate_email: candidateEmail,
+    };
+
+    if (candidateEmail) {
       const cs = comprehensiveScores;
       const hubPayload: HubWebhookPayload = {
         assessment_id: assessment.id,
-        candidate_email: entryInfo.candidateEmail,
+        candidate_email: candidateEmail,
         archetype: result.primaryArchetype.toLowerCase(),
         dimension_scores: {
           autonomy: Math.round(result.scores.autonomy),
@@ -101,15 +116,24 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
         department_ranking: departmentMatches?.slice(0, 5),
       };
 
-      // Fire and forget — don't block user from seeing results
-      sendResultsToHub(hubPayload).then((hubResult) => {
-        if (hubResult.success) {
-          clearPendingPayload();
-        } else {
-          console.warn('[Hub Integration] Failed, storing for retry');
-          storePendingPayload(hubPayload);
-        }
-      });
+      // Fire and forget — non-blocking, never breaks the result screen
+      console.log(`${logPrefix} attempt`, logMeta);
+      sendResultsToHub(hubPayload)
+        .then((hubResult) => {
+          if (hubResult.success) {
+            clearPendingPayload();
+            console.log(`${logPrefix} success`, { ...logMeta, status: 200 });
+          } else {
+            console.warn(`${logPrefix} failed`, { ...logMeta, error: hubResult.error });
+            storePendingPayload(hubPayload);
+          }
+        })
+        .catch((err) => {
+          // sendResultsToHub already catches network errors, but belt-and-braces:
+          console.warn(`${logPrefix} threw`, { ...logMeta, error: err instanceof Error ? err.message : String(err) });
+        });
+    } else {
+      console.log(`${logPrefix} skipped — no candidate email yet`, logMeta);
     }
 
     // Audit log
