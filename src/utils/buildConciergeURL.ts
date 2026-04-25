@@ -10,10 +10,16 @@ export function buildConciergeURL(): string {
   if (path) params.set("path", path);
 
   const name = localStorage.getItem("beconnect-firstname");
-  if (name) params.set("name", name);
+  if (name) params.set("first_name", name);
+
+  const lastName = localStorage.getItem("beconnect-lastname");
+  if (lastName) params.set("last_name", lastName);
 
   const email = localStorage.getItem("beconnect-email");
   if (email) params.set("email", email);
+
+  const assessmentId = localStorage.getItem("dna-assessment-id");
+  if (assessmentId) params.set("assessment_id", assessmentId);
 
   try {
     const raw = localStorage.getItem("dna-results");
