@@ -61,8 +61,14 @@ const PreAssessmentCapture = ({ onContinue }: PreAssessmentCaptureProps) => {
 
   const validate = (): boolean => {
     const e: typeof errors = {};
-    if (!firstName.trim()) e.firstName = "First name is required";
-    if (!lastName.trim()) e.lastName = "Last name is required";
+    // Letters (incl. accents), spaces, hyphens and apostrophes only; min 2 chars
+    const NAME_RE = /^[\p{L}][\p{L}\s'\-]{1,}$/u;
+    const fn = firstName.trim();
+    const ln = lastName.trim();
+    if (!fn) e.firstName = "First name is required";
+    else if (!NAME_RE.test(fn)) e.firstName = "Use letters, hyphens or apostrophes (min 2 chars)";
+    if (!ln) e.lastName = "Last name is required";
+    else if (!NAME_RE.test(ln)) e.lastName = "Use letters, hyphens or apostrophes (min 2 chars)";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = "Please enter a valid email";
     setErrors(e);
     return Object.keys(e).length === 0;

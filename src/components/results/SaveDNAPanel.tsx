@@ -5,6 +5,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { archetypeData } from "@/lib/archetypes";
 import type { AssessmentResult } from "@/lib/scoring";
 
+const REVEAL_EMAIL_CAPTURED_URL =
+  "https://buriwmeuvujisgmqnpjr.supabase.co/functions/v1/dna-reveal-email-captured";
+
 function getOrCreateSessionId(): string {
   let sid = localStorage.getItem("beconnect-session-id");
   if (!sid) {
@@ -12,6 +15,60 @@ function getOrCreateSessionId(): string {
     localStorage.setItem("beconnect-session-id", sid);
   }
   return sid;
+}
+
+/**
+ * Fire-and-forget POST to the Hub when a candidate captures their
+ * email on /reveal. The Hub orchestrates Email #1 (archetype reveal)
+ * via Brevo. Never blocks the UI; logs every attempt.
+ */
+function fireRevealEmailCaptured(args: {
+  assessmentId: string | null;
+  email: string;
+  firstName: string;
+  lastName: string;
+  archetype: string;
+  path: string;
+}) {
+  const capturedAt = new Date().toISOString();
+  const logMeta = {
+    timestamp: capturedAt,
+    assessment_id: args.assessmentId,
+    email: args.email,
+  };
+
+  const payload = {
+    assessment_id: args.assessmentId,
+    email: args.email,
+    first_name: args.firstName,
+    last_name: args.lastName,
+    archetype: args.archetype,
+    path: args.path,
+    captured_at: capturedAt,
+  };
+
+  console.log("[reveal-email-captured] attempt", logMeta);
+  // Direct fetch — this endpoint lives on the Hub project, not ours,
+  // so we cannot use supabase.functions.invoke(). Fire-and-forget.
+  fetch(REVEAL_EMAIL_CAPTURED_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  })
+    .then(async (res) => {
+      if (res.ok) {
+        console.log("[reveal-email-captured] success", { ...logMeta, status: res.status });
+      } else {
+        const errorText = await res.text().catch(() => "");
+        console.warn("[reveal-email-captured] failed", { ...logMeta, status: res.status, error: errorText });
+      }
+    })
+    .catch((err) => {
+      console.warn("[reveal-email-captured] threw", {
+        ...logMeta,
+        error: err instanceof Error ? err.message : String(err),
+      });
+    });
 }
 
 function fireHubRelay(candidateEmail: string) {
@@ -140,6 +197,20 @@ const SaveDNAPanel = ({
             });
         }
       }
+
+      // Persist first name to the canonical localStorage key
+      localStorage.setItem("beconnect-firstname", firstName.trim());
+
+      // Fire reveal-email-captured webhook to the Hub (Email #1 trigger).
+      // Non-blocking — candidate proceeds regardless of outcome.
+      fireRevealEmailCaptured({
+        assessmentId: storage.getAssessmentId(),
+        email: email.trim().toLowerCase(),
+        firstName: firstName.trim(),
+        lastName: localStorage.getItem("beconnect-lastname") || "",
+        archetype: result.primaryArchetype,
+        path: localStorage.getItem("beconnect-path") || "growing",
+      });
 
       // Fire hub-relay in background — never blocks UI
       fireHubRelay(email.trim().toLowerCase());
