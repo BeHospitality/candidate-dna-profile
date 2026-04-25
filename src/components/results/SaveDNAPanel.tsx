@@ -198,6 +198,20 @@ const SaveDNAPanel = ({
         }
       }
 
+      // Persist first name to the canonical localStorage key
+      localStorage.setItem("beconnect-firstname", firstName.trim());
+
+      // Fire reveal-email-captured webhook to the Hub (Email #1 trigger).
+      // Non-blocking — candidate proceeds regardless of outcome.
+      fireRevealEmailCaptured({
+        assessmentId: storage.getAssessmentId(),
+        email: email.trim().toLowerCase(),
+        firstName: firstName.trim(),
+        lastName: localStorage.getItem("beconnect-lastname") || "",
+        archetype: result.primaryArchetype,
+        path: localStorage.getItem("beconnect-path") || "growing",
+      });
+
       // Fire hub-relay in background — never blocks UI
       fireHubRelay(email.trim().toLowerCase());
 
