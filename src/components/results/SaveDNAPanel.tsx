@@ -5,9 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { archetypeData } from "@/lib/archetypes";
 import type { AssessmentResult } from "@/lib/scoring";
 
-const REVEAL_EMAIL_CAPTURED_URL =
-  "https://buriwmeuvujisgmqnpjr.supabase.co/functions/v1/dna-reveal-email-captured";
-
 function getOrCreateSessionId(): string {
   let sid = localStorage.getItem("beconnect-session-id");
   if (!sid) {
@@ -18,9 +15,18 @@ function getOrCreateSessionId(): string {
 }
 
 /**
- * Fire-and-forget POST to the Hub when a candidate captures their
- * email on /reveal. The Hub orchestrates Email #1 (archetype reveal)
- * via Brevo. Never blocks the UI; logs every attempt.
+ * Fire-and-forget invocation of the reveal-email-relay edge function on
+ * THIS project. The edge function reads DNA_REVEAL_WEBHOOK_SECRET at
+ * invocation time and forwards the payload to the Hub's
+ * dna-reveal-email-captured endpoint with the x-be-connect-secret
+ * header attached.
+ *
+ * The shared secret is read server-side (in the edge function), never
+ * shipped to the browser. If the secret is unset, the relay logs an
+ * error and skips the forward — we don't send bare requests to a Hub
+ * that's expecting auth.
+ *
+ * Never blocks the UI; logs every attempt.
  */
 function fireRevealEmailCaptured(args: {
   assessmentId: string | null;
@@ -48,19 +54,35 @@ function fireRevealEmailCaptured(args: {
   };
 
   console.log("[reveal-email-captured] attempt", logMeta);
-  // Direct fetch — this endpoint lives on the Hub project, not ours,
-  // so we cannot use supabase.functions.invoke(). Fire-and-forget.
-  fetch(REVEAL_EMAIL_CAPTURED_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  })
-    .then(async (res) => {
-      if (res.ok) {
-        console.log("[reveal-email-captured] success", { ...logMeta, status: res.status });
+  // Invoke the relay edge function on THIS project. The relay holds the
+  // shared secret and adds the x-be-connect-secret header before
+  // forwarding to the Hub. Fire-and-forget — never gates the UI.
+  supabase.functions
+    .invoke("reveal-email-relay", { body: payload })
+    .then(({ data, error }) => {
+      if (error) {
+        console.warn("[reveal-email-captured] relay invoke failed", {
+          ...logMeta,
+          error: error.message ?? String(error),
+        });
+        return;
+      }
+      const skipped = (data as any)?.skipped === true;
+      const reason = (data as any)?.reason;
+      const hubStatus = (data as any)?.hubStatus;
+      if (skipped) {
+        console.error("[reveal-email-captured] relay skipped forward", {
+          ...logMeta,
+          reason: reason ?? "unknown",
+        });
+      } else if (typeof hubStatus === "number" && hubStatus >= 200 && hubStatus < 300) {
+        console.log("[reveal-email-captured] success", { ...logMeta, status: hubStatus });
       } else {
-        const errorText = await res.text().catch(() => "");
-        console.warn("[reveal-email-captured] failed", { ...logMeta, status: res.status, error: errorText });
+        console.warn("[reveal-email-captured] Hub returned non-2xx", {
+          ...logMeta,
+          status: hubStatus,
+          body: (data as any)?.hubBody,
+        });
       }
     })
     .catch((err) => {

@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.hub-relay]
 verify_jwt = false
+
+[functions.reveal-email-relay]
+verify_jwt = false
