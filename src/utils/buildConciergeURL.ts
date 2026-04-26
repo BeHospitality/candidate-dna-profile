@@ -10,7 +10,13 @@ export function buildConciergeURL(): string {
   if (path) params.set("path", path);
 
   const name = localStorage.getItem("beconnect-firstname");
-  if (name) params.set("first_name", name);
+  if (name) {
+    // TEMPORARY backward-compat — drop after connect.be.ie
+    // (Build #1B) is verified reading first_name=. Tracking
+    // ticket: post-#1B cleanup follow-up.
+    params.set("name", name);
+    params.set("first_name", name);
+  }
 
   const lastName = localStorage.getItem("beconnect-lastname");
   if (lastName) params.set("last_name", lastName);
