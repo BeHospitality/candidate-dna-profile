@@ -174,6 +174,9 @@ const SaveDNAPanel = ({
     if (!canSubmit || submitting) return;
     setSubmitting(true);
 
+    // Single canonicalisation point per A6 — extract once, use everywhere.
+    const normalisedEmail = String(email).toLowerCase().trim();
+
     // Persist first name
     localStorage.setItem("beconnect-candidate-name", firstName.trim());
 
@@ -182,7 +185,7 @@ const SaveDNAPanel = ({
       const currentEntry = storage.getEntryMode();
       storage.setEntryMode({
         ...currentEntry,
-        candidateEmail: email.trim().toLowerCase(),
+        candidateEmail: normalisedEmail,
         candidateName: "",
       });
 
@@ -196,7 +199,7 @@ const SaveDNAPanel = ({
           body: {
             firstName: localStorage.getItem("beconnect-firstname") || "",
             lastName: localStorage.getItem("beconnect-lastname") || "",
-            email: email.trim().toLowerCase(),
+            email: normalisedEmail,
             archetype: archetype.name,
             archetypeDescription: archetype.tagline,
             topCareerPaths: archetype.careerPaths.slice(0, 3),
@@ -212,7 +215,7 @@ const SaveDNAPanel = ({
         if (participantId && !participantId.startsWith("local-")) {
           supabase
             .from("dna_participants")
-            .update({ email: email.trim().toLowerCase(), phone: whatsapp.trim() || null })
+            .update({ email: normalisedEmail, phone: whatsapp.trim() || null })
             .eq("id", participantId)
             .then(({ error }) => {
               if (error) console.error("Participant update failed:", error);
@@ -227,7 +230,7 @@ const SaveDNAPanel = ({
       // Non-blocking — candidate proceeds regardless of outcome.
       fireRevealEmailCaptured({
         assessmentId: storage.getAssessmentId(),
-        email: email.trim().toLowerCase(),
+        email: normalisedEmail,
         firstName: firstName.trim(),
         lastName: localStorage.getItem("beconnect-lastname") || "",
         archetype: result.primaryArchetype,
@@ -235,7 +238,7 @@ const SaveDNAPanel = ({
       });
 
       // Fire hub-relay in background — never blocks UI
-      fireHubRelay(email.trim().toLowerCase());
+      fireHubRelay(normalisedEmail);
 
       setSubmitted(true);
     } catch (err) {
