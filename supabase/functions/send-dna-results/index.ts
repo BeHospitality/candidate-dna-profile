@@ -16,13 +16,16 @@ serve(async (req) => {
     const {
       firstName,
       lastName,
-      email,
+      email: rawEmail,
       archetype,
       archetypeDescription,
       topCareerPaths,
       eqSuperpower,
       resultsUrl,
     } = await req.json();
+
+    // Boundary normalisation: canonicalise inbound email at receipt.
+    const email = rawEmail ? String(rawEmail).toLowerCase().trim() : rawEmail;
 
     if (!email || !archetype) {
       return new Response(

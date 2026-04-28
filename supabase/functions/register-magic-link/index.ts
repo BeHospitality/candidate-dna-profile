@@ -19,7 +19,13 @@ serve(async (req) => {
   }
 
   try {
-    const { token, candidate_email, candidate_name, org_code, expire_at } = await req.json()
+    const { token, candidate_email: rawCandidateEmail, candidate_name, org_code, expire_at } = await req.json()
+
+    // Boundary normalisation: canonicalise inbound candidate_email immediately on receipt
+    // (per A7 — do not trust upstream Hub-side normalisation; belt-and-braces).
+    const candidate_email = rawCandidateEmail
+      ? String(rawCandidateEmail).toLowerCase().trim()
+      : rawCandidateEmail;
 
     // Validate required fields (org_code is NOT NULL in the table)
     if (!token || !candidate_email || !org_code) {
@@ -39,11 +45,13 @@ serve(async (req) => {
 
     const expiryDate = expire_at || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
 
+    // Belt-and-braces: re-normalise candidate_email immediately before DB insert.
+    const candidateEmailForInsert = String(candidate_email).toLowerCase().trim();
     const { data, error } = await supabase
       .from('magic_links')
       .insert({
         token,
-        candidate_email,
+        candidate_email: candidateEmailForInsert,
         candidate_name: candidate_name || null,
         org_code,
         expire_at: expiryDate,

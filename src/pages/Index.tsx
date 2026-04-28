@@ -53,7 +53,11 @@ const Index = () => {
             setTokenError("This link is invalid or has expired.");
           } else {
             orgCode = result.orgCode;
-            storage.setEntryMode({ mode, token, orgCode, candidateEmail: result.candidateEmail, candidateName: result.candidateName });
+            // Boundary normalisation: canonicalise email from magic-link result before storing.
+            const normalisedEmail = result.candidateEmail
+              ? String(result.candidateEmail).toLowerCase().trim()
+              : undefined;
+            storage.setEntryMode({ mode, token, orgCode, candidateEmail: normalisedEmail, candidateName: result.candidateName });
           }
         });
         return;

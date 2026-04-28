@@ -49,7 +49,9 @@ async function sendDnaResultsEmail(
   try {
     // Get participant info from localStorage (RLS blocks SELECT on dna_participants)
     const entryInfo = storage.getEntryMode();
-    const email = entryInfo.candidateEmail;
+    // Boundary normalisation: canonicalise email read from entry info.
+    const rawEmail = entryInfo.candidateEmail;
+    const email = rawEmail ? String(rawEmail).toLowerCase().trim() : "";
     const firstName = entryInfo.candidateName?.split(' ')[0] || localStorage.getItem("beconnect-firstname") || '';
     const lastName = localStorage.getItem("beconnect-lastname") || entryInfo.candidateName?.split(' ').slice(1).join(' ') || '';
 

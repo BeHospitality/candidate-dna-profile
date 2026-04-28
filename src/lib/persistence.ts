@@ -66,10 +66,14 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
     // Send results to Hub for ALL completed assessments (fire-and-forget).
     // Public B2C traffic without an email yet will fire again from SaveDNAPanel
     // once the candidate provides their email post-result.
-    const candidateEmail =
+    // Boundary normalisation: canonicalise email from entry info or localStorage.
+    const candidateEmailRaw =
       entryInfo.candidateEmail ||
       (typeof localStorage !== 'undefined' ? localStorage.getItem('beconnect-email') : null) ||
       null;
+    const candidateEmail = candidateEmailRaw
+      ? String(candidateEmailRaw).toLowerCase().trim()
+      : null;
 
     const logPrefix = '[Hub Integration]';
     const logMeta = {
@@ -240,11 +244,15 @@ export async function validateMagicLink(token: string): Promise<{ valid: boolean
     if (data.used) return { valid: false };
     if (data.expire_at && new Date(data.expire_at) < new Date()) return { valid: false };
 
+    // Boundary normalisation: canonicalise email returned from magic-link DB lookup.
+    const candidateEmail = data.candidate_email
+      ? String(data.candidate_email).toLowerCase().trim()
+      : undefined;
     return {
       valid: true,
       orgCode: data.org_code,
       candidateName: data.candidate_name || undefined,
-      candidateEmail: data.candidate_email || undefined,
+      candidateEmail,
     };
   } catch {
     return { valid: false };

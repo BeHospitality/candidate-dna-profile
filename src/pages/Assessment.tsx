@@ -425,7 +425,11 @@ const AssessmentInner = ({
                 currentQuestion: currentIdx,
                 answers,
                 totalQuestions,
-                email: storage.getEntryMode().candidateEmail,
+                email: (() => {
+                  // Boundary normalisation: canonicalise email read from entry mode.
+                  const e = storage.getEntryMode().candidateEmail;
+                  return e ? String(e).toLowerCase().trim() : e;
+                })(),
                 participantId: storage.getParticipantId() || undefined,
               }}
               onClose={() => setShowSaveDialog(false)}
@@ -530,7 +534,11 @@ const AssessmentInner = ({
               currentQuestion: currentIdx,
               answers,
               totalQuestions,
-              email: storage.getEntryMode().candidateEmail,
+              email: (() => {
+                // Boundary normalisation: canonicalise email read from entry mode.
+                const e = storage.getEntryMode().candidateEmail;
+                return e ? String(e).toLowerCase().trim() : e;
+              })(),
               participantId: storage.getParticipantId() || undefined,
             }}
             onClose={() => setShowSaveDialog(false)}
