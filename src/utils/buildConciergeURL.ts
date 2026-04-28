@@ -21,7 +21,10 @@ export function buildConciergeURL(): string {
   const lastName = localStorage.getItem("beconnect-lastname");
   if (lastName) params.set("last_name", lastName);
 
-  const email = localStorage.getItem("beconnect-email");
+  // Boundary normalisation: canonicalise email before handing off to connect.be.ie.
+  // CRITICAL: this is the cross-project boundary — email must be lowercased here.
+  const emailRaw = localStorage.getItem("beconnect-email");
+  const email = emailRaw ? String(emailRaw).toLowerCase().trim() : null;
   if (email) params.set("email", email);
 
   const assessmentId = localStorage.getItem("dna-assessment-id");

@@ -41,7 +41,12 @@ Deno.serve(async (req) => {
   }
 
   const assessmentId = (payload.assessment_id as string) ?? null;
-  const email = (payload.email as string) ?? null;
+  // Boundary normalisation: canonicalise inbound email immediately on receipt.
+  const rawEmail = payload.email;
+  const email = rawEmail ? String(rawEmail).toLowerCase().trim() : null;
+  if (email !== null) {
+    payload.email = email;
+  }
   const secret = Deno.env.get("DNA_REVEAL_WEBHOOK_SECRET");
 
   if (!secret) {
@@ -68,7 +73,8 @@ Deno.serve(async (req) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-be-connect-secret": secret,
+        // Header renamed from x-be-connect-secret per Fix-B (28 April 2026); secret env variable DNA_REVEAL_WEBHOOK_SECRET unchanged
+        "x-dna-secret": secret,
       },
       body: JSON.stringify(payload),
     });

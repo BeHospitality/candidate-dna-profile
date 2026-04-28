@@ -16,10 +16,14 @@ export interface ResumeTokenData {
  */
 export async function createResumeToken(data: ResumeTokenData): Promise<string | null> {
   try {
+    // Belt-and-braces: re-normalise email immediately before DB insert.
+    const normalisedEmail = data.email
+      ? String(data.email).toLowerCase().trim()
+      : null;
     const { data: row, error } = await supabase
       .from("resume_tokens")
       .insert({
-        email: data.email || null,
+        email: normalisedEmail,
         participant_id: data.participantId || null,
         experience_path: data.experiencePath,
         current_question: data.currentQuestion,
@@ -92,8 +96,10 @@ export async function markResumeTokenUsed(token: string): Promise<void> {
  */
 export async function sendResumeEmail(email: string, resumeUrl: string, firstName?: string): Promise<boolean> {
   try {
+    // Boundary normalisation: canonicalise email before invoking edge function.
+    const normalisedEmail = email ? String(email).toLowerCase().trim() : email;
     const { data, error } = await supabase.functions.invoke("send-resume-email", {
-      body: { email, resumeUrl, firstName },
+      body: { email: normalisedEmail, resumeUrl, firstName },
     });
 
     if (error) {

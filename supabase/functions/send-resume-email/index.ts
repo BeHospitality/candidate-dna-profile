@@ -16,7 +16,10 @@ serve(async (req) => {
       throw new Error('BREVO_API_KEY is not configured');
     }
 
-    const { email, resumeUrl, firstName } = await req.json();
+    const { email: rawEmail, resumeUrl, firstName } = await req.json();
+
+    // Boundary normalisation: canonicalise inbound email at receipt.
+    const email = rawEmail ? String(rawEmail).toLowerCase().trim() : rawEmail;
 
     if (!email || !resumeUrl) {
       return new Response(JSON.stringify({ error: 'email and resumeUrl are required' }), {

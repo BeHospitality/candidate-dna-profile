@@ -17,7 +17,10 @@ const ParticipantDetails = ({ experiencePath, onContinue }: ParticipantDetailsPr
   const fired = useRef(false);
 
   const hasToken = !!localStorage.getItem("beconnect-token");
-  const hasEmail = !!localStorage.getItem("beconnect-email");
+  // Boundary normalisation: canonicalise email read from localStorage.
+  const storedEmailRaw = localStorage.getItem("beconnect-email");
+  const storedEmail = storedEmailRaw ? String(storedEmailRaw).toLowerCase().trim() : "";
+  const hasEmail = !!storedEmail;
 
   // Silent path: Hub token OR returning visitor with stored email
   useEffect(() => {
@@ -29,12 +32,12 @@ const ParticipantDetails = ({ experiencePath, onContinue }: ParticipantDetailsPr
     storage.setParticipantId(participantId);
     storage.setEntryMode({
       mode: "public",
-      candidateEmail: localStorage.getItem("beconnect-email") || "",
+      candidateEmail: storedEmail,
       candidateName: localStorage.getItem("beconnect-firstname") || "",
     });
 
     onContinue(participantId);
-  }, [onContinue, hasToken, hasEmail]);
+  }, [onContinue, hasToken, hasEmail, storedEmail]);
 
   // If silent path applies, render nothing
   if (hasToken || hasEmail) return null;
@@ -44,9 +47,11 @@ const ParticipantDetails = ({ experiencePath, onContinue }: ParticipantDetailsPr
     <PreAssessmentCapture
       onContinue={(participantId) => {
         storage.setParticipantId(participantId);
+        const freshEmailRaw = localStorage.getItem("beconnect-email");
+        const freshEmail = freshEmailRaw ? String(freshEmailRaw).toLowerCase().trim() : "";
         storage.setEntryMode({
           mode: "public",
-          candidateEmail: localStorage.getItem("beconnect-email") || "",
+          candidateEmail: freshEmail,
           candidateName: localStorage.getItem("beconnect-firstname") || "",
         });
         onContinue(participantId);
