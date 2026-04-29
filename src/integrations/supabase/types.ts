@@ -458,7 +458,77 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_assessment_by_id: {
+        Args: { p_id: string }
+        Returns: {
+          archetype: string
+          archetype_scores: Json
+          completed_at: string
+          comprehensive_scores: Json
+          department_matches: Json
+          dimension_scores: Json
+          geography_matches: Json
+          id: string
+          sector_matches: Json
+        }[]
+      }
+      get_dna_candidate_by_email: {
+        Args: { p_email: string }
+        Returns: {
+          email: string
+          first_name: string
+          last_name: string
+          path: string
+        }[]
+      }
+      get_resume_token: {
+        Args: { p_token: string }
+        Returns: {
+          answers: Json
+          assessment_id: string
+          current_question: number
+          email: string
+          experience_path: string
+          expires_at: string
+          participant_id: string
+          phase1_results: Json
+          total_questions: number
+          used: boolean
+        }[]
+      }
+      mark_magic_link_used: {
+        Args: { p_assessment_id: string; p_token: string }
+        Returns: undefined
+      }
+      mark_resume_token_used: { Args: { p_token: string }; Returns: undefined }
+      update_dna_participant: {
+        Args: {
+          p_assessment_id?: string
+          p_assessment_path?: string
+          p_completed_at?: string
+          p_consent_given_at?: string
+          p_country?: string
+          p_email?: string
+          p_first_name?: string
+          p_gdpr_consent?: boolean
+          p_id: string
+          p_last_name?: string
+          p_phone?: string
+          p_referral_source?: string
+          p_role_title?: string
+        }
+        Returns: undefined
+      }
+      validate_magic_link: {
+        Args: { p_token: string }
+        Returns: {
+          candidate_email: string
+          candidate_name: string
+          expire_at: string
+          org_code: string
+          used: boolean
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
