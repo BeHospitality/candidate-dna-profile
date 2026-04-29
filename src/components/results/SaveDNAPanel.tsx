@@ -210,13 +210,15 @@ const SaveDNAPanel = ({
           },
         }).catch((err) => console.error("Results email failed:", err));
 
-        // 3. Update participant record if it exists
+        // 3. Update participant record if it exists (via security-definer RPC)
         const participantId = storage.getParticipantId();
         if (participantId && !participantId.startsWith("local-")) {
           supabase
-            .from("dna_participants")
-            .update({ email: normalisedEmail, phone: whatsapp.trim() || null })
-            .eq("id", participantId)
+            .rpc("update_dna_participant", {
+              p_id: participantId,
+              p_email: normalisedEmail,
+              p_phone: whatsapp.trim() || null,
+            })
             .then(({ error }) => {
               if (error) console.error("Participant update failed:", error);
             });

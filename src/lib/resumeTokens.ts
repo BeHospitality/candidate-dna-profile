@@ -52,12 +52,10 @@ export async function createResumeToken(data: ResumeTokenData): Promise<string |
  */
 export async function fetchResumeToken(token: string): Promise<ResumeTokenData | null> {
   try {
-    const { data, error } = await supabase
-      .from("resume_tokens")
-      .select("*")
-      .eq("token", token)
-      .single();
+    const { data: rows, error } = await supabase
+      .rpc("get_resume_token", { p_token: token });
 
+    const data = Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
     if (error || !data) return null;
     if (data.used) return null;
     if (data.expires_at && new Date(data.expires_at) < new Date()) return null;
@@ -82,10 +80,7 @@ export async function fetchResumeToken(token: string): Promise<ResumeTokenData |
  */
 export async function markResumeTokenUsed(token: string): Promise<void> {
   try {
-    await supabase
-      .from("resume_tokens")
-      .update({ used: true, used_at: new Date().toISOString() })
-      .eq("token", token);
+    await supabase.rpc("mark_resume_token_used", { p_token: token });
   } catch (err) {
     console.error("Failed to mark resume token used:", err);
   }

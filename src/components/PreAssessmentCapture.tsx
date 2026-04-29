@@ -85,12 +85,9 @@ const PreAssessmentCapture = ({ onContinue }: PreAssessmentCaptureProps) => {
     // Returning path: check for existing record
     if (path === "returning") {
       try {
-        const { data } = await supabase
-          .from("dna_candidates")
-          .select("first_name")
-          .eq("email", trimmedEmail)
-          .limit(1)
-          .maybeSingle();
+        const { data: rows } = await supabase
+          .rpc("get_dna_candidate_by_email", { p_email: trimmedEmail });
+        const data = Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
         if (data) {
           localStorage.setItem("beconnect-firstname", data.first_name);
           localStorage.setItem("beconnect-email", trimmedEmail);
