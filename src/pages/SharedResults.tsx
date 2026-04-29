@@ -40,12 +40,10 @@ const SharedResults = () => {
     if (!assessmentId) { setError("No assessment ID provided."); setLoading(false); return; }
 
     const fetchData = async () => {
-      const { data, error: dbError } = await supabase
-        .from("assessments")
-        .select("*")
-        .eq("id", assessmentId)
-        .single();
+      const { data: rows, error: dbError } = await supabase
+        .rpc("get_assessment_by_id", { p_id: assessmentId });
 
+      const data = Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
       if (dbError || !data) {
         setError("Could not find this assessment. It may have been removed or the link is invalid.");
         setLoading(false);

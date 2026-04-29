@@ -153,16 +153,14 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
       } as any,
     });
 
-    // Link participant record to assessment and mark completed
+    // Link participant record to assessment and mark completed (via security-definer RPC)
     const participantId = storage.getParticipantId();
     if (participantId && !participantId.startsWith("local-")) {
-      await supabase
-        .from("dna_participants")
-        .update({
-          assessment_id: assessment.id,
-          completed_at: new Date().toISOString(),
-        })
-        .eq("id", participantId);
+      await supabase.rpc("update_dna_participant", {
+        p_id: participantId,
+        p_assessment_id: assessment.id,
+        p_completed_at: new Date().toISOString(),
+      });
     }
 
     return assessment.id;
@@ -234,12 +232,10 @@ export async function persistCareerProfile(
 
 export async function validateMagicLink(token: string): Promise<{ valid: boolean; orgCode?: string; candidateName?: string; candidateEmail?: string }> {
   try {
-    const { data, error } = await supabase
-      .from("magic_links")
-      .select("*")
-      .eq("token", token)
-      .single();
+    const { data: rows, error } = await supabase
+      .rpc("validate_magic_link", { p_token: token });
 
+    const data = Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
     if (error || !data) return { valid: false };
     if (data.used) return { valid: false };
     if (data.expire_at && new Date(data.expire_at) < new Date()) return { valid: false };
@@ -261,10 +257,10 @@ export async function validateMagicLink(token: string): Promise<{ valid: boolean
 
 export async function markMagicLinkUsed(token: string, assessmentId: string): Promise<void> {
   try {
-    await supabase
-      .from("magic_links")
-      .update({ used: true, used_at: new Date().toISOString(), assessment_id: assessmentId })
-      .eq("token", token);
+    await supabase.rpc("mark_magic_link_used", {
+      p_token: token,
+      p_assessment_id: assessmentId,
+    });
   } catch (err) {
     console.error("Failed to mark magic link used:", err);
   }
