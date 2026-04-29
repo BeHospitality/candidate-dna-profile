@@ -6,7 +6,7 @@ import { storage } from "./storage";
 import type { SectorMatch } from "@/utils/sectorMatching";
 import type { GeographyMatch } from "@/utils/geographyMatching";
 import type { DepartmentFit } from "@/utils/departmentMatching";
-import { sendResultsToHub, storePendingPayload, clearPendingPayload, type HubWebhookPayload } from "@/utils/hubIntegration";
+
 
 export interface PersistAssessmentParams {
   result: AssessmentResult;
@@ -63,82 +63,14 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
       console.error("Failed to persist responses:", responsesError);
     }
 
-    // Send results to Hub for ALL completed assessments (fire-and-forget).
-    // Public B2C traffic without an email yet will fire again from SaveDNAPanel
-    // once the candidate provides their email post-result.
-    // Boundary normalisation: canonicalise email from entry info or localStorage.
-    const candidateEmailRaw =
-      entryInfo.candidateEmail ||
-      (typeof localStorage !== 'undefined' ? localStorage.getItem('beconnect-email') : null) ||
-      null;
-    const candidateEmail = candidateEmailRaw
-      ? String(candidateEmailRaw).toLowerCase().trim()
-      : null;
-
-    const logPrefix = '[Hub Integration]';
-    const logMeta = {
-      timestamp: new Date().toISOString(),
-      entry_mode: entryInfo.mode ?? null,
-      assessment_id: assessment.id,
-      candidate_email: candidateEmail,
-    };
-
-    if (candidateEmail) {
-      const cs = comprehensiveScores;
-      const hubPayload: HubWebhookPayload = {
-        assessment_id: assessment.id,
-        candidate_email: candidateEmail,
-        archetype: result.primaryArchetype.toLowerCase(),
-        dimension_scores: {
-          autonomy: Math.round(result.scores.autonomy),
-          collaboration: Math.round(result.scores.collaboration),
-          precision: Math.round(result.scores.precision),
-          leadership: Math.round(result.scores.leadership),
-          adaptability: Math.round(result.scores.adaptability),
-          problemSolving: Math.round(cs?.problemSolving || 0),
-          attentionToDetail: Math.round(cs?.attentionToDetail || 0),
-          learningSpeed: Math.round(cs?.learningSpeed || 0),
-          patternRecognition: Math.round(cs?.patternRecognition || 0),
-          concentration: Math.round(cs?.concentration || 0),
-          extraversion: Math.round(cs?.extraversion || 0),
-          conscientiousness: Math.round(cs?.conscientiousness || 0),
-          openness: Math.round(cs?.openness || 0),
-          agreeableness: Math.round(cs?.agreeableness || 0),
-          emotionalStability: Math.round(cs?.emotionalStability || 0),
-          readingOthers: Math.round(cs?.readingOthers || 0),
-          empathy: Math.round(cs?.empathy || 0),
-          selfRegulation: Math.round(cs?.selfRegulation || 0),
-          socialAwareness: Math.round(cs?.socialAwareness || 0),
-          integrity: Math.round(cs?.integrity || 0),
-          ruleFollowing: Math.round(cs?.ruleFollowing || 0),
-          safetyConsciousness: Math.round(cs?.safetyConsciousness || 0),
-          dependability: Math.round(cs?.dependability || 0),
-        },
-        experience_path: experiencePath || 'experienced',
-        sector_matches: sectorMatches?.slice(0, 3),
-        geography_fit: geographyMatches,
-        department_ranking: departmentMatches?.slice(0, 5),
-      };
-
-      // Fire and forget — non-blocking, never breaks the result screen
-      console.log(`${logPrefix} attempt`, logMeta);
-      sendResultsToHub(hubPayload)
-        .then((hubResult) => {
-          if (hubResult.success) {
-            clearPendingPayload();
-            console.log(`${logPrefix} success`, { ...logMeta, status: 200 });
-          } else {
-            console.warn(`${logPrefix} failed`, { ...logMeta, error: hubResult.error });
-            storePendingPayload(hubPayload);
-          }
-        })
-        .catch((err) => {
-          // sendResultsToHub already catches network errors, but belt-and-braces:
-          console.warn(`${logPrefix} threw`, { ...logMeta, error: err instanceof Error ? err.message : String(err) });
-        });
-    } else {
-      console.log(`${logPrefix} skipped — no candidate email yet`, logMeta);
-    }
+    // Stage 7B (Option A): Path 2's Hub-push has been removed.
+    // Hub is now notified ONLY via Path 3 (SaveDNAPanel → hub-relay)
+    // when the candidate explicitly opts in by submitting the email
+    // capture form on the results page. This eliminates the duplicate
+    // record problem and ensures every Hub row corresponds to a
+    // candidate who has consciously asked to save their DNA profile.
+    // The assessment row itself is still written locally to the
+    // DNA app's `assessments` table above.
 
     // Audit log
     await supabase.from("audit_log").insert({

@@ -12,8 +12,6 @@ import ResumeAssessment from "./pages/ResumeAssessment";
 import NotFound from "./pages/NotFound";
 import Privacy from "./pages/Privacy";
 import TestReveal from "./pages/TestReveal";
-import { retryPendingPayload } from "./utils/hubIntegration";
-
 const queryClient = new QueryClient();
 
 /** On mount: read ?path= and ?token= from URL, persist to localStorage */
@@ -38,20 +36,12 @@ const InitParams = () => {
   return null;
 };
 
-const HubRetry = () => {
-  useEffect(() => {
-    retryPendingPayload();
-  }, []);
-  return null;
-};
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <InitParams />
-      <HubRetry />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />

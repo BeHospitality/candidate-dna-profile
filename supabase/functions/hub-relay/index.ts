@@ -14,13 +14,33 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Read shared secret server-side. Per Stage 7B (Q1 confirmation):
+  // reuse the existing DNA_REVEAL_WEBHOOK_SECRET — the same value
+  // protects both inbound endpoints on Hub (dna-webhook and
+  // dna-reveal-email-captured). Do NOT introduce a separate
+  // DNA_INBOUND_SECRET env var.
+  const sharedSecret = Deno.env.get("DNA_REVEAL_WEBHOOK_SECRET");
+  if (!sharedSecret) {
+    console.error("[hub-relay] DNA_REVEAL_WEBHOOK_SECRET is not set — refusing to forward unauthenticated POST to Hub");
+    return new Response(
+      JSON.stringify({
+        skipped: true,
+        reason: "missing_shared_secret",
+      }),
+      { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
   try {
     const payload = await req.json();
     console.log("[hub-relay] Forwarding payload to Hub:", JSON.stringify(payload));
 
     const response = await fetch(HUB_WEBHOOK_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-dna-secret": sharedSecret,
+      },
       body: JSON.stringify(payload),
     });
 
