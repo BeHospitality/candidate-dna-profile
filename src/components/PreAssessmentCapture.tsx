@@ -272,7 +272,7 @@ const PreAssessmentCapture = ({ onContinue }: PreAssessmentCaptureProps) => {
 
           {/* Footer text */}
           <p style={{ fontFamily: "DM Sans, sans-serif", fontSize: 11, color: "#4b5563", textAlign: "center", marginTop: 12 }}>
-            Free · No CV needed · Results in 5 minutes
+            Free · No CV needed · 15-20 minute deep dive
           </p>
         </div>
       </div>
