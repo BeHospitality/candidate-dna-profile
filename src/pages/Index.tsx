@@ -143,7 +143,7 @@ const Index = () => {
           </Button>
 
           <p className="text-sm text-muted-foreground/70 mt-4">
-            Free. No sign-up to start. Your first result in 3 minutes.
+            Free. No sign-up to start. First insight in 3 minutes. Full profile 15-20 minutes.
           </p>
         </motion.div>
       </section>
@@ -249,7 +249,7 @@ const Index = () => {
             <ArrowRight className="ml-2 w-5 h-5" />
           </Button>
           <p className="text-sm text-muted-foreground/70 mt-4">
-            Takes 3–18 minutes depending on your path. Every chapter delivers a result.
+            Takes 10-20 minutes depending on your path. Every chapter delivers a result.
           </p>
         </motion.div>
       </section>
