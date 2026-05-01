@@ -118,7 +118,7 @@ function fireHubRelay(candidateEmail: string) {
       archetype_type: parsed?.primaryArchetype
         ? archetypeData[parsed.primaryArchetype as keyof typeof archetypeData]?.name || null
         : null,
-      scores: parsed?.dimensionScores || parsed?.comprehensiveScores || null,
+      scores: parsed?.scores || parsed?.dimensionScores || parsed?.comprehensiveScores || null,
       matching_results: matchingResults,
       path,
       candidate_path: localStorage.getItem("beconnect-path") || "growing",
