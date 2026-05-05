@@ -478,7 +478,7 @@ const AssessmentInner = ({
               <SliderQuestion
                 leftLabel={question.leftLabel!}
                 rightLabel={question.rightLabel!}
-                value={answer !== undefined ? (answer as number) : 5}
+                value={answer !== undefined ? (answer as number) : undefined}
                 onChange={setAnswer}
               />
             )}
