@@ -111,14 +111,50 @@ function fireHubRelay(candidateEmail: string) {
 
     const firstName = localStorage.getItem("beconnect-candidate-name") || null;
 
+    // DNA-2: prefer the 23-dim comprehensiveScores from dna-matching-results.
+    // Fall back to the 5-dim AssessmentResult.scores only if comprehensive is
+    // unavailable, so Hub never receives an empty payload.
+    const comprehensive = matchingResults?.comprehensiveScores || null;
+    const dimensionScores = comprehensive || parsed?.scores || parsed?.dimensionScores || null;
+
+    // DNA-4: defensive archetype + archetype_type lookup.
+    // Normalise key to lowercase so legacy Title-Case localStorage shapes
+    // resolve. Surface lookup failures rather than silently nulling.
+    const rawArchetype = parsed?.primaryArchetype ?? null;
+    const archetypeKey = rawArchetype ? String(rawArchetype).toLowerCase().trim() : null;
+    const archetypeRecord = archetypeKey
+      ? archetypeData[archetypeKey as keyof typeof archetypeData]
+      : null;
+    const archetypeTypeName = archetypeRecord?.name ?? null;
+    const archetypeTypeLookupFailed = !!rawArchetype && !archetypeTypeName;
+
+    if (archetypeTypeLookupFailed) {
+      console.warn("[hub-relay] archetype_type lookup failed", {
+        ...logMeta,
+        rawArchetype,
+        archetypeKey,
+        knownKeys: Object.keys(archetypeData),
+      });
+    }
+
+    // DNA-4d: refuse to fire if essential data missing.
+    if (!parsed || !rawArchetype) {
+      console.error("[hub-relay] refusing to fire — missing assessment data", {
+        ...logMeta,
+        hasParsed: !!parsed,
+        hasArchetype: !!rawArchetype,
+      });
+      return { ok: false, reason: "missing-assessment-data" } as const;
+    }
+
     const payload = {
       email: candidateEmail,
       first_name: firstName,
-      archetype: parsed?.primaryArchetype || null,
-      archetype_type: parsed?.primaryArchetype
-        ? archetypeData[parsed.primaryArchetype as keyof typeof archetypeData]?.name || null
-        : null,
-      scores: parsed?.scores || parsed?.dimensionScores || parsed?.comprehensiveScores || null,
+      archetype: archetypeKey,
+      archetype_type: archetypeTypeName,
+      archetype_type_lookup_failed: archetypeTypeLookupFailed,
+      scores: dimensionScores,
+      dimension_scores: dimensionScores,
       matching_results: matchingResults,
       path,
       candidate_path: localStorage.getItem("beconnect-path") || "growing",
@@ -127,7 +163,12 @@ function fireHubRelay(candidateEmail: string) {
       completed_at: new Date().toISOString(),
     };
 
-    console.log("[hub-relay] attempt", logMeta);
+    console.log("[hub-relay] attempt", {
+      ...logMeta,
+      dimension_count: dimensionScores ? Object.keys(dimensionScores).length : 0,
+      archetype: archetypeKey,
+      archetype_type: archetypeTypeName,
+    });
     supabase.functions
       .invoke("hub-relay", { body: payload })
       .then(({ data, error }) => {
@@ -140,8 +181,10 @@ function fireHubRelay(candidateEmail: string) {
       .catch((err) => {
         console.warn("[hub-relay] threw", { ...logMeta, error: err instanceof Error ? err.message : String(err) });
       });
+    return { ok: true } as const;
   } catch (err) {
     console.warn("[hub-relay] payload build error", { ...logMeta, error: err instanceof Error ? err.message : String(err) });
+    return { ok: false, reason: "build-error" } as const;
   }
 }
 import ScrollRevealSection from "./ScrollRevealSection";
