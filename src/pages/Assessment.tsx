@@ -242,14 +242,9 @@ const AssessmentInner = ({
     }
   }, [answers, currentIdx, experiencePath, totalQuestions]);
 
-  // Auto-initialize slider answers
-  useEffect(() => {
-    if (question && question.type === "slider" && answers[question.id] === undefined) {
-      const updated = { ...answers, [question.id]: 5 };
-      setAnswers(updated);
-      storage.setAnswers(updated);
-    }
-  }, [question?.id, question?.type]);
+  // Sliders no longer auto-initialise — candidate must explicitly interact.
+  // (DNA-1 fix: auto-default value of 5 inflated Adaptability and skewed
+  // archetype distribution toward Whale.)
 
   const isAnswered = () => {
     if (!question) return false;
@@ -483,7 +478,7 @@ const AssessmentInner = ({
               <SliderQuestion
                 leftLabel={question.leftLabel!}
                 rightLabel={question.rightLabel!}
-                value={answer !== undefined ? (answer as number) : 5}
+                value={answer !== undefined ? (answer as number) : undefined}
                 onChange={setAnswer}
               />
             )}
