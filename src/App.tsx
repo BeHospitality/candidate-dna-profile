@@ -11,7 +11,7 @@ import SharedResults from "./pages/SharedResults";
 import ResumeAssessment from "./pages/ResumeAssessment";
 import NotFound from "./pages/NotFound";
 import Privacy from "./pages/Privacy";
-import TestReveal from "./pages/TestReveal";
+
 const queryClient = new QueryClient();
 
 /** On mount: read ?path= and ?token= from URL, persist to localStorage */
