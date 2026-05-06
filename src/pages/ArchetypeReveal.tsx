@@ -111,6 +111,8 @@ const ArchetypeReveal = () => {
   const [showRadar, setShowRadar] = useState(false);
   const [hubStatus, setHubStatus] = useState<"idle" | "sending" | "sent" | "failed">("idle");
   const [comprehensiveScores, setComprehensiveScores] = useState<ComprehensiveScores | null>(null);
+  const [persistedAssessmentId, setPersistedAssessmentId] = useState<string | null>(null);
+  const [persistError, setPersistError] = useState<boolean>(false);
   const [sectorMatches, setSectorMatches] = useState<SectorMatch[]>([]);
   const [geographyMatches, setGeographyMatches] = useState<GeographyMatch[]>([]);
   const [departmentMatches, setDepartmentMatches] = useState<DepartmentFit[]>([]);
