@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.assessments-by-email]
 verify_jwt = false
+
+[functions.verify-assessment]
+verify_jwt = false
