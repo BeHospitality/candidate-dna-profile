@@ -24,10 +24,16 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
     const { data: userData } = await supabase.auth.getUser();
     const userId = userData?.user?.id || null;
 
-    // Insert assessment with matching data
-    const { data: assessment, error: assessmentError } = await supabase
+    // id generated client-side; assessments table has no SELECT RLS for anon
+    // by design — reads go via get_assessment_by_id RPC. This avoids the
+    // 42501 RLS violation that occurred when chaining .select().single()
+    // after an anon insert. See verification 2026-05-06.
+    const assessmentId = crypto.randomUUID();
+
+    const { error: assessmentError } = await supabase
       .from("assessments")
       .insert({
+        id: assessmentId,
         user_id: userId,
         entry_mode: entryInfo.mode,
         token: entryInfo.token || null,
@@ -39,19 +45,16 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
         sector_matches: (sectorMatches || []) as any,
         geography_matches: (geographyMatches || []) as any,
         department_matches: (departmentMatches || []) as any,
-      })
-      .select("id")
-      .single();
+      });
 
-    if (assessmentError || !assessment) {
+    if (assessmentError) {
       console.error("Failed to persist assessment:", assessmentError);
       // FIX 1 — surface the underlying error so the caller can show
-      // a non-blocking toast and log to audit_log. The previous
-      // silent `return null` was masking persistence failures.
-      throw new Error(
-        assessmentError?.message || "assessments insert returned no row"
-      );
+      // a non-blocking toast and log to audit_log.
+      throw new Error(assessmentError.message || "assessments insert failed");
     }
+
+    const assessment = { id: assessmentId };
 
     // Insert individual responses
     const responses = Object.entries(answers).map(([questionId, answer]) => ({
