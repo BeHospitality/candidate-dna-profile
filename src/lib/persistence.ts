@@ -103,7 +103,10 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
     return assessment.id;
   } catch (err) {
     console.error("Persistence error:", err);
-    return null;
+    // FIX 1 — re-throw so the caller in ArchetypeReveal can surface a
+    // toast/banner and log to audit_log. Previously this returned null
+    // and the failure was silently dropped.
+    throw err;
   }
 }
 
