@@ -27,6 +27,10 @@ export function buildConciergeURL(): string {
   const email = emailRaw ? String(emailRaw).toLowerCase().trim() : null;
   if (email) params.set("email", email);
 
+  // FIX 4: dna_verified must only be set when we have a confirmed
+  // assessment_id from a successful persistAssessment(). CONNECT uses
+  // dna_verified=true as the gate before persisting archetype, so it
+  // MUST NOT be set speculatively from localStorage results alone.
   const assessmentId = localStorage.getItem("dna-assessment-id");
   if (assessmentId) params.set("assessment_id", assessmentId);
 
@@ -36,8 +40,11 @@ export function buildConciergeURL(): string {
       const parsed = JSON.parse(raw);
 
       if (parsed.primaryArchetype) {
-        params.set("archetype", parsed.primaryArchetype);
-        params.set("dna_verified", "true");
+        // Boundary normalisation: lowercased archetype key (lion/whale/falcon)
+        params.set("archetype", String(parsed.primaryArchetype).toLowerCase().trim());
+        if (assessmentId) {
+          params.set("dna_verified", "true");
+        }
       }
 
       if (parsed.eqSuperpower) {

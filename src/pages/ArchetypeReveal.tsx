@@ -24,6 +24,7 @@ import {
 } from "recharts";
 import { useToast } from "@/hooks/use-toast";
 import { persistAssessment, markMagicLinkUsed } from "@/lib/persistence";
+import { fireHubRelayReveal, logPersistFailure } from "@/lib/hubRelayReveal";
 import { generateProfilePDF } from "@/utils/generateProfilePDF";
 import { supabase } from "@/integrations/supabase/client";
 import ScrollRevealSection from "@/components/results/ScrollRevealSection";
@@ -110,6 +111,8 @@ const ArchetypeReveal = () => {
   const [showRadar, setShowRadar] = useState(false);
   const [hubStatus, setHubStatus] = useState<"idle" | "sending" | "sent" | "failed">("idle");
   const [comprehensiveScores, setComprehensiveScores] = useState<ComprehensiveScores | null>(null);
+  const [persistedAssessmentId, setPersistedAssessmentId] = useState<string | null>(null);
+  const [persistError, setPersistError] = useState<boolean>(false);
   const [sectorMatches, setSectorMatches] = useState<SectorMatch[]>([]);
   const [geographyMatches, setGeographyMatches] = useState<GeographyMatch[]>([]);
   const [departmentMatches, setDepartmentMatches] = useState<DepartmentFit[]>([]);
@@ -156,9 +159,16 @@ const ArchetypeReveal = () => {
       sectorMatches: sMat,
       geographyMatches: gMat,
       departmentMatches: dMat,
-    }).then((assessmentId) => {
-      if (assessmentId) {
+    })
+      .then((assessmentId) => {
+        if (!assessmentId) {
+          throw new Error("persistAssessment returned null assessmentId");
+        }
+        // FIX 1 — confirmed persistence success path
         storage.setAssessmentId(assessmentId);
+        setPersistedAssessmentId(assessmentId);
+        setPersistError(false);
+
         if (entryInfo.mode === "candidate" && entryInfo.token) {
           markMagicLinkUsed(entryInfo.token, assessmentId);
         }
@@ -166,9 +176,33 @@ const ArchetypeReveal = () => {
           const pending = localStorage.getItem("dna_hub_pending");
           setHubStatus(pending ? "failed" : "sent");
         }
+
+        // sendDnaResultsEmail only fires after confirmed persistence
         sendDnaResultsEmail(assessmentId, res, comprehensive, path);
-      }
-    });
+
+        // FIX 3 — fire hub-relay immediately at reveal so Hub sees
+        // every completed assessment, not only post-SaveDNAPanel submitters.
+        fireHubRelayReveal({
+          assessmentId,
+          result: res,
+          comprehensive,
+          matchingResults: { sectorMatches: sMat, geographyMatches: gMat, departmentMatches: dMat, comprehensiveScores: comprehensive },
+          experiencePath: path,
+        });
+      })
+      .catch((err) => {
+        // FIX 1 — surface the failure to the user and forensic audit log
+        console.error("[persist] failed", err);
+        setPersistError(true);
+        if (isHubMode) setHubStatus("failed");
+        toast({
+          title: "Saving your DNA — having trouble",
+          description: "Please don't close this page yet. We'll keep retrying in the background.",
+          variant: "destructive",
+        });
+        // FIX 2 — server-side audit hook
+        logPersistFailure(err);
+      });
 
     const t1 = setTimeout(() => setPhase("flip"), 2000);
     const t2 = setTimeout(() => setPhase("revealed"), 3000);
@@ -482,8 +516,28 @@ const ArchetypeReveal = () => {
                   </div>
                 </ScrollRevealSection>
 
-                {/* Save DNA Panel — post-result email capture */}
-                {entryInfo.mode === "public" && comprehensiveScores && (
+                {/* Persist error banner — shown only when persistAssessment failed */}
+                {persistError && (
+                  <ScrollRevealSection>
+                    <div
+                      className="rounded-2xl p-4 text-sm"
+                      style={{
+                        background: "rgba(220, 38, 38, 0.08)",
+                        border: "1px solid rgba(220, 38, 38, 0.35)",
+                        color: "#fecaca",
+                        fontFamily: "DM Sans, sans-serif",
+                      }}
+                      role="status"
+                    >
+                      We're having trouble saving your DNA right now. Please don't close this page —
+                      we'll keep retrying in the background. If this persists, refresh and we'll
+                      pick up where you left off.
+                    </div>
+                  </ScrollRevealSection>
+                )}
+
+                {/* Save DNA Panel — gated on confirmed persistence (FIX 1) */}
+                {entryInfo.mode === "public" && comprehensiveScores && persistedAssessmentId && (
                   <SaveDNAPanel
                     result={result}
                     comprehensiveScores={comprehensiveScores as unknown as Record<string, number>}

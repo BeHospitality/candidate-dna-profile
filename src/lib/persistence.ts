@@ -45,7 +45,12 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
 
     if (assessmentError || !assessment) {
       console.error("Failed to persist assessment:", assessmentError);
-      return null;
+      // FIX 1 — surface the underlying error so the caller can show
+      // a non-blocking toast and log to audit_log. The previous
+      // silent `return null` was masking persistence failures.
+      throw new Error(
+        assessmentError?.message || "assessments insert returned no row"
+      );
     }
 
     // Insert individual responses
@@ -98,7 +103,10 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
     return assessment.id;
   } catch (err) {
     console.error("Persistence error:", err);
-    return null;
+    // FIX 1 — re-throw so the caller in ArchetypeReveal can surface a
+    // toast/banner and log to audit_log. Previously this returned null
+    // and the failure was silently dropped.
+    throw err;
   }
 }
 
