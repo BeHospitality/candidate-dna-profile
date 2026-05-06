@@ -159,9 +159,16 @@ const ArchetypeReveal = () => {
       sectorMatches: sMat,
       geographyMatches: gMat,
       departmentMatches: dMat,
-    }).then((assessmentId) => {
-      if (assessmentId) {
+    })
+      .then((assessmentId) => {
+        if (!assessmentId) {
+          throw new Error("persistAssessment returned null assessmentId");
+        }
+        // FIX 1 — confirmed persistence success path
         storage.setAssessmentId(assessmentId);
+        setPersistedAssessmentId(assessmentId);
+        setPersistError(false);
+
         if (entryInfo.mode === "candidate" && entryInfo.token) {
           markMagicLinkUsed(entryInfo.token, assessmentId);
         }
@@ -169,9 +176,33 @@ const ArchetypeReveal = () => {
           const pending = localStorage.getItem("dna_hub_pending");
           setHubStatus(pending ? "failed" : "sent");
         }
+
+        // sendDnaResultsEmail only fires after confirmed persistence
         sendDnaResultsEmail(assessmentId, res, comprehensive, path);
-      }
-    });
+
+        // FIX 3 — fire hub-relay immediately at reveal so Hub sees
+        // every completed assessment, not only post-SaveDNAPanel submitters.
+        fireHubRelayReveal({
+          assessmentId,
+          result: res,
+          comprehensive,
+          matchingResults: { sectorMatches: sMat, geographyMatches: gMat, departmentMatches: dMat, comprehensiveScores: comprehensive },
+          experiencePath: path,
+        });
+      })
+      .catch((err) => {
+        // FIX 1 — surface the failure to the user and forensic audit log
+        console.error("[persist] failed", err);
+        setPersistError(true);
+        if (isHubMode) setHubStatus("failed");
+        toast({
+          title: "Saving your DNA — having trouble",
+          description: "Please don't close this page yet. We'll keep retrying in the background.",
+          variant: "destructive",
+        });
+        // FIX 2 — server-side audit hook
+        logPersistFailure(err);
+      });
 
     const t1 = setTimeout(() => setPhase("flip"), 2000);
     const t2 = setTimeout(() => setPhase("revealed"), 3000);
