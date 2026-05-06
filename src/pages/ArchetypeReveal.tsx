@@ -24,6 +24,7 @@ import {
 } from "recharts";
 import { useToast } from "@/hooks/use-toast";
 import { persistAssessment, markMagicLinkUsed } from "@/lib/persistence";
+import { fireHubRelayReveal, logPersistFailure } from "@/lib/hubRelayReveal";
 import { generateProfilePDF } from "@/utils/generateProfilePDF";
 import { supabase } from "@/integrations/supabase/client";
 import ScrollRevealSection from "@/components/results/ScrollRevealSection";
