@@ -516,8 +516,28 @@ const ArchetypeReveal = () => {
                   </div>
                 </ScrollRevealSection>
 
-                {/* Save DNA Panel — post-result email capture */}
-                {entryInfo.mode === "public" && comprehensiveScores && (
+                {/* Persist error banner — shown only when persistAssessment failed */}
+                {persistError && (
+                  <ScrollRevealSection>
+                    <div
+                      className="rounded-2xl p-4 text-sm"
+                      style={{
+                        background: "rgba(220, 38, 38, 0.08)",
+                        border: "1px solid rgba(220, 38, 38, 0.35)",
+                        color: "#fecaca",
+                        fontFamily: "DM Sans, sans-serif",
+                      }}
+                      role="status"
+                    >
+                      We're having trouble saving your DNA right now. Please don't close this page —
+                      we'll keep retrying in the background. If this persists, refresh and we'll
+                      pick up where you left off.
+                    </div>
+                  </ScrollRevealSection>
+                )}
+
+                {/* Save DNA Panel — gated on confirmed persistence (FIX 1) */}
+                {entryInfo.mode === "public" && comprehensiveScores && persistedAssessmentId && (
                   <SaveDNAPanel
                     result={result}
                     comprehensiveScores={comprehensiveScores as unknown as Record<string, number>}
