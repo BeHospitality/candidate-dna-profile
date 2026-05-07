@@ -103,6 +103,40 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
       });
     }
 
+    // P0 FIX (public flow): dna_participants is never written by the
+    // public entry mode (PreAssessmentCapture is skipped). Without this,
+    // verify-assessment can't match email→assessment_id and CONNECT
+    // ethics-gating fails. Additive only — does not affect B2C/B2B.
+    if (entryInfo.mode === "public") {
+      try {
+        const emailRaw = localStorage.getItem("beconnect-email");
+        const email = emailRaw ? String(emailRaw).toLowerCase().trim() : "";
+        const firstName = localStorage.getItem("beconnect-firstname") || "";
+        const lastName = localStorage.getItem("beconnect-lastname") || "";
+        const path = localStorage.getItem("beconnect-path") || experiencePath || "";
+        if (email) {
+          const { error: linkErr } = await supabase.rpc(
+            "link_participant_to_assessment",
+            {
+              p_email: email,
+              p_assessment_id: assessment.id,
+              p_first_name: firstName || null,
+              p_last_name: lastName || null,
+              p_path: path || null,
+              p_completed_at: new Date().toISOString(),
+            },
+          );
+          if (linkErr) {
+            console.error("link_participant_to_assessment failed:", linkErr);
+          }
+        } else {
+          console.warn("Public flow: no beconnect-email in localStorage; skipping participant link");
+        }
+      } catch (linkCatchErr) {
+        console.error("link_participant_to_assessment threw:", linkCatchErr);
+      }
+    }
+
     return assessment.id;
   } catch (err) {
     console.error("Persistence error:", err);
