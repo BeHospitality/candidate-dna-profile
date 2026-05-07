@@ -1,0 +1,2 @@
+DELETE FROM dna_participants WHERE email = 'prog-test-null-rich@synthetic.example';
+DELETE FROM audit_log WHERE event_type IN ('participant_linkage_created','verify_assessment_request') AND metadata->>'assessment_id' = 'b92d3ef5-a975-4a3c-8dd2-c51edacc5297';
