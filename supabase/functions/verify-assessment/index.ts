@@ -165,6 +165,38 @@ Deno.serve(async (req) => {
     }
   }
 
+  // Build rich payload (best-effort, additive). Never blocks verification.
+  let archetypeType: string | null = null;
+  let tribeViralArchetype: string | null = null;
+  let dimensionScores: unknown = null;
+  let comprehensiveScores: unknown = null;
+  let matchingResults: unknown = null;
+  let richFieldsCount = 0;
+
+  if (verified && assessment) {
+    try {
+      const archKey = (assessment.archetype as string | null)?.toLowerCase().trim() ?? null;
+      tribeViralArchetype = archKey;
+      archetypeType = archKey ? ARCHETYPE_TYPE_MAP[archKey] ?? null : null;
+      dimensionScores = (assessment as any).dimension_scores ?? null;
+      comprehensiveScores = (assessment as any).comprehensive_scores ?? null;
+      const sector = (assessment as any).sector_matches ?? null;
+      const geography = (assessment as any).geography_matches ?? null;
+      const department = (assessment as any).department_matches ?? null;
+      if (sector !== null || geography !== null || department !== null) {
+        matchingResults = { sector, geography, department };
+      }
+      for (const v of [archetypeType, tribeViralArchetype, dimensionScores, comprehensiveScores, matchingResults]) {
+        if (v !== null && v !== undefined) richFieldsCount++;
+      }
+    } catch (richErr) {
+      console.error("[verify-assessment] rich payload build failed (non-fatal)", {
+        timestamp: ts,
+        error: richErr instanceof Error ? richErr.message : String(richErr),
+      });
+    }
+  }
+
   // Best-effort audit log; never includes raw email or secret.
   try {
     await supabase.from("audit_log").insert({
@@ -177,6 +209,8 @@ Deno.serve(async (req) => {
         assessment_id: assessmentId,
         verified,
         reason,
+        rich_payload_returned: verified && richFieldsCount > 0,
+        rich_payload_fields_count: richFieldsCount,
         ts,
       },
     });
@@ -191,6 +225,7 @@ Deno.serve(async (req) => {
     timestamp: ts,
     verified,
     reason,
+    rich_fields: richFieldsCount,
   });
 
   if (verified) {
@@ -198,6 +233,11 @@ Deno.serve(async (req) => {
       verified: true,
       completed_at: completedAt,
       archetype,
+      archetype_type: archetypeType,
+      tribe_viral_archetype: tribeViralArchetype,
+      dimension_scores: dimensionScores,
+      matching_results: matchingResults,
+      comprehensive_scores: comprehensiveScores,
     });
   }
   return jsonResponse(200, { verified: false, reason });
