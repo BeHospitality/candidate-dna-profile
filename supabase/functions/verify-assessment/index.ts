@@ -35,6 +35,13 @@ function jsonResponse(status: number, body: unknown): Response {
   });
 }
 
+// Mirror of src/lib/archetypes.ts tagline -> archetype_type.
+const ARCHETYPE_TYPE_MAP: Record<string, string> = {
+  lion: "The Autonomous Leader",
+  whale: "The Collaborative Anchor",
+  falcon: "The Precision Specialist",
+};
+
 /**
  * verify-assessment
  *
