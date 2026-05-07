@@ -103,10 +103,12 @@ Deno.serve(async (req) => {
     { auth: { persistSession: false } },
   );
 
-  // 1) Look up the assessment row by id.
+  // 1) Look up the assessment row by id (incl. rich-payload columns).
   const { data: assessment, error: aErr } = await supabase
     .from("assessments")
-    .select("id, archetype, completed_at")
+    .select(
+      "id, archetype, completed_at, dimension_scores, comprehensive_scores, sector_matches, geography_matches, department_matches",
+    )
     .eq("id", assessmentId)
     .maybeSingle();
 
