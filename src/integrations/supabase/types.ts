@@ -496,6 +496,17 @@ export type Database = {
           used: boolean
         }[]
       }
+      link_participant_to_assessment: {
+        Args: {
+          p_assessment_id: string
+          p_completed_at?: string
+          p_email: string
+          p_first_name?: string
+          p_last_name?: string
+          p_path?: string
+        }
+        Returns: string
+      }
       mark_magic_link_used: {
         Args: { p_assessment_id: string; p_token: string }
         Returns: undefined
