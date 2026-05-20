@@ -244,6 +244,26 @@ const AssessmentInner = ({
     }
   }, [answers, currentIdx, experiencePath, totalQuestions]);
 
+  // Show a bouncing hint when content is taller than the viewport on first paint
+  useEffect(() => {
+    const check = () => {
+      const overflow = document.documentElement.scrollHeight > window.innerHeight + 8;
+      setShowFoldHint(overflow);
+    };
+    check();
+    const t = setTimeout(check, 150);
+    window.addEventListener("resize", check);
+    const onScroll = () => {
+      if (window.scrollY > 40) setShowFoldHint(false);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener("resize", check);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, [currentIdx, question?.id]);
+
   // Sliders no longer auto-initialise — candidate must explicitly interact.
   // (DNA-1 fix: auto-default value of 5 inflated Adaptability and skewed
   // archetype distribution toward Whale.)
