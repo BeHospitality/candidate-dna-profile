@@ -1,7 +1,7 @@
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ArrowLeft, BookmarkPlus } from "lucide-react";
+import { ArrowRight, ArrowLeft, BookmarkPlus, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ConsentGate, { hasGdprConsent } from "@/components/ConsentGate";
 import { getQuestionsForPath, getLayerLabel, type ExperiencePath, type BranchedQuestion } from "@/data/questions";
@@ -183,6 +183,8 @@ const AssessmentInner = ({
     return new Set();
   });
   const [microReward, setMicroReward] = useState<MicroRewardContent | null>(null);
+  const navBarRef = useRef<HTMLDivElement | null>(null);
+  const [showFoldHint, setShowFoldHint] = useState(false);
 
   const pathQuestionIds = useMemo(() => pathQuestions.map(q => q.id), [pathQuestions]);
   const pathChapters = useMemo(() => getChaptersForPath(experiencePath), [experiencePath]);
@@ -241,6 +243,26 @@ const AssessmentInner = ({
       localStorage.setItem(SAVE_KEY, JSON.stringify(saveState));
     }
   }, [answers, currentIdx, experiencePath, totalQuestions]);
+
+  // Show a bouncing hint when content is taller than the viewport on first paint
+  useEffect(() => {
+    const check = () => {
+      const overflow = document.documentElement.scrollHeight > window.innerHeight + 8;
+      setShowFoldHint(overflow);
+    };
+    check();
+    const t = setTimeout(check, 150);
+    window.addEventListener("resize", check);
+    const onScroll = () => {
+      if (window.scrollY > 40) setShowFoldHint(false);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener("resize", check);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, [currentIdx, question?.id]);
 
   // Sliders no longer auto-initialise — candidate must explicitly interact.
   // (DNA-1 fix: auto-default value of 5 inflated Adaptability and skewed
@@ -450,7 +472,7 @@ const AssessmentInner = ({
         />
       )}
 
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-8">
+      <div className="flex-1 flex flex-col items-center justify-start px-4 pt-4 pb-24 sm:pb-28">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={question.id}
@@ -462,7 +484,7 @@ const AssessmentInner = ({
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="w-full max-w-lg mx-auto"
           >
-            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 text-foreground">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-4 sm:mb-5 text-foreground">
               {question.text}
             </h2>
 
@@ -493,34 +515,18 @@ const AssessmentInner = ({
           </motion.div>
         </AnimatePresence>
 
-        {/* Navigation */}
-        <div className="flex items-center gap-4 mt-10 w-full max-w-lg mx-auto">
-          {currentIdx > 0 && (
-            <Button variant="outline" onClick={prev} size="lg" className="rounded-xl">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
-          )}
-          <div className="flex-1" />
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowSaveDialog(true)}
-            className="text-muted-foreground hover:text-foreground rounded-xl"
+        {/* Bouncing scroll hint — only when nav bar is below the fold */}
+        {showFoldHint && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, y: [0, 6, 0] }}
+            transition={{ y: { repeat: Infinity, duration: 1.2 }, opacity: { duration: 0.3 } }}
+            className="fixed left-1/2 -translate-x-1/2 bottom-24 z-30 pointer-events-none text-primary"
+            aria-hidden="true"
           >
-            <BookmarkPlus className="w-4 h-4 mr-1.5" />
-            Save & Finish Later
-          </Button>
-          <Button
-            onClick={next}
-            size="lg"
-            disabled={!isAnswered()}
-            className="rounded-xl font-bold px-8"
-          >
-            {currentIdx === totalQuestions - 1 ? "See Results" : "Next"}
-            <ArrowRight className="ml-2 w-4 h-4" />
-          </Button>
-        </div>
+            <ChevronDown className="w-6 h-6 drop-shadow-[0_0_6px_hsl(var(--primary)/0.6)]" />
+          </motion.div>
+        )}
 
         {showSaveDialog && (
           <SaveProgressDialog
@@ -539,6 +545,49 @@ const AssessmentInner = ({
             onClose={() => setShowSaveDialog(false)}
           />
         )}
+      </div>
+
+      {/* Sticky nav bar — always visible above the fold */}
+      <div
+        ref={navBarRef}
+        className="sticky bottom-0 z-40 w-full bg-background/95 backdrop-blur-md border-t border-border/50 px-4 py-3"
+      >
+        <div className="flex items-center gap-2 sm:gap-4 w-full max-w-lg mx-auto">
+          {currentIdx > 0 && (
+            <Button variant="outline" onClick={prev} size="lg" className="rounded-xl">
+              <ArrowLeft className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Back</span>
+            </Button>
+          )}
+          <div className="flex-1" />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowSaveDialog(true)}
+            className="text-muted-foreground hover:text-foreground rounded-xl hidden sm:inline-flex"
+          >
+            <BookmarkPlus className="w-4 h-4 mr-1.5" />
+            Save & Finish Later
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowSaveDialog(true)}
+            className="text-muted-foreground hover:text-foreground rounded-xl sm:hidden px-2"
+            aria-label="Save and finish later"
+          >
+            <BookmarkPlus className="w-4 h-4" />
+          </Button>
+          <Button
+            onClick={next}
+            size="lg"
+            disabled={!isAnswered()}
+            className="rounded-xl font-bold px-6 sm:px-8"
+          >
+            {currentIdx === totalQuestions - 1 ? "See Results" : "Next"}
+            <ArrowRight className="ml-2 w-4 h-4" />
+          </Button>
+        </div>
       </div>
     </div>
     <DynamicFooter />

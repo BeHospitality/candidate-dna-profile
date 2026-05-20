@@ -20,9 +20,23 @@ const SliderQuestion = ({ leftLabel, rightLabel, value, onChange }: SliderQuesti
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-lg mx-auto space-y-8"
+      className="w-full max-w-lg mx-auto"
     >
-      <div className="glass-card p-8 rounded-2xl">
+      <div className="glass-card p-4 sm:p-5 rounded-2xl">
+        {/* Instruction / value display ABOVE slider so it's never hidden */}
+        <div className="text-center mb-3 min-h-[28px]">
+          {touched ? (
+            <>
+              <span className="text-3xl font-bold text-foreground">{value}</span>
+              <span className="text-muted-foreground text-sm ml-1">/ 10</span>
+            </>
+          ) : (
+            <span className="text-sm text-muted-foreground italic">
+              Drag the slider to answer
+            </span>
+          )}
+        </div>
+
         <Slider
           min={0}
           max={10}
@@ -30,7 +44,6 @@ const SliderQuestion = ({ leftLabel, rightLabel, value, onChange }: SliderQuesti
           value={[displayValue]}
           onValueChange={([v]) => handleChange(v)}
           onKeyDown={(e) => {
-            // Treat arrow keys as interaction even if value doesn't change
             if (!touched && (e.key === "ArrowLeft" || e.key === "ArrowRight" || e.key === "ArrowUp" || e.key === "ArrowDown")) {
               const delta = e.key === "ArrowRight" || e.key === "ArrowUp" ? 1 : -1;
               const next = Math.max(0, Math.min(10, displayValue + delta));
@@ -39,21 +52,9 @@ const SliderQuestion = ({ leftLabel, rightLabel, value, onChange }: SliderQuesti
           }}
           className={`w-full ${touched ? "" : "opacity-60"}`}
         />
-        <div className="flex justify-between mt-4">
-          <span className="text-sm font-semibold text-primary">{leftLabel}</span>
-          <span className="text-sm font-semibold text-primary">{rightLabel}</span>
-        </div>
-        <div className="text-center mt-4">
-          {touched ? (
-            <>
-              <span className="text-4xl font-bold text-foreground">{value}</span>
-              <span className="text-muted-foreground text-sm ml-1">/ 10</span>
-            </>
-          ) : (
-            <span className="text-sm text-muted-foreground italic">
-              Drag the slider to answer
-            </span>
-          )}
+        <div className="flex justify-between mt-3">
+          <span className="text-xs sm:text-sm font-semibold text-primary">{leftLabel}</span>
+          <span className="text-xs sm:text-sm font-semibold text-primary">{rightLabel}</span>
         </div>
       </div>
     </motion.div>
