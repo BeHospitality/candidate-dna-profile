@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ArrowLeft, BookmarkPlus } from "lucide-react";
+import { ArrowRight, ArrowLeft, BookmarkPlus, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ConsentGate, { hasGdprConsent } from "@/components/ConsentGate";
 import { getQuestionsForPath, getLayerLabel, type ExperiencePath, type BranchedQuestion } from "@/data/questions";
