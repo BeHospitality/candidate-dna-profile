@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowLeft, BookmarkPlus, ChevronDown } from "lucide-react";
@@ -183,6 +183,8 @@ const AssessmentInner = ({
     return new Set();
   });
   const [microReward, setMicroReward] = useState<MicroRewardContent | null>(null);
+  const navBarRef = useRef<HTMLDivElement | null>(null);
+  const [showFoldHint, setShowFoldHint] = useState(false);
 
   const pathQuestionIds = useMemo(() => pathQuestions.map(q => q.id), [pathQuestions]);
   const pathChapters = useMemo(() => getChaptersForPath(experiencePath), [experiencePath]);
