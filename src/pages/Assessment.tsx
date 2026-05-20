@@ -450,7 +450,7 @@ const AssessmentInner = ({
         />
       )}
 
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-8">
+      <div className="flex-1 flex flex-col items-center justify-start px-4 pt-4 pb-24 sm:pb-28">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={question.id}
@@ -462,7 +462,7 @@ const AssessmentInner = ({
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="w-full max-w-lg mx-auto"
           >
-            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 text-foreground">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-4 sm:mb-5 text-foreground">
               {question.text}
             </h2>
 
@@ -493,34 +493,18 @@ const AssessmentInner = ({
           </motion.div>
         </AnimatePresence>
 
-        {/* Navigation */}
-        <div className="flex items-center gap-4 mt-10 w-full max-w-lg mx-auto">
-          {currentIdx > 0 && (
-            <Button variant="outline" onClick={prev} size="lg" className="rounded-xl">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
-          )}
-          <div className="flex-1" />
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowSaveDialog(true)}
-            className="text-muted-foreground hover:text-foreground rounded-xl"
+        {/* Bouncing scroll hint — only when nav bar is below the fold */}
+        {showFoldHint && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, y: [0, 6, 0] }}
+            transition={{ y: { repeat: Infinity, duration: 1.2 }, opacity: { duration: 0.3 } }}
+            className="fixed left-1/2 -translate-x-1/2 bottom-24 z-30 pointer-events-none text-primary"
+            aria-hidden="true"
           >
-            <BookmarkPlus className="w-4 h-4 mr-1.5" />
-            Save & Finish Later
-          </Button>
-          <Button
-            onClick={next}
-            size="lg"
-            disabled={!isAnswered()}
-            className="rounded-xl font-bold px-8"
-          >
-            {currentIdx === totalQuestions - 1 ? "See Results" : "Next"}
-            <ArrowRight className="ml-2 w-4 h-4" />
-          </Button>
-        </div>
+            <ChevronDown className="w-6 h-6 drop-shadow-[0_0_6px_hsl(var(--primary)/0.6)]" />
+          </motion.div>
+        )}
 
         {showSaveDialog && (
           <SaveProgressDialog
@@ -539,6 +523,49 @@ const AssessmentInner = ({
             onClose={() => setShowSaveDialog(false)}
           />
         )}
+      </div>
+
+      {/* Sticky nav bar — always visible above the fold */}
+      <div
+        ref={navBarRef}
+        className="sticky bottom-0 z-40 w-full bg-background/95 backdrop-blur-md border-t border-border/50 px-4 py-3"
+      >
+        <div className="flex items-center gap-2 sm:gap-4 w-full max-w-lg mx-auto">
+          {currentIdx > 0 && (
+            <Button variant="outline" onClick={prev} size="lg" className="rounded-xl">
+              <ArrowLeft className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Back</span>
+            </Button>
+          )}
+          <div className="flex-1" />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowSaveDialog(true)}
+            className="text-muted-foreground hover:text-foreground rounded-xl hidden sm:inline-flex"
+          >
+            <BookmarkPlus className="w-4 h-4 mr-1.5" />
+            Save & Finish Later
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowSaveDialog(true)}
+            className="text-muted-foreground hover:text-foreground rounded-xl sm:hidden px-2"
+            aria-label="Save and finish later"
+          >
+            <BookmarkPlus className="w-4 h-4" />
+          </Button>
+          <Button
+            onClick={next}
+            size="lg"
+            disabled={!isAnswered()}
+            className="rounded-xl font-bold px-6 sm:px-8"
+          >
+            {currentIdx === totalQuestions - 1 ? "See Results" : "Next"}
+            <ArrowRight className="ml-2 w-4 h-4" />
+          </Button>
+        </div>
       </div>
     </div>
     <DynamicFooter />
