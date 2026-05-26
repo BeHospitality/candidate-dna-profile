@@ -38,10 +38,10 @@ const SECTOR_PROFILES: SectorProfile[] = [
       socialAwareness: "Cultural sensitivity",
     },
     growthLabels: {
-      precision: "Your profile is optimised for pace and momentum — this sector draws on micro-detail differently",
-      attentionToDetail: "Your strengths lean toward big-picture thinking — luxury environments reward a complementary detail focus",
-      empathy: "Your profile is built for efficiency and clarity — this sector draws on emotional attunement differently",
-      selfRegulation: "Your authenticity is a strength — high-touch environments reward adding a measured composure layer",
+      precision: "Your profile is optimised for pace and momentum, this sector draws on micro-detail differently",
+      attentionToDetail: "Your strengths lean toward big-picture thinking, luxury environments reward a complementary detail focus",
+      empathy: "Your profile is built for efficiency and clarity, this sector draws on emotional attunement differently",
+      selfRegulation: "Your authenticity is a strength, high-touch environments reward adding a measured composure layer",
     },
   },
   {
@@ -58,9 +58,9 @@ const SECTOR_PROFILES: SectorProfile[] = [
       learningSpeed: "Picks up systems quickly", ruleFollowing: "Follows procedures consistently",
     },
     growthLabels: {
-      adaptability: "Your profile thrives in structured environments — high-pace operations reward your adaptability over time",
-      concentration: "Your concentration compounds with familiarity — you perform at your best in environments you know well",
-      emotionalStability: "Your profile is optimised for depth over speed — this sector draws on pressure tolerance differently",
+      adaptability: "Your profile thrives in structured environments, high-pace operations reward your adaptability over time",
+      concentration: "Your concentration compounds with familiarity, you perform at your best in environments you know well",
+      emotionalStability: "Your profile is optimised for depth over speed, this sector draws on pressure tolerance differently",
     },
   },
   {
@@ -77,9 +77,9 @@ const SECTOR_PROFILES: SectorProfile[] = [
       integrity: "Trusted with sensitive information",
     },
     growthLabels: {
-      socialAwareness: "Your profile is optimised for directness and clarity — this sector draws on social nuance differently",
-      empathy: "Your strengths lean toward efficiency and action — members' clubs reward adding a relational depth layer",
-      integrity: "Your profile is built for results — this environment draws on long-term trust-building differently",
+      socialAwareness: "Your profile is optimised for directness and clarity, this sector draws on social nuance differently",
+      empathy: "Your strengths lean toward efficiency and action, members' clubs reward adding a relational depth layer",
+      integrity: "Your profile is built for results, this environment draws on long-term trust-building differently",
     },
   },
   {
@@ -98,9 +98,9 @@ const SECTOR_PROFILES: SectorProfile[] = [
       openness: "Embraces multicultural environments",
     },
     growthLabels: {
-      adaptability: "Your profile is optimised for stability — cruise environments draw on rotational flexibility differently",
-      emotionalStability: "Your strengths shine in varied environments — confined living draws on sustained composure differently",
-      collaboration: "Your profile is built for independent excellence — this sector draws on close-quarters teamwork differently",
+      adaptability: "Your profile is optimised for stability, cruise environments draw on rotational flexibility differently",
+      emotionalStability: "Your strengths shine in varied environments, confined living draws on sustained composure differently",
+      collaboration: "Your profile is built for independent excellence, this sector draws on close-quarters teamwork differently",
     },
   },
   {
@@ -117,9 +117,9 @@ const SECTOR_PROFILES: SectorProfile[] = [
       emotionalStability: "Composed under pressure",
     },
     growthLabels: {
-      safetyConsciousness: "Your profile is optimised for creativity and pace — aviation draws on safety vigilance differently",
-      ruleFollowing: "Your strengths lean toward independent thinking — this sector draws on protocol discipline differently",
-      precision: "Your profile is built for momentum — aviation draws on procedural precision differently",
+      safetyConsciousness: "Your profile is optimised for creativity and pace, aviation draws on safety vigilance differently",
+      ruleFollowing: "Your strengths lean toward independent thinking, this sector draws on protocol discipline differently",
+      precision: "Your profile is built for momentum, aviation draws on procedural precision differently",
     },
   },
   {
@@ -136,9 +136,9 @@ const SECTOR_PROFILES: SectorProfile[] = [
       extraversion: "Natural networker and host",
     },
     growthLabels: {
-      collaboration: "Your profile is optimised for individual excellence — this sector draws on team coordination differently",
-      adaptability: "Your strengths are optimised for consistency — environments with clear structure bring out your best",
-      problemSolving: "Your profile is built for precision and reliability — a strength this sector draws on differently",
+      collaboration: "Your profile is optimised for individual excellence, this sector draws on team coordination differently",
+      adaptability: "Your strengths are optimised for consistency, environments with clear structure bring out your best",
+      problemSolving: "Your profile is built for precision and reliability, a strength this sector draws on differently",
     },
   },
 ];

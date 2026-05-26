@@ -219,7 +219,7 @@ const ConsentGate = ({ onConsent }: { onConsent: () => void }) => {
             marginBottom: 12,
           }}
         >
-          I understand — let's begin
+          I understand, let's begin
         </button>
 
         {/* Secondary link */}
@@ -233,7 +233,7 @@ const ConsentGate = ({ onConsent }: { onConsent: () => void }) => {
             cursor: "pointer",
           }}
         >
-          I do not consent — take me back
+          I do not consent, take me back
         </p>
 
         {/* Bottom note */}
@@ -246,8 +246,8 @@ const ConsentGate = ({ onConsent }: { onConsent: () => void }) => {
             marginTop: 24,
           }}
         >
-          Be Connect — Be Hospitality Solutions Ltd, Cork, Ireland. Registered
-          under GDPR Article 6(1)(a) — consent.
+          Be Connect, Be Hospitality Solutions Ltd, Cork, Ireland. Registered
+          under GDPR Article 6(1)(a), consent.
         </p>
       </div>
     </div>

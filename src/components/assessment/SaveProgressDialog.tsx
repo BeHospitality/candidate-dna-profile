@@ -74,7 +74,7 @@ const SaveProgressDialog = ({ data, onClose }: SaveProgressDialogProps) => {
             <div className="text-4xl mb-4">😕</div>
             <p className="text-foreground font-semibold mb-2">Couldn't save</p>
             <p className="text-sm text-muted-foreground mb-4">
-              Something went wrong. Your progress is still saved locally — you can continue in this browser.
+              Something went wrong. Your progress is still saved locally, you can continue in this browser.
             </p>
             <Button onClick={onClose} variant="outline" className="rounded-xl">
               Close
@@ -116,7 +116,7 @@ const SaveProgressDialog = ({ data, onClose }: SaveProgressDialogProps) => {
                 ) : emailSent ? (
                   <span className="text-primary">✓ Resume link sent to {data.email}</span>
                 ) : (
-                  <span className="text-muted-foreground">Email delivery failed — use the link above</span>
+                  <span className="text-muted-foreground">Email delivery failed, use the link above</span>
                 )}
               </div>
             )}

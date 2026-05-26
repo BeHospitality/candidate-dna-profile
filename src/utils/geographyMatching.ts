@@ -115,7 +115,7 @@ export function calculateGeographyMatches(scores: ComprehensiveScores): Geograph
     let reason: string;
 
     if (fit === "excellent") {
-      reason = `Your profile aligns strongly with ${region.name}'s work culture — particularly your ${formatDimName(bestFit.dim)} score.`;
+      reason = `Your profile aligns strongly with ${region.name}'s work culture, particularly your ${formatDimName(bestFit.dim)} score.`;
     } else if (fit === "good") {
       reason = `Good cultural fit for ${region.name}. Your strengths align well, with some areas to adapt.`;
     } else if (fit === "moderate") {
@@ -123,7 +123,7 @@ export function calculateGeographyMatches(scores: ComprehensiveScores): Geograph
       reason = `Workable fit, but ${region.name}'s emphasis on ${formatDimName(weakest.dim)} may require adjustment.`;
     } else {
       const weakest = dimAnalysis[dimAnalysis.length - 1];
-      reason = `${region.name}'s work culture may be challenging — particularly the expectation around ${formatDimName(weakest.dim)}.`;
+      reason = `${region.name}'s work culture may be challenging, particularly the expectation around ${formatDimName(weakest.dim)}.`;
     }
 
     return { region: region.name, flag: region.flag, fit, fitScore, reason };

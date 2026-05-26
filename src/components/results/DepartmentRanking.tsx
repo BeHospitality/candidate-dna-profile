@@ -54,7 +54,7 @@ const DepartmentRanking = ({ departmentMatches }: DepartmentRankingProps) => {
               <p className="text-xs text-primary font-medium">
                 {d.fitScore}%
                 {d.topReasons.length > 0 && (
-                  <span className="text-muted-foreground font-normal"> — {d.topReasons.join(", ")}</span>
+                  <span className="text-muted-foreground font-normal">, {d.topReasons.join(", ")}</span>
                 )}
               </p>
             </div>

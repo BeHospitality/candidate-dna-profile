@@ -333,7 +333,7 @@ const CareerCompass = () => {
             </motion.div>
           )}
 
-          {/* Career Map — NEW STEP */}
+          {/* Career Map, NEW STEP */}
           {step === "career-map" && comprehensiveScores && (
             <CareerMapStep
               archetypeName={archetype.name}

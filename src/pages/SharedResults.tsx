@@ -59,7 +59,7 @@ const SharedResults = () => {
       setCompletedAt(data.completed_at);
 
       // Update page title for link previews
-      document.title = `DNA Profile: ${(archetypeData[data.archetype as Archetype]?.name) || data.archetype} — Be Connect`;
+      document.title = `DNA Profile: ${(archetypeData[data.archetype as Archetype]?.name) || data.archetype}, Be Connect`;
 
       setLoading(false);
     };

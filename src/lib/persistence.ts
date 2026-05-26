@@ -25,7 +25,7 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
     const userId = userData?.user?.id || null;
 
     // id generated client-side; assessments table has no SELECT RLS for anon
-    // by design — reads go via get_assessment_by_id RPC. This avoids the
+    // by design, reads go via get_assessment_by_id RPC. This avoids the
     // 42501 RLS violation that occurred when chaining .select().single()
     // after an anon insert. See verification 2026-05-06.
     const assessmentId = crypto.randomUUID();
@@ -49,7 +49,7 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
 
     if (assessmentError) {
       console.error("Failed to persist assessment:", assessmentError);
-      // FIX 1 — surface the underlying error so the caller can show
+      // FIX 1, surface the underlying error so the caller can show
       // a non-blocking toast and log to audit_log.
       throw new Error(assessmentError.message || "assessments insert failed");
     }
@@ -106,7 +106,7 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
     // P0 FIX (public flow): dna_participants is never written by the
     // public entry mode (PreAssessmentCapture is skipped). Without this,
     // verify-assessment can't match email→assessment_id and CONNECT
-    // ethics-gating fails. Additive only — does not affect B2C/B2B.
+    // ethics-gating fails. Additive only, does not affect B2C/B2B.
     if (entryInfo.mode === "public") {
       try {
         const emailRaw = localStorage.getItem("beconnect-email");
@@ -140,7 +140,7 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
     return assessment.id;
   } catch (err) {
     console.error("Persistence error:", err);
-    // FIX 1 — re-throw so the caller in ArchetypeReveal can surface a
+    // FIX 1, re-throw so the caller in ArchetypeReveal can surface a
     // toast/banner and log to audit_log. Previously this returned null
     // and the failure was silently dropped.
     throw err;

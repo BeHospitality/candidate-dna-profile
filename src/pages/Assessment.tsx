@@ -27,7 +27,7 @@ import DynamicFooter from "@/components/DynamicFooter";
 const SAVE_KEY = "dna_assessment_progress";
 const MILESTONES_SHOWN_KEY = "dna_milestones_shown";
 
-// Chapter boundary question IDs — milestones at these are replaced by chapter transitions
+// Chapter boundary question IDs, milestones at these are replaced by chapter transitions
 const CHAPTER_BOUNDARY_QUESTIONS = new Set([12, 27, 47, 62, 77]);
 
 const Assessment = () => {
@@ -264,7 +264,7 @@ const AssessmentInner = ({
     };
   }, [currentIdx, question?.id]);
 
-  // Sliders no longer auto-initialise — candidate must explicitly interact.
+  // Sliders no longer auto-initialise, candidate must explicitly interact.
   // (DNA-1 fix: auto-default value of 5 inflated Adaptability and skewed
   // archetype distribution toward Whale.)
 
@@ -289,7 +289,7 @@ const AssessmentInner = ({
     const questionNumber = questionIdx + 1;
     const currentQ = pathQuestions[questionIdx];
 
-    // Skip milestone reveals at chapter boundaries — chapter transitions handle these
+    // Skip milestone reveals at chapter boundaries, chapter transitions handle these
     if (currentQ && CHAPTER_BOUNDARY_QUESTIONS.has(currentQ.id)) {
       return false;
     }
@@ -321,7 +321,7 @@ const AssessmentInner = ({
       const nextCh = nextQ ? getChapterForQuestion(nextQ.id) : undefined;
 
       if (currentCh && nextCh && currentCh.id !== nextCh.id) {
-        // Chapter boundary — show transition
+        // Chapter boundary, show transition
         const nextPathChapter = pathChapters.find(ch => ch.id === nextCh.id);
         if (nextPathChapter) {
           setCompletedChapterNumber(currentCh.id);
@@ -515,7 +515,7 @@ const AssessmentInner = ({
           </motion.div>
         </AnimatePresence>
 
-        {/* Bouncing scroll hint — only when nav bar is below the fold */}
+        {/* Bouncing scroll hint, only when nav bar is below the fold */}
         {showFoldHint && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -547,7 +547,7 @@ const AssessmentInner = ({
         )}
       </div>
 
-      {/* Sticky nav bar — always visible above the fold */}
+      {/* Sticky nav bar, always visible above the fold */}
       <div
         ref={navBarRef}
         className="sticky bottom-0 z-40 w-full bg-background/95 backdrop-blur-md border-t border-border/50 px-4 py-3"

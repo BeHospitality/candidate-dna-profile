@@ -105,7 +105,7 @@ const CareerMapStep = ({
         {archetypeEmoji} {archetypeName} profiles thrive here.
       </p>
 
-      {/* SECTION A — Top Career Paths */}
+      {/* SECTION A, Top Career Paths */}
       <div className="glass-card p-5 rounded-2xl mb-6">
         <h3 className="font-bold text-base text-foreground mb-4">🏢 Your Top Career Paths</h3>
         <div className="space-y-3">
@@ -133,7 +133,7 @@ const CareerMapStep = ({
         </div>
       </div>
 
-      {/* SECTION B — Best Departments */}
+      {/* SECTION B, Best Departments */}
       <div className="glass-card p-5 rounded-2xl mb-6">
         <h3 className="font-bold text-base text-foreground mb-4">🏛️ Departments Built for You</h3>
         <div className="space-y-3">
@@ -162,7 +162,7 @@ const CareerMapStep = ({
         </div>
       </div>
 
-      {/* SECTION C — EQ Superpower */}
+      {/* SECTION C, EQ Superpower */}
       <div className="glass-card p-5 rounded-2xl mb-6 border border-primary/30 bg-primary/5">
         <h3 className="font-bold text-base text-foreground mb-3">⚡ Your EQ Superpower</h3>
         {eqNarrative && (
@@ -173,7 +173,7 @@ const CareerMapStep = ({
         )}
       </div>
 
-      {/* SECTION D — DNA Card */}
+      {/* SECTION D, DNA Card */}
       <div className="glass-card p-5 rounded-2xl mb-6">
         <h3 className="font-bold text-base text-foreground mb-1">🧬 Your DNA Card is Ready</h3>
         <p className="text-xs text-muted-foreground mb-4">

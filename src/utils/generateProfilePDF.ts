@@ -117,7 +117,7 @@ export function generateProfilePDF(data: {
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>DNA Profile — ${archetype.name}</title>
+  <title>DNA Profile, ${archetype.name}</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { 
@@ -185,7 +185,7 @@ export function generateProfilePDF(data: {
     <h3>🏢 Sector Matches</h3>
     ${sectorMatches.slice(0, 4).map((s, i) => `
       <div class="match-card">
-        <div class="name">${i + 1}. ${s.sector} — ${starsStr(s.stars)} (${s.fitScore}%)</div>
+        <div class="name">${i + 1}. ${s.sector}, ${starsStr(s.stars)} (${s.fitScore}%)</div>
         ${s.topStrengths.length > 0 ? `
           <ul class="strengths-list reasons">
             ${s.topStrengths.map(r => `<li>${r}</li>`).join('')}
@@ -204,7 +204,7 @@ export function generateProfilePDF(data: {
     <h3>🏨 Department Alignment</h3>
     ${departmentMatches.slice(0, 5).map(d => `
       <div class="match-card">
-        <div class="name">${d.rank}. ${d.emoji} ${d.department} — ${starsStr(d.stars)} (${d.fitScore}%)</div>
+        <div class="name">${d.rank}. ${d.emoji} ${d.department}, ${starsStr(d.stars)} (${d.fitScore}%)</div>
         <div class="reasons">${d.topReasons.join(', ')}</div>
       </div>
     `).join('')}
@@ -234,7 +234,7 @@ export function generateProfilePDF(data: {
   container.style.top = '0';
   container.style.width = '800px';
   container.innerHTML = html;
-  // Remove the doctype/html/head wrapper — just use the body content
+  // Remove the doctype/html/head wrapper, just use the body content
   const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/);
   if (bodyMatch) {
     const styleMatch = html.match(/<style>([\s\S]*?)<\/style>/);

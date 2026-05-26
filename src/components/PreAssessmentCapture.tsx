@@ -9,7 +9,7 @@ const PERSONA: Record<string, { emoji: string; heading: string; sub: string; btn
   starting: {
     emoji: "🌱",
     heading: "Let's find out who you are",
-    sub: "Before your first step in hospitality — understand what makes you great.",
+    sub: "Before your first step in hospitality, understand what makes you great.",
     btnBg: "#E11048",
     btnColor: "#fff",
   },
@@ -30,7 +30,7 @@ const PERSONA: Record<string, { emoji: string; heading: string; sub: string; btn
   advancing: {
     emoji: "⭐",
     heading: "Let's understand how you lead",
-    sub: "The DNA Assessment is how we build a picture of you as a professional. Not a quiz — a mirror.",
+    sub: "The DNA Assessment is how we build a picture of you as a professional. Not a quiz, a mirror.",
     btnBg: "#7c3aed",
     btnColor: "#fff",
   },

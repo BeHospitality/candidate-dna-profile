@@ -11,7 +11,7 @@ interface ParticipantDetailsProps {
 /**
  * Routes between:
  * 1. Silent pass-through (Hub magic-link or returning visitor with email already stored)
- * 2. Pre-assessment capture screen (B2C portal flow — name + email)
+ * 2. Pre-assessment capture screen (B2C portal flow, name + email)
  */
 const ParticipantDetails = ({ experiencePath, onContinue }: ParticipantDetailsProps) => {
   const fired = useRef(false);

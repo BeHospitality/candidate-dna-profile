@@ -12,7 +12,7 @@ const SignatureCard = ({ combination }: SignatureCardProps) => {
   const { toast } = useToast();
 
   const handleShare = async () => {
-    const text = `I just found out I'm ${combination.name} — ${combination.tagline}.\nDiscover your hospitality DNA at be-connect-dna.lovable.app`;
+    const text = `I just found out I'm ${combination.name}, ${combination.tagline}.\nDiscover your hospitality DNA at be-connect-dna.lovable.app`;
 
     if (navigator.share) {
       try {
