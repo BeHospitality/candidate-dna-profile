@@ -27,7 +27,7 @@ const Privacy = () => {
           </ul>
 
           <p className="leading-relaxed">
-            Your data is stored securely and only shared with employers you apply to.
+            On completion, your DNA Profile (archetype, scores, matches) is shared with the Be Connect talent platform so we can match you with opportunities. You can withdraw at any time.
           </p>
 
           <p className="leading-relaxed">
