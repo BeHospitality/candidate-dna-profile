@@ -29,17 +29,19 @@ export const MILESTONES: Milestone[] = [
     emoji: "🧬",
     content: (_scores, archetype) => {
       const name = archetype ? archetypeNames[archetype] || archetype : "Unknown";
+      const detail =
+        name === "Lion"
+          ? "The Autonomous Leader — decisive, independent, visionary.\n\nIn hospitality, you thrive when you own the room: running a shift, leading a brigade, or building a venue from the ground up. You're wired for front-of-house leadership, GM tracks, and entrepreneurial roles where the call is yours to make."
+          : name === "Whale"
+          ? "The Collaborative Anchor — empathetic, supportive, adaptive.\n\nIn hospitality, you're the glue every great team needs. Guests feel seen because you read them, and colleagues stay because you steady them. You shine in guest relations, concierge, training, and any team-led service environment where trust is the product."
+          : "The Precision Specialist — detail-oriented, systematic, expert.\n\nIn hospitality, you're the reason standards hold. From pastry sections to sommelier floors, revenue desks to spa protocols, you turn craft into consistency. You belong in expert-track roles where mastery and accuracy matter more than noise.";
       return {
         headline: `You're a ${name}!`,
-        detail:
-          name === "Lion"
-            ? "The Autonomous Leader — decisive, independent, visionary."
-            : name === "Whale"
-            ? "The Collaborative Anchor — empathetic, supportive, adaptive."
-            : "The Precision Specialist — detail-oriented, systematic, expert.",
+        detail,
       };
     },
   },
+
   {
     afterQuestion: 27,
     title: "Cognitive Profile Unlocked!",
