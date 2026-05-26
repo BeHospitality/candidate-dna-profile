@@ -8,7 +8,7 @@ const BrandHeader = () => {
         <span className="text-[#9ca3af] text-sm hidden sm:inline">Hospitality Intelligence</span>
       </div>
       <span className="text-[#f59e0b] text-sm font-semibold uppercase tracking-wider">
-        DNA Assessment
+        DNA Profile
       </span>
     </header>
   );
