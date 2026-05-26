@@ -112,7 +112,7 @@ const Index = () => {
           </h1>
 
           <p className="text-lg sm:text-xl text-[#9ca3af] mb-4 max-w-xl mx-auto">
-            One profile that changes how you see your career.
+            One profile that can change how you see your career.
           </p>
           <p className="text-lg sm:text-xl text-[#9ca3af] mb-8 max-w-xl mx-auto">
             Find out where you truly belong in hospitality.
