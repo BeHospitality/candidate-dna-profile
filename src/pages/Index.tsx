@@ -213,7 +213,7 @@ const Index = () => {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {[
-              { step: "1", title: "Choose Your Path", desc: "Entry, Experienced, or Executive — the assessment adapts to your career stage." },
+              { step: "1", title: "Choose Your Path", desc: "Entry, experienced, or executive. Your DNA Profile adapts to your career stage." },
               { step: "2", title: "Answer in Chapters", desc: "6 named chapters, each unlocking new insights about yourself. Stop anytime with value." },
               { step: "3", title: "Get Your DNA Profile", desc: "Archetype, sector matches, department ranking, career pathway — and a shareable DNA Card." },
             ].map((item) => (
