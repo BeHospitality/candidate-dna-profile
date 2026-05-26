@@ -115,7 +115,7 @@ const Index = () => {
             One profile that can change how you see your career.
           </p>
           <p className="text-lg sm:text-xl text-[#9ca3af] mb-8 max-w-xl mx-auto">
-            Find out where you truly belong in hospitality.
+            This is not a personality test. It's how we match you to teams and standards you will thrive in.
           </p>
 
           {/* Archetype icons above CTA */}
