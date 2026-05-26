@@ -142,6 +142,7 @@ const ConsentGate = ({ onConsent }: { onConsent: () => void }) => {
             {[
               "Personality profiling for career matching purposes",
               "Storage of your archetype result to personalise your Be Connect journey",
+              "On completion, your DNA Profile (archetype, scores, matches) is shared with the Be Connect talent platform so we can match you with opportunities. You can withdraw at any time.",
               "Optional: being contacted by Be Connect about relevant career opportunities",
             ].map((text, i) => (
               <div
