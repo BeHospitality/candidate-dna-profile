@@ -529,7 +529,7 @@ const ArchetypeReveal = () => {
                       }}
                       role="status"
                     >
-                      We're having trouble saving your DNA right now. Please don't close this page —
+                      We're having trouble saving your DNA right now. please don't close this page.
                       we'll keep retrying in the background. If this persists, refresh and we'll
                       pick up where you left off.
                     </div>

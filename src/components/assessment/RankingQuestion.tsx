@@ -51,7 +51,7 @@ const RankingQuestion = ({ items, ranking, onRank }: RankingQuestionProps) => {
                     : "bg-secondary text-secondary-foreground"
                 }`}
               >
-                {rank !== null ? rankLabels[rank - 1] : "—"}
+                {rank !== null ? rankLabels[rank - 1] : "–"}
               </span>
               <span className="font-medium text-foreground">{item.text}</span>
             </div>

@@ -94,7 +94,7 @@ const ConsentGate = ({ onConsent }: { onConsent: () => void }) => {
             marginBottom: 12,
           }}
         >
-          Before we begin —
+          Before we begin:
           <br />a word about your data.
         </h1>
 
