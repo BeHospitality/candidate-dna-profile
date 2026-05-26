@@ -47,9 +47,10 @@ const MilestoneReveal = ({
           transition={{ delay: 0.3 }}
         >
           <p className="text-lg font-semibold text-foreground mb-2">{headline}</p>
-          <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+          <p className="text-sm text-muted-foreground leading-relaxed mb-6 whitespace-pre-line text-left sm:text-center">
             {detail}
           </p>
+
         </motion.div>
 
         <Button
