@@ -11,7 +11,7 @@ export function buildConciergeURL(): string {
 
   const name = localStorage.getItem("beconnect-firstname");
   if (name) {
-    // TEMPORARY backward-compat — drop after connect.be.ie
+    // TEMPORARY backward-compat, drop after connect.be.ie
     // (Build #1B) is verified reading first_name=. Tracking
     // ticket: post-#1B cleanup follow-up.
     params.set("name", name);
@@ -22,7 +22,7 @@ export function buildConciergeURL(): string {
   if (lastName) params.set("last_name", lastName);
 
   // Boundary normalisation: canonicalise email before handing off to connect.be.ie.
-  // CRITICAL: this is the cross-project boundary — email must be lowercased here.
+  // CRITICAL: this is the cross-project boundary, email must be lowercased here.
   const emailRaw = localStorage.getItem("beconnect-email");
   const email = emailRaw ? String(emailRaw).toLowerCase().trim() : null;
   if (email) params.set("email", email);

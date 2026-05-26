@@ -13,7 +13,7 @@ function getOrCreateSessionId(): string {
 }
 
 /**
- * FIX 3 — Fire hub-relay immediately after persistAssessment succeeds in
+ * FIX 3, Fire hub-relay immediately after persistAssessment succeeds in
  * ArchetypeReveal. This makes Hub aware of every completed assessment,
  * not only those who later submit the SaveDNAPanel form.
  *
@@ -94,7 +94,7 @@ export function fireHubRelayReveal(args: {
 }
 
 /**
- * FIX 2 — Log a persist failure to audit_log so we have forensic
+ * FIX 2, Log a persist failure to audit_log so we have forensic
  * visibility without depending on user-reported devtools captures.
  */
 export async function logPersistFailure(err: unknown) {

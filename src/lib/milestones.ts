@@ -33,8 +33,8 @@ export const MILESTONES: Milestone[] = [
         name === "Lion"
           ? "You thrive in operations that move fast, with clear authority and decisive calls. Hospitality fit: front office leadership, opening teams, fast-pace urban properties."
           : name === "Whale"
-          ? "The Collaborative Anchor — empathetic, supportive, adaptive.\n\nIn hospitality, you're the glue every great team needs. Guests feel seen because you read them, and colleagues stay because you steady them. You shine in guest relations, concierge, training, and any team-led service environment where trust is the product."
-          : "The Precision Specialist — detail-oriented, systematic, expert.\n\nIn hospitality, you're the reason standards hold. From pastry sections to sommelier floors, revenue desks to spa protocols, you turn craft into consistency. You belong in expert-track roles where mastery and accuracy matter more than noise.";
+          ? "The Collaborative Anchor, empathetic, supportive, adaptive.\n\nIn hospitality, you're the glue every great team needs. Guests feel seen because you read them, and colleagues stay because you steady them. You shine in guest relations, concierge, training, and any team-led service environment where trust is the product."
+          : "The Precision Specialist, detail-oriented, systematic, expert.\n\nIn hospitality, you're the reason standards hold. From pastry sections to sommelier floors, revenue desks to spa protocols, you turn craft into consistency. You belong in expert-track roles where mastery and accuracy matter more than noise.";
       return {
         headline: `You're a ${name}!`,
         detail,
@@ -126,11 +126,11 @@ export const MILESTONES: Milestone[] = [
 
 export function getEncouragement(current: number, total: number): string {
   const percent = Math.round((current / total) * 100);
-  if (percent < 15) return "Great start — let's discover your DNA 🧬";
+  if (percent < 15) return "Great start, let's discover your DNA 🧬";
   if (percent < 30) return "You're building momentum 💪";
-  if (percent < 45) return "Nearly halfway — your profile is taking shape";
+  if (percent < 45) return "Nearly halfway, your profile is taking shape";
   if (percent < 60) return "Over halfway! The insights get richer from here";
-  if (percent < 75) return "Fantastic progress — you're in the home stretch";
-  if (percent < 90) return "Almost there — just a few more questions ⭐";
-  return "Final questions — your full DNA profile awaits! 🎉";
+  if (percent < 75) return "Fantastic progress, you're in the home stretch";
+  if (percent < 90) return "Almost there, just a few more questions ⭐";
+  return "Final questions, your full DNA profile awaits! 🎉";
 }

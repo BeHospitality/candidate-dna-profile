@@ -23,7 +23,7 @@ function getOrCreateSessionId(): string {
  *
  * The shared secret is read server-side (in the edge function), never
  * shipped to the browser. If the secret is unset, the relay logs an
- * error and skips the forward — we don't send bare requests to a Hub
+ * error and skips the forward, we don't send bare requests to a Hub
  * that's expecting auth.
  *
  * Never blocks the UI; logs every attempt.
@@ -56,7 +56,7 @@ function fireRevealEmailCaptured(args: {
   console.log("[reveal-email-captured] attempt", logMeta);
   // Invoke the relay edge function on THIS project. The relay holds the
   // shared secret and adds the x-be-connect-secret header before
-  // forwarding to the Hub. Fire-and-forget — never gates the UI.
+  // forwarding to the Hub. Fire-and-forget, never gates the UI.
   supabase.functions
     .invoke("reveal-email-relay", { body: payload })
     .then(({ data, error }) => {
@@ -139,7 +139,7 @@ function fireHubRelay(candidateEmail: string) {
 
     // DNA-4d: refuse to fire if essential data missing.
     if (!parsed || !rawArchetype) {
-      console.error("[hub-relay] refusing to fire — missing assessment data", {
+      console.error("[hub-relay] refusing to fire, missing assessment data", {
         ...logMeta,
         hasParsed: !!parsed,
         hasArchetype: !!rawArchetype,
@@ -217,7 +217,7 @@ const SaveDNAPanel = ({
     if (!canSubmit || submitting) return;
     setSubmitting(true);
 
-    // Single canonicalisation point per A6 — extract once, use everywhere.
+    // Single canonicalisation point per A6, extract once, use everywhere.
     const normalisedEmail = String(email).toLowerCase().trim();
 
     // Persist first name
@@ -272,7 +272,7 @@ const SaveDNAPanel = ({
       localStorage.setItem("beconnect-firstname", firstName.trim());
 
       // Fire reveal-email-captured webhook to the Hub (Email #1 trigger).
-      // Non-blocking — candidate proceeds regardless of outcome.
+      // Non-blocking, candidate proceeds regardless of outcome.
       fireRevealEmailCaptured({
         assessmentId: storage.getAssessmentId(),
         email: normalisedEmail,
@@ -282,7 +282,7 @@ const SaveDNAPanel = ({
         path: localStorage.getItem("beconnect-path") || "growing",
       });
 
-      // Fire hub-relay in background — never blocks UI
+      // Fire hub-relay in background, never blocks UI
       fireHubRelay(normalisedEmail);
 
       setSubmitted(true);
@@ -308,7 +308,7 @@ const SaveDNAPanel = ({
             className="inline-block transition-opacity hover:opacity-80"
             style={{ fontFamily: "DM Sans, sans-serif", fontSize: 15, color: "#008C72" }}
           >
-            Next step — build your career map →
+            Next step, build your career map →
           </a>
         </div>
       </ScrollRevealSection>

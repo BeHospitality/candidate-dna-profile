@@ -28,10 +28,10 @@ const INSIGHT_MAP: Record<string, MicroRewardContent> = {
   readingOthers:      { emoji: "👁️", insight: "You read between the lines", sublabel: "You notice what others miss entirely." },
   selfRegulation:     { emoji: "🛡️", insight: "Composure under pressure", sublabel: "You choose your response, even under fire." },
   socialAwareness:    { emoji: "🎭", insight: "You read the room", sublabel: "You know what's happening before it's said." },
-  integrity:          { emoji: "⚖️", insight: "Your integrity is evident", sublabel: "You do the right thing — especially when nobody's watching." },
+  integrity:          { emoji: "⚖️", insight: "Your integrity is evident", sublabel: "You do the right thing, especially when nobody's watching." },
   ruleFollowing:      { emoji: "📋", insight: "Standards anchor showing", sublabel: "Operations rely on people like you." },
   safetyConsciousness:{ emoji: "🔒", insight: "Safety-first mindset identified", sublabel: "You see hazards before they become incidents." },
-  dependability:      { emoji: "⚙️", insight: "Dependability is a pattern", sublabel: "People can count on you — consistently." },
+  dependability:      { emoji: "⚙️", insight: "Dependability is a pattern", sublabel: "People can count on you, consistently." },
 };
 
 export function getMicroReward(

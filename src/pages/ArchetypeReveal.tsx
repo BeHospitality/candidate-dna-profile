@@ -164,7 +164,7 @@ const ArchetypeReveal = () => {
         if (!assessmentId) {
           throw new Error("persistAssessment returned null assessmentId");
         }
-        // FIX 1 — confirmed persistence success path
+        // FIX 1, confirmed persistence success path
         storage.setAssessmentId(assessmentId);
         setPersistedAssessmentId(assessmentId);
         setPersistError(false);
@@ -180,7 +180,7 @@ const ArchetypeReveal = () => {
         // sendDnaResultsEmail only fires after confirmed persistence
         sendDnaResultsEmail(assessmentId, res, comprehensive, path);
 
-        // FIX 3 — fire hub-relay immediately at reveal so Hub sees
+        // FIX 3, fire hub-relay immediately at reveal so Hub sees
         // every completed assessment, not only post-SaveDNAPanel submitters.
         fireHubRelayReveal({
           assessmentId,
@@ -191,16 +191,16 @@ const ArchetypeReveal = () => {
         });
       })
       .catch((err) => {
-        // FIX 1 — surface the failure to the user and forensic audit log
+        // FIX 1, surface the failure to the user and forensic audit log
         console.error("[persist] failed", err);
         setPersistError(true);
         if (isHubMode) setHubStatus("failed");
         toast({
-          title: "Saving your DNA — having trouble",
+          title: "Saving your DNA, having trouble",
           description: "Please don't close this page yet. We'll keep retrying in the background.",
           variant: "destructive",
         });
-        // FIX 2 — server-side audit hook
+        // FIX 2, server-side audit hook
         logPersistFailure(err);
       });
 
@@ -246,7 +246,7 @@ const ArchetypeReveal = () => {
     { dimension: "Adaptability", score: result.scores.adaptability },
   ];
 
-  const shareText = `I'm a ${archetype.name} ${archetype.emoji} — ${archetype.tagline}! Discover your work DNA`;
+  const shareText = `I'm a ${archetype.name} ${archetype.emoji}, ${archetype.tagline}! Discover your work DNA`;
 
   const copyLink = () => {
     navigator.clipboard.writeText(window.location.origin);
@@ -516,7 +516,7 @@ const ArchetypeReveal = () => {
                   </div>
                 </ScrollRevealSection>
 
-                {/* Persist error banner — shown only when persistAssessment failed */}
+                {/* Persist error banner, shown only when persistAssessment failed */}
                 {persistError && (
                   <ScrollRevealSection>
                     <div
@@ -529,14 +529,14 @@ const ArchetypeReveal = () => {
                       }}
                       role="status"
                     >
-                      We're having trouble saving your DNA right now. Please don't close this page —
+                      We're having trouble saving your DNA right now. please don't close this page.
                       we'll keep retrying in the background. If this persists, refresh and we'll
                       pick up where you left off.
                     </div>
                   </ScrollRevealSection>
                 )}
 
-                {/* Save DNA Panel — gated on confirmed persistence (FIX 1) */}
+                {/* Save DNA Panel, gated on confirmed persistence (FIX 1) */}
                 {entryInfo.mode === "public" && comprehensiveScores && persistedAssessmentId && (
                   <SaveDNAPanel
                     result={result}
@@ -707,7 +707,7 @@ const ArchetypeReveal = () => {
                   <>
                     <div className="pt-4 pb-4 space-y-5">
                       <div className="glass-card p-6 rounded-2xl text-center space-y-4">
-                        <p className="text-lg font-bold text-foreground">You've unlocked your archetype — but there's more.</p>
+                        <p className="text-lg font-bold text-foreground">You've unlocked your archetype, but there's more.</p>
                         <p className="text-sm text-muted-foreground font-medium">Continue now to discover:</p>
                         <ul className="text-sm text-muted-foreground text-left inline-block space-y-2">
                           <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✓</span>Your top 3 career paths (with match %)</li>
