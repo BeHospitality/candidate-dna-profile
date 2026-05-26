@@ -245,7 +245,7 @@ const Index = () => {
             onClick={handleStart}
             className="text-lg px-10 py-7 rounded-xl font-bold animate-pulse-gold"
           >
-            Start Your DNA Assessment
+            Start your DNA Profile
             <ArrowRight className="ml-2 w-5 h-5" />
           </Button>
           <p className="text-sm text-muted-foreground/70 mt-4">
