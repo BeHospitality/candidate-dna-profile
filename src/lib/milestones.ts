@@ -31,7 +31,7 @@ export const MILESTONES: Milestone[] = [
       const name = archetype ? archetypeNames[archetype] || archetype : "Unknown";
       const detail =
         name === "Lion"
-          ? "The Autonomous Leader — decisive, independent, visionary.\n\nIn hospitality, you thrive when you own the room: running a shift, leading a brigade, or building a venue from the ground up. You're wired for front-of-house leadership, GM tracks, and entrepreneurial roles where the call is yours to make."
+          ? "You thrive in operations that move fast, with clear authority and decisive calls. Hospitality fit: front office leadership, opening teams, fast-pace urban properties."
           : name === "Whale"
           ? "The Collaborative Anchor — empathetic, supportive, adaptive.\n\nIn hospitality, you're the glue every great team needs. Guests feel seen because you read them, and colleagues stay because you steady them. You shine in guest relations, concierge, training, and any team-led service environment where trust is the product."
           : "The Precision Specialist — detail-oriented, systematic, expert.\n\nIn hospitality, you're the reason standards hold. From pastry sections to sommelier floors, revenue desks to spa protocols, you turn craft into consistency. You belong in expert-track roles where mastery and accuracy matter more than noise.";
