@@ -157,7 +157,7 @@ const Index = () => {
           className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto"
         >
           {[
-            { number: "23", label: "Dimensions Measured", sub: "Cognitive, personality, EQ, reliability & more" },
+            { number: "23", label: "Dimensions Measured", sub: "Autonomy, Collaboration, Precision, Leadership, Adaptability, Problem Solving, Attention to Detail, Learning Speed, Pattern Recognition, Concentration, Extraversion, Conscientiousness, Openness, Agreeableness, Emotional Stability, Reading Others, Empathy, Self-Regulation, Social Awareness, Integrity, Rule Following, Safety Consciousness, Dependability" },
             { number: "6", label: "Sectors Matched", sub: "Luxury Hotels & Resorts, QSR, Private Members' Clubs, Cruise Lines, Airlines & Aviation, Events & Conferences" },
             { number: "8", label: "Departments Ranked", sub: "Guest Relations / Concierge, Front Office, Events & Banqueting, F&B Service, Housekeeping, Revenue Management, Kitchen / Culinary, Spa & Wellness" },
           ].map((stat) => (
