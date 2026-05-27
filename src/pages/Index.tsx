@@ -112,7 +112,7 @@ const Index = () => {
           </h1>
 
           <p className="text-lg sm:text-xl text-[#9ca3af] mb-4 max-w-xl mx-auto">
-            One profile that can change how you see your career.
+            One DNA Profile. Every team you will thrive in.
           </p>
           <p className="text-lg sm:text-xl text-[#9ca3af] mb-8 max-w-xl mx-auto">
             This is not a personality test. It's how we match you to teams and standards you will thrive in.
