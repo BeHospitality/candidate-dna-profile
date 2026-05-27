@@ -25,7 +25,7 @@ const archetypePreviews = [
     emoji: "🦅",
     name: "Falcon",
     tagline: "The Precision Specialist",
-    desc: "Detail-oriented, systematic, expert. You master craft and optimize.",
+    desc: "You need systems you can trust, standards you can refine, and time to master what others rush past. Hospitality fit: Luxury property engineering, executive pastry, revenue strategy, spa therapy.",
   },
 ];
 
