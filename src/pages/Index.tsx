@@ -139,7 +139,7 @@ const Index = () => {
             onClick={handleStart}
             className="text-lg px-10 py-7 rounded-xl font-bold animate-pulse-gold"
           >
-            Start Your DNA Discovery →
+            Start Your DNA Profile
           </Button>
 
           <p className="text-sm text-muted-foreground/70 mt-4">
