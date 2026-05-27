@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.verify-assessment]
 verify_jwt = false
+
+[functions.secure-rpc]
+verify_jwt = false
