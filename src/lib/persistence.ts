@@ -30,6 +30,10 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
     // 42501 RLS violation that occurred when chaining .select().single()
     // after an anon insert. See verification 2026-05-06.
     const assessmentId = crypto.randomUUID();
+    const responseProof = entryInfo.token || localStorage.getItem("beconnect-session-id") || crypto.randomUUID();
+    if (!localStorage.getItem("beconnect-session-id")) {
+      localStorage.setItem("beconnect-session-id", responseProof);
+    }
 
     const { error: assessmentError } = await supabase
       .from("assessments")
@@ -37,7 +41,7 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
         id: assessmentId,
         user_id: userId,
         entry_mode: entryInfo.mode,
-        token: entryInfo.token || null,
+        token: responseProof,
         org_code: entryInfo.orgCode || null,
         archetype: result.primaryArchetype,
         archetype_scores: result.archetypeScores as any,
@@ -64,9 +68,11 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
       answer: answer as any,
     }));
 
-    const { error: responsesError } = await supabase
-      .from("assessment_responses")
-      .insert(responses);
+    const { error: responsesError } = await invokeSecureRpc("insert_assessment_responses", {
+      p_assessment_id: assessment.id,
+      p_response_proof: responseProof,
+      p_responses: responses,
+    });
 
     if (responsesError) {
       console.error("Failed to persist responses:", responsesError);
