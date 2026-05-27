@@ -158,8 +158,8 @@ const Index = () => {
         >
           {[
             { number: "23", label: "Dimensions Measured", sub: "Cognitive, personality, EQ, reliability & more" },
-            { number: "6", label: "Sectors Matched", sub: "From boutique hotels to cruise lines" },
-            { number: "8", label: "Departments Ranked", sub: "Find your perfect department fit" },
+            { number: "6", label: "Sectors Matched", sub: "Luxury Hotels & Resorts, QSR, Private Members' Clubs, Cruise Lines, Airlines & Aviation, Events & Conferences" },
+            { number: "8", label: "Departments Ranked", sub: "Guest Relations / Concierge, Front Office, Events & Banqueting, F&B Service, Housekeeping, Revenue Management, Kitchen / Culinary, Spa & Wellness" },
           ].map((stat) => (
             <div key={stat.number} className="glass-card p-6 text-center border border-[#1a2332]">
               <div className="text-4xl font-extrabold text-[#f59e0b] mb-1">{stat.number}</div>
