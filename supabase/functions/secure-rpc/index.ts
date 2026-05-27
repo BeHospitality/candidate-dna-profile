@@ -156,6 +156,39 @@ Deno.serve(async (req) => {
         return jsonResponse(200, { data });
       }
 
+      case "insert_assessment_responses": {
+        const assessmentId = cleanUuid(payload.p_assessment_id);
+        const proof = cleanText(payload.p_response_proof, 256);
+        const responses = Array.isArray(payload.p_responses) ? payload.p_responses : [];
+        if (!assessmentId || !proof || responses.length === 0 || responses.length > 200) {
+          return jsonResponse(400, { error: "invalid_responses" });
+        }
+
+        const { data: assessment, error: assessmentError } = await supabase
+          .from("assessments")
+          .select("id")
+          .eq("id", assessmentId)
+          .eq("token", proof)
+          .maybeSingle();
+        if (assessmentError) throw assessmentError;
+        if (!assessment) return jsonResponse(403, { error: "response_proof_rejected" });
+
+        const rows = responses.map((row) => {
+          const value = row && typeof row === "object" ? row as Record<string, unknown> : {};
+          return {
+            assessment_id: assessmentId,
+            question_id: Number(value.question_id),
+            answer: value.answer,
+          };
+        }).filter((row) => Number.isInteger(row.question_id) && row.question_id > 0);
+
+        if (rows.length !== responses.length) return jsonResponse(400, { error: "invalid_response_rows" });
+
+        const { error } = await supabase.from("assessment_responses").insert(rows);
+        if (error) throw error;
+        return jsonResponse(200, { data: true });
+      }
+
       default:
         return jsonResponse(400, { error: "unsupported_action" });
     }
