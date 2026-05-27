@@ -13,7 +13,7 @@ const archetypePreviews = [
     emoji: "🦁",
     name: "Lion",
     tagline: "The Autonomous Leader",
-    desc: "Decisive, independent, visionary. You take charge and drive results.",
+    desc: "You make decisions under pressure and protect standards when no one is watching. Hospitality fit: Front office leadership, operations management, events and F&B direction.",
   },
   {
     emoji: "🐋",
