@@ -13,19 +13,19 @@ const archetypePreviews = [
     emoji: "🦁",
     name: "Lion",
     tagline: "The Autonomous Leader",
-    desc: "Decisive, independent, visionary. You take charge and drive results.",
+    desc: "You make decisions under pressure and protect standards when no one is watching. Hospitality fit: Front office leadership, operations management, events and F&B direction.",
   },
   {
     emoji: "🐋",
     name: "Whale",
     tagline: "The Collaborative Anchor",
-    desc: "Empathetic, supportive, adaptive. You build bridges and lift teams.",
+    desc: "You thrive in teams that depend on each other, where standards are kept through care. Hospitality fit: F&B teams in destination properties, family-resort hospitality, training and mentorship roles.",
   },
   {
     emoji: "🦅",
     name: "Falcon",
     tagline: "The Precision Specialist",
-    desc: "Detail-oriented, systematic, expert. You master craft and optimize.",
+    desc: "You need systems you can trust, standards you can refine, and time to master what others rush past. Hospitality fit: Luxury property engineering, executive pastry, revenue strategy, spa therapy.",
   },
 ];
 
@@ -108,11 +108,11 @@ const Index = () => {
           className="text-center max-w-3xl mx-auto"
         >
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 leading-tight">
-            <span className="text-gradient-gold">Are you a Lion, a Whale, or a Falcon?</span>
+            <span className="text-gradient-gold">Are you a Lion, a Whale or a Falcon?</span>
           </h1>
 
           <p className="text-lg sm:text-xl text-[#9ca3af] mb-4 max-w-xl mx-auto">
-            One profile that can change how you see your career.
+            One DNA Profile. Every team you will thrive in.
           </p>
           <p className="text-lg sm:text-xl text-[#9ca3af] mb-8 max-w-xl mx-auto">
             This is not a personality test. It's how we match you to teams and standards you will thrive in.
@@ -139,7 +139,7 @@ const Index = () => {
             onClick={handleStart}
             className="text-lg px-10 py-7 rounded-xl font-bold animate-pulse-gold"
           >
-            Start Your DNA Discovery →
+            Start Your DNA Profile
           </Button>
 
           <p className="text-sm text-muted-foreground/70 mt-4">
@@ -179,7 +179,7 @@ const Index = () => {
           className="max-w-3xl mx-auto"
         >
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground text-center mb-8">
-            Three Tribes. Which One Are You?
+            Three Archetypes. One DNA Profile.
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {archetypePreviews.map((a, idx) => (
@@ -238,7 +238,7 @@ const Index = () => {
           className="text-center max-w-xl mx-auto"
         >
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-6">
-            Ready to Discover Your DNA?
+            Ready for Your DNA Profile?
           </h2>
           <Button
             size="lg"
