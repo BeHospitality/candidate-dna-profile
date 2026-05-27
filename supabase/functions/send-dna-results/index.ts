@@ -34,6 +34,32 @@ serve(async (req) => {
       );
     }
 
+    // HTML-escape all caller-supplied strings before interpolating into the
+    // email body. Even with verify_jwt = true a legitimate client could send
+    // unexpected characters that would otherwise render as markup.
+    const esc = (v: unknown): string =>
+      String(v ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+
+    // Only allow https URLs for the CTA, so an attacker can't smuggle a
+    // javascript: or data: URL even via the auth'd surface.
+    const safeResultsUrl =
+      typeof resultsUrl === "string" && /^https:\/\//i.test(resultsUrl)
+        ? esc(resultsUrl)
+        : "";
+
+    const safeFirstName = esc(firstName || "there");
+    const safeArchetype = esc(archetype);
+    const safeArchetypeDescription = esc(archetypeDescription || "");
+    const safeEqSuperpower = esc(eqSuperpower || "");
+    const safeTopCareerPaths = Array.isArray(topCareerPaths)
+      ? topCareerPaths.map((p: unknown) => esc(p))
+      : [];
+
     const recipientName = [firstName, lastName].filter(Boolean).join(" ") || "there";
 
     const emailPayload = {
