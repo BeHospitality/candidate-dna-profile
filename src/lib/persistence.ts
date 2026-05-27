@@ -97,7 +97,7 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
     // Link participant record to assessment and mark completed (via security-definer RPC)
     const participantId = storage.getParticipantId();
     if (participantId && !participantId.startsWith("local-")) {
-      await supabase.rpc("update_dna_participant", {
+      await invokeSecureRpc("update_dna_participant", {
         p_id: participantId,
         p_assessment_id: assessment.id,
         p_completed_at: new Date().toISOString(),
@@ -210,10 +210,8 @@ export async function persistCareerProfile(
 
 export async function validateMagicLink(token: string): Promise<{ valid: boolean; orgCode?: string; candidateName?: string; candidateEmail?: string }> {
   try {
-    const { data: rows, error } = await supabase
-      .functions.invoke("secure-rpc", { body: { action: "validate_magic_link", payload: { p_token: token } } });
+    const { data: rpcRows, error } = await invokeSecureRpc<any[]>("validate_magic_link", { p_token: token });
 
-    const rpcRows = rows?.data;
     const data = Array.isArray(rpcRows) && rpcRows.length > 0 ? rpcRows[0] : null;
     if (error || !data) return { valid: false };
     if (data.used) return { valid: false };
