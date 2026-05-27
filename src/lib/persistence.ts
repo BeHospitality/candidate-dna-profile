@@ -3,6 +3,7 @@ import type { AssessmentResult } from "./scoring";
 import type { ComprehensiveScores } from "./scoring";
 import type { EntryInfo } from "./storage";
 import { storage } from "./storage";
+import { invokeSecureRpc } from "./secureRpc";
 import type { SectorMatch } from "@/utils/sectorMatching";
 import type { GeographyMatch } from "@/utils/geographyMatching";
 import type { DepartmentFit } from "@/utils/departmentMatching";
@@ -115,7 +116,7 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
         const lastName = localStorage.getItem("beconnect-lastname") || "";
         const path = localStorage.getItem("beconnect-path") || experiencePath || "";
         if (email) {
-          const { error: linkErr } = await supabase.rpc(
+          const { error: linkErr } = await invokeSecureRpc(
             "link_participant_to_assessment",
             {
               p_email: email,
@@ -210,9 +211,10 @@ export async function persistCareerProfile(
 export async function validateMagicLink(token: string): Promise<{ valid: boolean; orgCode?: string; candidateName?: string; candidateEmail?: string }> {
   try {
     const { data: rows, error } = await supabase
-      .rpc("validate_magic_link", { p_token: token });
+      .functions.invoke("secure-rpc", { body: { action: "validate_magic_link", payload: { p_token: token } } });
 
-    const data = Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
+    const rpcRows = rows?.data;
+    const data = Array.isArray(rpcRows) && rpcRows.length > 0 ? rpcRows[0] : null;
     if (error || !data) return { valid: false };
     if (data.used) return { valid: false };
     if (data.expire_at && new Date(data.expire_at) < new Date()) return { valid: false };
@@ -234,7 +236,7 @@ export async function validateMagicLink(token: string): Promise<{ valid: boolean
 
 export async function markMagicLinkUsed(token: string, assessmentId: string): Promise<void> {
   try {
-    await supabase.rpc("mark_magic_link_used", {
+    await invokeSecureRpc("mark_magic_link_used", {
       p_token: token,
       p_assessment_id: assessmentId,
     });
