@@ -458,6 +458,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_insert_assessment_response: {
+        Args: { p_assessment_id: string }
+        Returns: boolean
+      }
       get_assessment_by_id: {
         Args: { p_id: string }
         Returns: {
