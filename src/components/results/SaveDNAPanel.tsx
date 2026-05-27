@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Check } from "lucide-react";
 import { storage } from "@/lib/storage";
 import { supabase } from "@/integrations/supabase/client";
+import { invokeSecureRpc } from "@/lib/secureRpc";
 import { archetypeData } from "@/lib/archetypes";
 import type { AssessmentResult } from "@/lib/scoring";
 
@@ -256,8 +257,7 @@ const SaveDNAPanel = ({
         // 3. Update participant record if it exists (via security-definer RPC)
         const participantId = storage.getParticipantId();
         if (participantId && !participantId.startsWith("local-")) {
-          supabase
-            .rpc("update_dna_participant", {
+          invokeSecureRpc("update_dna_participant", {
               p_id: participantId,
               p_email: normalisedEmail,
               p_phone: whatsapp.trim() || null,
