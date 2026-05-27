@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { ArrowRight, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { supabase } from "@/integrations/supabase/client";
 import { invokeSecureRpc } from "@/lib/secureRpc";
 import { archetypeData } from "@/lib/archetypes";
 import type { Archetype } from "@/lib/scoring";
