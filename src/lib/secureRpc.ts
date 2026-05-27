@@ -8,7 +8,8 @@ type SecureRpcAction =
   | "mark_magic_link_used"
   | "mark_resume_token_used"
   | "update_dna_participant"
-  | "link_participant_to_assessment";
+  | "link_participant_to_assessment"
+  | "insert_assessment_responses";
 
 export async function invokeSecureRpc<T = unknown>(
   action: SecureRpcAction,
