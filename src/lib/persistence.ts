@@ -238,13 +238,26 @@ export async function validateMagicLink(token: string): Promise<{ valid: boolean
   }
 }
 
-export async function markMagicLinkUsed(token: string, assessmentId: string): Promise<void> {
-  try {
-    await invokeSecureRpc("mark_magic_link_used", {
-      p_token: token,
-      p_assessment_id: assessmentId,
-    });
-  } catch (err) {
-    console.error("Failed to mark magic link used:", err);
+export async function markMagicLinkUsed(token: string, assessmentId: string): Promise<boolean> {
+  // Retried + awaited per ops decision 2026-05-27: fire-and-forget left
+  // magic_links.used=false / assessment_id=NULL on network blips even though
+  // the assessment persisted. Shared-token join still works, but Hub-side
+  // "consumed" logic depends on this flag.
+  const delays = [0, 500, 1500]; // ~2s total budget; non-blocking for UI
+  let lastErr: unknown = null;
+  for (const delay of delays) {
+    if (delay) await new Promise((r) => setTimeout(r, delay));
+    try {
+      const { error } = await invokeSecureRpc("mark_magic_link_used", {
+        p_token: token,
+        p_assessment_id: assessmentId,
+      });
+      if (!error) return true;
+      lastErr = error;
+    } catch (err) {
+      lastErr = err;
+    }
   }
+  console.error("Failed to mark magic link used after retries:", lastErr);
+  return false;
 }
