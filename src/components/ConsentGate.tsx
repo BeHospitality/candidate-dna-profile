@@ -108,7 +108,7 @@ const ConsentGate = ({ onConsent }: { onConsent: () => void }) => {
             marginBottom: 28,
           }}
         >
-          The Be Connect DNA Assessment asks questions about your personality,
+          The Be Connect DNA Profile asks questions about your personality,
           working style, and career preferences. This is personal data. We use
           it solely to generate your career archetype and match you with
           relevant opportunities.

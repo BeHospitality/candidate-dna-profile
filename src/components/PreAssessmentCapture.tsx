@@ -30,7 +30,7 @@ const PERSONA: Record<string, { emoji: string; heading: string; sub: string; btn
   advancing: {
     emoji: "⭐",
     heading: "Let's understand how you lead",
-    sub: "The DNA Assessment is how we build a picture of you as a professional. Not a quiz, a mirror.",
+    sub: "The DNA Profile is how we build a picture of you as a professional. Not a quiz, a mirror.",
     btnBg: "#7c3aed",
     btnColor: "#fff",
   },
@@ -267,7 +267,7 @@ const PreAssessmentCapture = ({ onContinue }: PreAssessmentCaptureProps) => {
               opacity: submitting ? 0.6 : 1,
             }}
           >
-            {submitting ? "Starting…" : "Start my DNA assessment →"}
+            {submitting ? "Starting…" : "Start my DNA Profile →"}
           </button>
 
           {/* Footer text */}
