@@ -5,6 +5,7 @@ import { ArrowRight, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
+import { invokeSecureRpc } from "@/lib/secureRpc";
 import { archetypeData } from "@/lib/archetypes";
 import type { Archetype } from "@/lib/scoring";
 import type { ComprehensiveScores } from "@/lib/scoring";
@@ -40,8 +41,10 @@ const SharedResults = () => {
     if (!assessmentId) { setError("No assessment ID provided."); setLoading(false); return; }
 
     const fetchData = async () => {
-      const { data: rows, error: dbError } = await supabase
-        .rpc("get_assessment_by_id", { p_id: assessmentId });
+      const { data: rows, error: dbError } = await invokeSecureRpc<any[]>(
+        "get_assessment_by_id",
+        { p_id: assessmentId },
+      );
 
       const data = Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
       if (dbError || !data) {
