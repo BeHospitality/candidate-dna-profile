@@ -143,7 +143,7 @@ const Index = () => {
           </Button>
 
           <p className="text-sm text-muted-foreground/70 mt-4">
-            Free. No sign-up to start. First insight in 3 minutes. Full profile in a 12-25 minute range.
+            Free. No sign-up to start. First insight in about 3 minutes. Full DNA Profile takes 12-25 minutes depending on your path.
           </p>
         </motion.div>
       </section>
