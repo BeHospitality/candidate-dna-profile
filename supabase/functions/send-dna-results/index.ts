@@ -34,47 +34,73 @@ serve(async (req) => {
       );
     }
 
+    // HTML-escape all caller-supplied strings before interpolating into the
+    // email body. Even with verify_jwt = true a legitimate client could send
+    // unexpected characters that would otherwise render as markup.
+    const esc = (v: unknown): string =>
+      String(v ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+
+    // Only allow https URLs for the CTA, so an attacker can't smuggle a
+    // javascript: or data: URL even via the auth'd surface.
+    const safeResultsUrl =
+      typeof resultsUrl === "string" && /^https:\/\//i.test(resultsUrl)
+        ? esc(resultsUrl)
+        : "";
+
+    const safeFirstName = esc(firstName || "there");
+    const safeArchetype = esc(archetype);
+    const safeArchetypeDescription = esc(archetypeDescription || "");
+    const safeEqSuperpower = esc(eqSuperpower || "");
+    const safeTopCareerPaths = Array.isArray(topCareerPaths)
+      ? topCareerPaths.map((p: unknown) => esc(p))
+      : [];
+
     const recipientName = [firstName, lastName].filter(Boolean).join(" ") || "there";
 
     const emailPayload = {
       sender: { name: "Be Connect", email: "hello@be.ie" },
       to: [{ email, name: recipientName }],
-      subject: `Your Work DNA Results — You're a ${archetype}!`,
+      subject: `Your Work DNA Results — You're a ${safeArchetype}!`,
       htmlContent: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="text-align: center; padding: 20px 0;">
             <h1 style="color: #1a1a2e; font-size: 24px; margin: 0;">Be Connect</h1>
           </div>
           
-          <h2 style="color: #1a1a2e;">Hi ${firstName || "there"},</h2>
+          <h2 style="color: #1a1a2e;">Hi ${safeFirstName},</h2>
           
           <p>Your Work DNA assessment is complete. Here's your snapshot:</p>
           
           <div style="background: #1a1a2e; border-radius: 12px; padding: 30px; text-align: center; margin: 20px 0;">
             <p style="color: #f59e0b; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; margin: 0;">Your Archetype</p>
-            <h1 style="color: #ffffff; font-size: 36px; margin: 10px 0;">You're a ${archetype}!</h1>
-            <p style="color: #94a3b8; font-size: 16px; margin: 0;">${archetypeDescription || ""}</p>
+            <h1 style="color: #ffffff; font-size: 36px; margin: 10px 0;">You're a ${safeArchetype}!</h1>
+            <p style="color: #94a3b8; font-size: 16px; margin: 0;">${safeArchetypeDescription}</p>
           </div>
           
-          ${eqSuperpower ? `
+          ${safeEqSuperpower ? `
           <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin: 20px 0;">
             <h3 style="color: #1a1a2e; margin-top: 0;">Your EQ Superpower</h3>
-            <p style="font-size: 18px; color: #f59e0b; font-weight: bold; margin: 0;">${eqSuperpower}</p>
+            <p style="font-size: 18px; color: #f59e0b; font-weight: bold; margin: 0;">${safeEqSuperpower}</p>
           </div>
           ` : ""}
           
-          ${topCareerPaths && topCareerPaths.length > 0 ? `
+          ${safeTopCareerPaths.length > 0 ? `
           <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin: 20px 0;">
             <h3 style="color: #1a1a2e; margin-top: 0;">Your Top Career Paths</h3>
-            ${topCareerPaths.map((path: string, i: number) =>
+            ${safeTopCareerPaths.map((path, i) =>
               `<p style="margin: 5px 0; font-size: 16px;">${i + 1}. ${path}</p>`
             ).join("")}
           </div>
           ` : ""}
           
-          ${resultsUrl ? `
+          ${safeResultsUrl ? `
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${resultsUrl}" 
+            <a href="${safeResultsUrl}" 
                style="background: #f59e0b; color: #1a1a2e; padding: 14px 35px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block; font-size: 16px;">
               View Your Full DNA Profile →
             </a>
