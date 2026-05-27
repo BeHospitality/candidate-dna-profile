@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { invokeSecureRpc } from "@/lib/secureRpc";
 import BrandHeader from "@/components/BrandHeader";
 import DynamicFooter from "@/components/DynamicFooter";
 
@@ -85,8 +86,10 @@ const PreAssessmentCapture = ({ onContinue }: PreAssessmentCaptureProps) => {
     // Returning path: check for existing record
     if (path === "returning") {
       try {
-        const { data: rows } = await supabase
-          .rpc("get_dna_candidate_by_email", { p_email: trimmedEmail });
+        const { data: rows } = await invokeSecureRpc<any[]>(
+          "get_dna_candidate_by_email",
+          { p_email: trimmedEmail },
+        );
         const data = Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
         if (data) {
           localStorage.setItem("beconnect-firstname", data.first_name);

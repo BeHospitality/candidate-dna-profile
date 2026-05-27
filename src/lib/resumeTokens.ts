@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { invokeSecureRpc } from "./secureRpc";
 
 export interface ResumeTokenData {
   experiencePath: string;
@@ -52,8 +53,7 @@ export async function createResumeToken(data: ResumeTokenData): Promise<string |
  */
 export async function fetchResumeToken(token: string): Promise<ResumeTokenData | null> {
   try {
-    const { data: rows, error } = await supabase
-      .rpc("get_resume_token", { p_token: token });
+    const { data: rows, error } = await invokeSecureRpc<any[]>("get_resume_token", { p_token: token });
 
     const data = Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
     if (error || !data) return null;
@@ -80,7 +80,7 @@ export async function fetchResumeToken(token: string): Promise<ResumeTokenData |
  */
 export async function markResumeTokenUsed(token: string): Promise<void> {
   try {
-    await supabase.rpc("mark_resume_token_used", { p_token: token });
+    await invokeSecureRpc("mark_resume_token_used", { p_token: token });
   } catch (err) {
     console.error("Failed to mark resume token used:", err);
   }

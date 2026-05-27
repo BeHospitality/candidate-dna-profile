@@ -3,6 +3,7 @@ import type { AssessmentResult } from "./scoring";
 import type { ComprehensiveScores } from "./scoring";
 import type { EntryInfo } from "./storage";
 import { storage } from "./storage";
+import { invokeSecureRpc } from "./secureRpc";
 import type { SectorMatch } from "@/utils/sectorMatching";
 import type { GeographyMatch } from "@/utils/geographyMatching";
 import type { DepartmentFit } from "@/utils/departmentMatching";
@@ -29,6 +30,10 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
     // 42501 RLS violation that occurred when chaining .select().single()
     // after an anon insert. See verification 2026-05-06.
     const assessmentId = crypto.randomUUID();
+    const responseProof = entryInfo.token || localStorage.getItem("beconnect-session-id") || crypto.randomUUID();
+    if (!localStorage.getItem("beconnect-session-id")) {
+      localStorage.setItem("beconnect-session-id", responseProof);
+    }
 
     const { error: assessmentError } = await supabase
       .from("assessments")
@@ -36,7 +41,7 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
         id: assessmentId,
         user_id: userId,
         entry_mode: entryInfo.mode,
-        token: entryInfo.token || null,
+        token: responseProof,
         org_code: entryInfo.orgCode || null,
         archetype: result.primaryArchetype,
         archetype_scores: result.archetypeScores as any,
@@ -63,9 +68,11 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
       answer: answer as any,
     }));
 
-    const { error: responsesError } = await supabase
-      .from("assessment_responses")
-      .insert(responses);
+    const { error: responsesError } = await invokeSecureRpc("insert_assessment_responses", {
+      p_assessment_id: assessment.id,
+      p_response_proof: responseProof,
+      p_responses: responses,
+    });
 
     if (responsesError) {
       console.error("Failed to persist responses:", responsesError);
@@ -96,7 +103,7 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
     // Link participant record to assessment and mark completed (via security-definer RPC)
     const participantId = storage.getParticipantId();
     if (participantId && !participantId.startsWith("local-")) {
-      await supabase.rpc("update_dna_participant", {
+      await invokeSecureRpc("update_dna_participant", {
         p_id: participantId,
         p_assessment_id: assessment.id,
         p_completed_at: new Date().toISOString(),
@@ -115,7 +122,7 @@ export async function persistAssessment({ result, answers, entryInfo, comprehens
         const lastName = localStorage.getItem("beconnect-lastname") || "";
         const path = localStorage.getItem("beconnect-path") || experiencePath || "";
         if (email) {
-          const { error: linkErr } = await supabase.rpc(
+          const { error: linkErr } = await invokeSecureRpc(
             "link_participant_to_assessment",
             {
               p_email: email,
@@ -209,10 +216,9 @@ export async function persistCareerProfile(
 
 export async function validateMagicLink(token: string): Promise<{ valid: boolean; orgCode?: string; candidateName?: string; candidateEmail?: string }> {
   try {
-    const { data: rows, error } = await supabase
-      .rpc("validate_magic_link", { p_token: token });
+    const { data: rpcRows, error } = await invokeSecureRpc<any[]>("validate_magic_link", { p_token: token });
 
-    const data = Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
+    const data = Array.isArray(rpcRows) && rpcRows.length > 0 ? rpcRows[0] : null;
     if (error || !data) return { valid: false };
     if (data.used) return { valid: false };
     if (data.expire_at && new Date(data.expire_at) < new Date()) return { valid: false };
@@ -234,7 +240,7 @@ export async function validateMagicLink(token: string): Promise<{ valid: boolean
 
 export async function markMagicLinkUsed(token: string, assessmentId: string): Promise<void> {
   try {
-    await supabase.rpc("mark_magic_link_used", {
+    await invokeSecureRpc("mark_magic_link_used", {
       p_token: token,
       p_assessment_id: assessmentId,
     });
