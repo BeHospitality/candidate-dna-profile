@@ -170,7 +170,8 @@ const ArchetypeReveal = () => {
         setPersistError(false);
 
         if (entryInfo.mode === "candidate" && entryInfo.token) {
-          markMagicLinkUsed(entryInfo.token, assessmentId);
+          // Awaited + retried; don't block reveal UI on failure.
+          void markMagicLinkUsed(entryInfo.token, assessmentId);
         }
         if (isHubMode) {
           const pending = localStorage.getItem("dna_hub_pending");
