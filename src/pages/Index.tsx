@@ -19,7 +19,7 @@ const archetypePreviews = [
     emoji: "🐋",
     name: "Whale",
     tagline: "The Collaborative Anchor",
-    desc: "Empathetic, supportive, adaptive. You build bridges and lift teams.",
+    desc: "You thrive in teams that depend on each other, where standards are kept through care. Hospitality fit: F&B teams in destination properties, family-resort hospitality, training and mentorship roles.",
   },
   {
     emoji: "🦅",
