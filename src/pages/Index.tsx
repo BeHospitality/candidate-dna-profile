@@ -238,7 +238,7 @@ const Index = () => {
           className="text-center max-w-xl mx-auto"
         >
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-6">
-            Ready to Discover Your DNA?
+            Ready for Your DNA Profile?
           </h2>
           <Button
             size="lg"
