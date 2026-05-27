@@ -108,7 +108,7 @@ const Index = () => {
           className="text-center max-w-3xl mx-auto"
         >
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 leading-tight">
-            <span className="text-gradient-gold">Are you a Lion, a Whale, or a Falcon?</span>
+            <span className="text-gradient-gold">Are you a Lion, a Whale or a Falcon?</span>
           </h1>
 
           <p className="text-lg sm:text-xl text-[#9ca3af] mb-4 max-w-xl mx-auto">
