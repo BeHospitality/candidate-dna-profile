@@ -1,6 +1,8 @@
 import { supabase } from "@/integrations/supabase/client";
 import { storage } from "@/lib/storage";
 import { archetypeData } from "@/lib/archetypes";
+import { invokeSecureRpc } from "@/lib/secureRpc";
+import { track } from "@/lib/funnel";
 import type { AssessmentResult, ComprehensiveScores } from "@/lib/scoring";
 
 function getOrCreateSessionId(): string {
