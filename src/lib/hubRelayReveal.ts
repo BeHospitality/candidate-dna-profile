@@ -74,22 +74,31 @@ export function fireHubRelayReveal(args: {
       dimension_count: dimensionScores ? Object.keys(dimensionScores).length : 0,
     };
 
-    console.log("[hub-relay:reveal] attempt", logMeta);
-    supabase.functions
-      .invoke("hub-relay", { body: payload })
+    console.log("[hub-relay:reveal] enqueue", logMeta);
+
+    // Durable outbox: write once, retry worker delivers. Replaces the prior
+    // fire-and-forget direct invoke that silently lost rows on network blips
+    // (the "DNA PRE-FIX" cohort). See migration: public.hub_outbox.
+    invokeSecureRpc("enqueue_hub_outbox", {
+      p_assessment_id: args.assessmentId,
+      p_email: email,
+      p_payload: payload,
+    })
       .then(({ data, error }) => {
         if (error) {
-          console.warn("[hub-relay:reveal] failed", { ...logMeta, error: error.message ?? String(error) });
+          console.warn("[hub-relay:reveal] enqueue failed", { ...logMeta, error: error.message });
         } else {
-          console.log("[hub-relay:reveal] success", { ...logMeta, status: (data as any)?.hubStatus ?? 200 });
+          console.log("[hub-relay:reveal] enqueued", { ...logMeta, outbox_id: data });
         }
       })
       .catch((err) => {
-        console.warn("[hub-relay:reveal] threw", {
+        console.warn("[hub-relay:reveal] enqueue threw", {
           ...logMeta,
           error: err instanceof Error ? err.message : String(err),
         });
       });
+
+    track("assessment_completed", { assessment_id: args.assessmentId, archetype: archetypeKey });
   } catch (err) {
     console.warn("[hub-relay:reveal] build error", err);
   }
