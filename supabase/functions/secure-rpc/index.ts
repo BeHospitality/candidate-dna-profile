@@ -189,6 +189,66 @@ Deno.serve(async (req) => {
         return jsonResponse(200, { data: true });
       }
 
+      case "enqueue_hub_outbox": {
+        const assessmentId = cleanUuid(payload.p_assessment_id);
+        if (!assessmentId) return jsonResponse(400, { error: "invalid_assessment_id" });
+        const email = payload.p_email == null ? null : cleanEmail(payload.p_email);
+        const p = payload.p_payload;
+        if (!p || typeof p !== "object") return jsonResponse(400, { error: "invalid_payload" });
+        const { data, error } = await supabase.rpc("enqueue_hub_outbox", {
+          p_assessment_id: assessmentId,
+          p_email: email,
+          p_payload: p as any,
+        });
+        if (error) throw error;
+        return jsonResponse(200, { data });
+      }
+
+      case "save_progress": {
+        const email = cleanEmail(payload.p_email);
+        if (!email) return jsonResponse(400, { error: "invalid_email" });
+        const expPath = payload.p_experience_path == null ? null : cleanText(payload.p_experience_path, 40);
+        const cur = Number(payload.p_current_question);
+        const total = payload.p_total_questions == null ? null : Number(payload.p_total_questions);
+        const answers = payload.p_answers && typeof payload.p_answers === "object" ? payload.p_answers : {};
+        const phase1 = payload.p_phase1_results && typeof payload.p_phase1_results === "object"
+          ? payload.p_phase1_results : null;
+        const { error } = await supabase.rpc("upsert_assessment_progress", {
+          p_email: email,
+          p_experience_path: expPath,
+          p_current_question: Number.isFinite(cur) ? cur : 0,
+          p_answers: answers as any,
+          p_phase1_results: phase1 as any,
+          p_total_questions: total != null && Number.isFinite(total) ? total : null,
+        });
+        if (error) throw error;
+        return jsonResponse(200, { data: true });
+      }
+
+      case "load_progress": {
+        const email = cleanEmail(payload.p_email);
+        if (!email) return jsonResponse(400, { error: "invalid_email" });
+        const { data, error } = await supabase.rpc("load_assessment_progress", { p_email: email });
+        if (error) throw error;
+        return jsonResponse(200, { data });
+      }
+
+      case "mark_video_skipped": {
+        const id = cleanUuid(payload.p_participant_id);
+        if (!id) return jsonResponse(400, { error: "invalid_participant_id" });
+        const { error } = await supabase.rpc("mark_video_skipped", { p_participant_id: id });
+        if (error) throw error;
+        return jsonResponse(200, { data: true });
+      }
+
+      case "mark_video_completed": {
+        const id = cleanUuid(payload.p_participant_id);
+        if (!id) return jsonResponse(400, { error: "invalid_participant_id" });
+        const { error } = await supabase.rpc("mark_video_completed", { p_participant_id: id });
+        if (error) throw error;
+        return jsonResponse(200, { data: true });
+      }
+
       default:
         return jsonResponse(400, { error: "unsupported_action" });
     }

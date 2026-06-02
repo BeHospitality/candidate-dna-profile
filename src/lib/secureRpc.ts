@@ -9,7 +9,12 @@ type SecureRpcAction =
   | "mark_resume_token_used"
   | "update_dna_participant"
   | "link_participant_to_assessment"
-  | "insert_assessment_responses";
+  | "insert_assessment_responses"
+  | "enqueue_hub_outbox"
+  | "save_progress"
+  | "load_progress"
+  | "mark_video_skipped"
+  | "mark_video_completed";
 
 export async function invokeSecureRpc<T = unknown>(
   action: SecureRpcAction,

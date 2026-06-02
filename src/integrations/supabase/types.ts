@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      assessment_progress: {
+        Row: {
+          answers: Json
+          created_at: string
+          current_question: number
+          email: string
+          experience_path: string | null
+          phase1_results: Json | null
+          total_questions: number | null
+          updated_at: string
+        }
+        Insert: {
+          answers?: Json
+          created_at?: string
+          current_question?: number
+          email: string
+          experience_path?: string | null
+          phase1_results?: Json | null
+          total_questions?: number | null
+          updated_at?: string
+        }
+        Update: {
+          answers?: Json
+          created_at?: string
+          current_question?: number
+          email?: string
+          experience_path?: string | null
+          phase1_results?: Json | null
+          total_questions?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       assessment_responses: {
         Row: {
           answer: Json
@@ -247,6 +280,11 @@ export type Database = {
           phone: string | null
           referral_source: string | null
           role_title: string | null
+          video_completed_at: string | null
+          video_nudge_48h_at: string | null
+          video_nudge_7d_at: string | null
+          video_skipped_at: string | null
+          video_status: string | null
         }
         Insert: {
           assessment_id?: string | null
@@ -263,6 +301,11 @@ export type Database = {
           phone?: string | null
           referral_source?: string | null
           role_title?: string | null
+          video_completed_at?: string | null
+          video_nudge_48h_at?: string | null
+          video_nudge_7d_at?: string | null
+          video_skipped_at?: string | null
+          video_status?: string | null
         }
         Update: {
           assessment_id?: string | null
@@ -279,6 +322,83 @@ export type Database = {
           phone?: string | null
           referral_source?: string | null
           role_title?: string | null
+          video_completed_at?: string | null
+          video_nudge_48h_at?: string | null
+          video_nudge_7d_at?: string | null
+          video_skipped_at?: string | null
+          video_status?: string | null
+        }
+        Relationships: []
+      }
+      funnel_events: {
+        Row: {
+          created_at: string
+          email: string | null
+          event_name: string
+          id: string
+          metadata: Json
+          session_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          event_name: string
+          id?: string
+          metadata?: Json
+          session_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          event_name?: string
+          id?: string
+          metadata?: Json
+          session_id?: string
+        }
+        Relationships: []
+      }
+      hub_outbox: {
+        Row: {
+          assessment_id: string
+          attempts: number
+          created_at: string
+          delivered_at: string | null
+          email: string | null
+          first_attempt_at: string | null
+          id: string
+          last_attempt_at: string | null
+          last_error: string | null
+          next_attempt_at: string
+          payload: Json
+          status: string
+        }
+        Insert: {
+          assessment_id: string
+          attempts?: number
+          created_at?: string
+          delivered_at?: string | null
+          email?: string | null
+          first_attempt_at?: string | null
+          id?: string
+          last_attempt_at?: string | null
+          last_error?: string | null
+          next_attempt_at?: string
+          payload: Json
+          status?: string
+        }
+        Update: {
+          assessment_id?: string
+          attempts?: number
+          created_at?: string
+          delivered_at?: string | null
+          email?: string | null
+          first_attempt_at?: string | null
+          id?: string
+          last_attempt_at?: string | null
+          last_error?: string | null
+          next_attempt_at?: string
+          payload?: Json
+          status?: string
         }
         Relationships: []
       }
@@ -458,6 +578,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      enqueue_hub_outbox: {
+        Args: { p_assessment_id: string; p_email: string; p_payload: Json }
+        Returns: string
+      }
       get_assessment_by_id: {
         Args: { p_id: string }
         Returns: {
@@ -507,11 +631,46 @@ export type Database = {
         }
         Returns: string
       }
+      list_undelivered_assessments: {
+        Args: { p_limit?: number }
+        Returns: {
+          archetype: string
+          assessment_id: string
+          assessment_path: string
+          completed_at: string
+          comprehensive_scores: Json
+          department_matches: Json
+          dimension_scores: Json
+          email: string
+          first_name: string
+          geography_matches: Json
+          sector_matches: Json
+        }[]
+      }
+      load_assessment_progress: {
+        Args: { p_email: string }
+        Returns: {
+          answers: Json
+          current_question: number
+          experience_path: string
+          phase1_results: Json
+          total_questions: number
+          updated_at: string
+        }[]
+      }
       mark_magic_link_used: {
         Args: { p_assessment_id: string; p_token: string }
         Returns: undefined
       }
       mark_resume_token_used: { Args: { p_token: string }; Returns: undefined }
+      mark_video_completed: {
+        Args: { p_participant_id: string }
+        Returns: undefined
+      }
+      mark_video_skipped: {
+        Args: { p_participant_id: string }
+        Returns: undefined
+      }
       update_dna_participant: {
         Args: {
           p_assessment_id?: string
@@ -527,6 +686,17 @@ export type Database = {
           p_phone?: string
           p_referral_source?: string
           p_role_title?: string
+        }
+        Returns: undefined
+      }
+      upsert_assessment_progress: {
+        Args: {
+          p_answers: Json
+          p_current_question: number
+          p_email: string
+          p_experience_path: string
+          p_phase1_results?: Json
+          p_total_questions?: number
         }
         Returns: undefined
       }

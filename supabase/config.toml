@@ -23,3 +23,15 @@ verify_jwt = false
 
 [functions.secure-rpc]
 verify_jwt = false
+
+[functions.funnel-ingest]
+verify_jwt = false
+
+[functions.hub-outbox-worker]
+verify_jwt = false
+
+[functions.hub-outbox-backfill]
+verify_jwt = false
+
+[functions.video-reminder-worker]
+verify_jwt = false
