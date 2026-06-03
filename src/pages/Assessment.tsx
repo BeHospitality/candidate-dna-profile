@@ -334,6 +334,12 @@ const AssessmentInner = ({
         // Chapter boundary, show transition
         const nextPathChapter = pathChapters.find(ch => ch.id === nextCh.id);
         if (nextPathChapter) {
+          track("chapter_completed", {
+            chapter_id: currentCh.id,
+            chapter_name: currentCh.name,
+            experience_path: experiencePath,
+            question_index: currentIdx,
+          });
           setCompletedChapterNumber(currentCh.id);
           setPendingChapter(nextPathChapter);
           setShowChapterTransition(true);
