@@ -231,7 +231,7 @@ const AssessmentInner = ({
     localStorage.setItem(MILESTONES_SHOWN_KEY, JSON.stringify([...shownMilestones]));
   };
 
-  // Auto-save on every answer change
+  // Auto-save on every answer change (localStorage fast cache)
   useEffect(() => {
     if (Object.keys(answers).length > 0) {
       const saveState: any = {
@@ -245,6 +245,14 @@ const AssessmentInner = ({
       localStorage.setItem(SAVE_KEY, JSON.stringify(saveState));
     }
   }, [answers, currentIdx, experiencePath, totalQuestions]);
+
+  // Server-side autosave (debounced; only fires post-email-capture)
+  useAutosaveProgress({
+    answers,
+    currentQuestion: currentIdx,
+    experiencePath,
+    totalQuestions,
+  });
 
   // Show a bouncing hint when content is taller than the viewport on first paint
   useEffect(() => {
