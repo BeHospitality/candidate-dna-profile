@@ -1,61 +1,30 @@
+// DEPRECATED 2026-06-03.
+// Hub delivery is now done exclusively via the durable hub_outbox queue
+// (enqueue_hub_outbox RPC → hub-outbox-worker cron). This open relay used to
+// accept any browser POST and forward it to Hub with the outbound secret —
+// which meant anyone could inject fake assessments. It is now retired.
+//
+// We keep the function deployed but it returns 410 Gone for ALL callers so
+// any stale client code surfaces loudly rather than silently writing garbage.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-dna-secret",
 };
 
-const HUB_WEBHOOK_URL =
-  "https://buriwmeuvujisgmqnpjr.supabase.co/functions/v1/dna-webhook";
-
-Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  // Read shared secret server-side. Per Stage 7B (Q1 confirmation):
-  // reuse the existing DNA_REVEAL_WEBHOOK_SECRET — the same value
-  // protects both inbound endpoints on Hub (dna-webhook and
-  // dna-reveal-email-captured). Do NOT introduce a separate
-  // DNA_INBOUND_SECRET env var.
-  const sharedSecret = Deno.env.get("DNA_REVEAL_WEBHOOK_SECRET");
-  if (!sharedSecret) {
-    console.error("[hub-relay] DNA_REVEAL_WEBHOOK_SECRET is not set — refusing to forward unauthenticated POST to Hub");
-    return new Response(
-      JSON.stringify({
-        skipped: true,
-        reason: "missing_shared_secret",
-      }),
-      { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
-  }
-
-  try {
-    const payload = await req.json();
-    console.log("[hub-relay] Forwarding payload to Hub:", JSON.stringify(payload));
-
-    const response = await fetch(HUB_WEBHOOK_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-dna-secret": sharedSecret,
-      },
-      body: JSON.stringify(payload),
-    });
-
-    const body = await response.text();
-    console.log("[hub-relay] Hub response:", response.status, body);
-
-    return new Response(
-      JSON.stringify({ hubStatus: response.status, hubBody: body }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
-  } catch (error) {
-    console.error("[hub-relay] Error:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
-  }
+Deno.serve((req) => {
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  console.warn("[hub-relay] called after deprecation", {
+    timestamp: new Date().toISOString(),
+    method: req.method,
+    ua: req.headers.get("user-agent"),
+  });
+  return new Response(
+    JSON.stringify({
+      error: "gone",
+      message: "hub-relay is deprecated. Hub delivery is now via the durable hub_outbox queue.",
+    }),
+    { status: 410, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+  );
 });

@@ -26,6 +26,32 @@ Deno.serve(async (req) => {
   }
 
   const ts = new Date().toISOString();
+
+  // Inbound auth: shared secret in `x-dna-secret`, validated against
+  // DNA_OUTBOUND_SECRET (same pattern as assessments-by-email).
+  // Previously this endpoint accepted ANY POST and forwarded with the
+  // outbound secret attached — anyone could fake reveal-email events to Hub.
+  const expectedInbound = Deno.env.get("DNA_OUTBOUND_SECRET");
+  if (!expectedInbound) {
+    console.error("[reveal-email-relay] DNA_OUTBOUND_SECRET not configured", { timestamp: ts });
+    return new Response(
+      JSON.stringify({ error: "server_misconfigured" }),
+      { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
+  }
+  const providedInbound = req.headers.get("x-dna-secret") ?? "";
+  if (providedInbound.length !== expectedInbound.length ||
+      providedInbound !== expectedInbound) {
+    console.warn("[reveal-email-relay] auth rejected", {
+      timestamp: ts,
+      had_header: providedInbound.length > 0,
+    });
+    return new Response(
+      JSON.stringify({ error: "unauthorized" }),
+      { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
+  }
+
   let payload: Record<string, unknown> = {};
   try {
     payload = await req.json();
@@ -39,6 +65,7 @@ Deno.serve(async (req) => {
       { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
+
 
   const assessmentId = (payload.assessment_id as string) ?? null;
   // Boundary normalisation: canonicalise inbound email immediately on receipt.

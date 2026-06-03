@@ -8,7 +8,7 @@ const corsHeaders = {
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response('ok', { headers: { ...corsHeaders, 'Access-Control-Allow-Headers': corsHeaders['Access-Control-Allow-Headers'] + ', x-dna-secret' } })
   }
 
   if (req.method !== 'POST') {
@@ -18,7 +18,30 @@ serve(async (req) => {
     )
   }
 
+  // Inbound auth: shared secret in `x-dna-secret`, validated against
+  // DNA_OUTBOUND_SECRET. Previously this endpoint was wide open — any
+  // anonymous caller could register a magic_links row for any candidate
+  // email, opening an account-takeover vector. Hub is the only legitimate
+  // caller (server-side) and already holds this secret.
+  const expectedInbound = Deno.env.get('DNA_OUTBOUND_SECRET')
+  if (!expectedInbound) {
+    console.error('[register-magic-link] DNA_OUTBOUND_SECRET not configured')
+    return new Response(
+      JSON.stringify({ error: 'server_misconfigured' }),
+      { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
+  }
+  const providedInbound = req.headers.get('x-dna-secret') ?? ''
+  if (providedInbound.length !== expectedInbound.length || providedInbound !== expectedInbound) {
+    console.warn('[register-magic-link] auth rejected', { had_header: providedInbound.length > 0 })
+    return new Response(
+      JSON.stringify({ error: 'unauthorized' }),
+      { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
+  }
+
   try {
+
     const { token, candidate_email: rawCandidateEmail, candidate_name, org_code, expire_at } = await req.json()
 
     // Boundary normalisation: canonicalise inbound candidate_email immediately on receipt
