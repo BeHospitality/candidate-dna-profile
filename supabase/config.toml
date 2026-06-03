@@ -7,13 +7,9 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.register-magic-link]
-verify_jwt = false
+verify_jwt = true
 
-[functions.hub-relay]
-verify_jwt = false
 
-[functions.reveal-email-relay]
-verify_jwt = false
 
 [functions.assessments-by-email]
 verify_jwt = false

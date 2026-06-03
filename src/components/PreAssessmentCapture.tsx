@@ -117,22 +117,9 @@ const PreAssessmentCapture = ({ onContinue }: PreAssessmentCaptureProps) => {
         path,
         session_id: sid,
       } as any);
-      // Fire profile to Hub pipeline (non-blocking)
-      try {
-        await supabase.functions.invoke('hub-relay', {
-          body: {
-            candidate_email: trimmedEmail,
-            first_name: trimmedFirst,
-            last_name: trimmedLast,
-            path,
-            source: 'dna-assessment',
-            completed_at: new Date().toISOString(),
-          },
-        });
-        console.log('[registration] hub-relay fired for:', trimmedEmail);
-      } catch (relayErr) {
-        console.error('[registration] hub-relay failed (non-critical):', relayErr);
-      }
+      // Hub delivery for the registration signal is now routed via the
+      // durable hub_outbox queue at reveal time. The legacy hub-relay
+      // edge function was deleted on 2026-06-03.
     } catch (err) {
       console.error("Pre-assessment capture insert failed:", err);
     }
