@@ -25,6 +25,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { persistAssessment, markMagicLinkUsed } from "@/lib/persistence";
 import { fireHubRelayReveal, logPersistFailure } from "@/lib/hubRelayReveal";
+import { track } from "@/lib/funnel";
 import { generateProfilePDF } from "@/utils/generateProfilePDF";
 import { supabase } from "@/integrations/supabase/client";
 import ScrollRevealSection from "@/components/results/ScrollRevealSection";
@@ -131,6 +132,12 @@ const ArchetypeReveal = () => {
     const res = calculateScores(answers);
     setResult(res);
     storage.setResults(res);
+
+    // Funnel: candidate reached the results screen with valid answers.
+    track("results_viewed", {
+      archetype: res.primaryArchetype,
+      experience_path: storage.getExperiencePath() || null,
+    });
 
     const path = storage.getExperiencePath() || 'experienced';
     const pathQuestions = getQuestionsForPath(path as ExperiencePath);

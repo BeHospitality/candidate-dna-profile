@@ -112,7 +112,13 @@ Deno.serve(async (req) => {
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      const shouldDeadLetter = ageMs >= DEAD_AFTER_MS;
+      // Dead-letter rules:
+      //   1. row has been retrying for >= 24h (DEAD_AFTER_MS), OR
+      //   2. row has no email AND has failed >= 5 times — these historic
+      //      email-less rows can never satisfy Hub's `email required` check,
+      //      so they would otherwise loop on backoff for the full 24h window.
+      const noEmailGiveUp = (!row.email || String(row.email).trim() === "") && nextAttempts >= 5;
+      const shouldDeadLetter = ageMs >= DEAD_AFTER_MS || noEmailGiveUp;
       const newStatus = shouldDeadLetter ? "dead" : "pending";
 
       await supabase.from("hub_outbox").update({
@@ -132,13 +138,18 @@ Deno.serve(async (req) => {
           metadata: {
             assessment_id: row.assessment_id, email: row.email,
             attempts: nextAttempts, last_error: msg,
+            reason: noEmailGiveUp ? "no_email_after_5_attempts" : "age_24h",
           } as any,
         });
         await supabase.from("funnel_events").insert({
           session_id: row.assessment_id,
           email: row.email,
           event_name: "hub_delivery_dead",
-          metadata: { attempts: nextAttempts, error: msg } as any,
+          metadata: {
+            attempts: nextAttempts,
+            error: msg,
+            reason: noEmailGiveUp ? "no_email_after_5_attempts" : "age_24h",
+          } as any,
         });
       } else {
         failed++;

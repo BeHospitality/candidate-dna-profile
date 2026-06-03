@@ -188,6 +188,20 @@ const AssessmentInner = ({
   const navBarRef = useRef<HTMLDivElement | null>(null);
   const [showFoldHint, setShowFoldHint] = useState(false);
 
+  // Fire assessment_started exactly once per mount so the funnel captures
+  // entry into the questions UI (not just consent / path / details).
+  const startedFired = useRef(false);
+  useEffect(() => {
+    if (startedFired.current) return;
+    startedFired.current = true;
+    track("assessment_started", {
+      experience_path: experiencePath,
+      total_questions: pathQuestions.length,
+      resumed: isResuming,
+      initial_question: initialIdx,
+    });
+  }, [experiencePath, pathQuestions.length, isResuming, initialIdx]);
+
   const pathQuestionIds = useMemo(() => pathQuestions.map(q => q.id), [pathQuestions]);
   const pathChapters = useMemo(() => getChaptersForPath(experiencePath), [experiencePath]);
 
