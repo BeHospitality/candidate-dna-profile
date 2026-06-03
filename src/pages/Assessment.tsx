@@ -23,6 +23,8 @@ import SaveProgressDialog from "@/components/assessment/SaveProgressDialog";
 import ParticipantDetails from "@/components/ParticipantDetails";
 import BrandHeader from "@/components/BrandHeader";
 import DynamicFooter from "@/components/DynamicFooter";
+import { useAutosaveProgress } from "@/hooks/useAutosaveProgress";
+import { track } from "@/lib/funnel";
 
 const SAVE_KEY = "dna_assessment_progress";
 const MILESTONES_SHOWN_KEY = "dna_milestones_shown";
@@ -229,7 +231,7 @@ const AssessmentInner = ({
     localStorage.setItem(MILESTONES_SHOWN_KEY, JSON.stringify([...shownMilestones]));
   };
 
-  // Auto-save on every answer change
+  // Auto-save on every answer change (localStorage fast cache)
   useEffect(() => {
     if (Object.keys(answers).length > 0) {
       const saveState: any = {
@@ -243,6 +245,14 @@ const AssessmentInner = ({
       localStorage.setItem(SAVE_KEY, JSON.stringify(saveState));
     }
   }, [answers, currentIdx, experiencePath, totalQuestions]);
+
+  // Server-side autosave (debounced; only fires post-email-capture)
+  useAutosaveProgress({
+    answers,
+    currentQuestion: currentIdx,
+    experiencePath,
+    totalQuestions,
+  });
 
   // Show a bouncing hint when content is taller than the viewport on first paint
   useEffect(() => {
@@ -324,6 +334,12 @@ const AssessmentInner = ({
         // Chapter boundary, show transition
         const nextPathChapter = pathChapters.find(ch => ch.id === nextCh.id);
         if (nextPathChapter) {
+          track("chapter_completed", {
+            chapter_id: currentCh.id,
+            chapter_name: currentCh.name,
+            experience_path: experiencePath,
+            question_index: currentIdx,
+          });
           setCompletedChapterNumber(currentCh.id);
           setPendingChapter(nextPathChapter);
           setShowChapterTransition(true);
