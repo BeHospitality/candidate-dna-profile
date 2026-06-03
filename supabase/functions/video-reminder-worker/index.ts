@@ -1,12 +1,17 @@
 // Video reminder worker: hourly cron. Finds participants who skipped the video
 // and sends warm reminder emails at 48h and 7d via Brevo.
 // Stops after the 7-day final nudge.
+//
+// SECURITY: Requires inbound shared secret (x-dna-secret) matching
+// DNA_OUTBOUND_SECRET. Without this, any unauthenticated caller could
+// trigger premature 48h/7d nudges and burn the one-shot nudge slots.
+// The pg_cron job is configured to send this header.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-dna-secret",
 };
 
 const BREVO_API = "https://api.brevo.com/v3/smtp/email";
@@ -38,6 +43,18 @@ function emailBody(firstName: string, isFinal: boolean) {
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  // Inbound auth — only the pg_cron job (or an authorised operator) may
+  // trigger reminder sends. Without this gate, anyone on the internet
+  // could POST to this endpoint and immediately burn the 7d final-nudge
+  // slot for every eligible participant.
+  const expectedSecret = Deno.env.get("DNA_OUTBOUND_SECRET");
+  const providedSecret = req.headers.get("x-dna-secret");
+  if (!expectedSecret || providedSecret !== expectedSecret) {
+    return new Response(JSON.stringify({ error: "unauthorized" }), {
+      status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
 
   const brevoKey = Deno.env.get("BREVO_API_KEY");
   if (!brevoKey) {

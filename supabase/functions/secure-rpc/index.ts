@@ -190,11 +190,41 @@ Deno.serve(async (req) => {
       }
 
       case "enqueue_hub_outbox": {
+        // SECURITY: bind enqueue to the candidate who actually created the
+        // assessment. The caller must present the assessment row's `token`
+        // (the same response_proof used by insert_assessment_responses),
+        // which only the legitimate browser session that inserted the row
+        // knows. This blocks the prior arbitrary-injection vector where an
+        // anonymous caller could enqueue any uuid + fabricated payload and
+        // have the worker forward it to the Hub with our outbound secret.
         const assessmentId = cleanUuid(payload.p_assessment_id);
         if (!assessmentId) return jsonResponse(400, { error: "invalid_assessment_id" });
+        const proof = cleanText(payload.p_assessment_token, 256);
+        if (!proof) return jsonResponse(400, { error: "missing_assessment_token" });
+
         const email = payload.p_email == null ? null : cleanEmail(payload.p_email);
         const p = payload.p_payload;
         if (!p || typeof p !== "object") return jsonResponse(400, { error: "invalid_payload" });
+
+        // Hard size cap (16 KB JSON) to stop abusive bloat.
+        let serialised: string;
+        try {
+          serialised = JSON.stringify(p);
+        } catch {
+          return jsonResponse(400, { error: "unserialisable_payload" });
+        }
+        if (serialised.length > 16_384) return jsonResponse(413, { error: "payload_too_large" });
+
+        // Verify assessment exists AND token matches.
+        const { data: assessmentRow, error: lookupError } = await supabase
+          .from("assessments")
+          .select("id")
+          .eq("id", assessmentId)
+          .eq("token", proof)
+          .maybeSingle();
+        if (lookupError) throw lookupError;
+        if (!assessmentRow) return jsonResponse(403, { error: "assessment_proof_rejected" });
+
         const { data, error } = await supabase.rpc("enqueue_hub_outbox", {
           p_assessment_id: assessmentId,
           p_email: email,
