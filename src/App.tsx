@@ -11,6 +11,7 @@ import SharedResults from "./pages/SharedResults";
 import ResumeAssessment from "./pages/ResumeAssessment";
 import NotFound from "./pages/NotFound";
 import Privacy from "./pages/Privacy";
+import AdminOutbox from "./pages/AdminOutbox";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,7 @@ const App = () => (
           <Route path="/results/:assessmentId" element={<SharedResults />} />
           <Route path="/resume/:token" element={<ResumeAssessment />} />
           <Route path="/privacy" element={<Privacy />} />
+          <Route path="/admin/outbox" element={<AdminOutbox />} />
 
 
 
