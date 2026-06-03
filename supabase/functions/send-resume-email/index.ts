@@ -16,19 +16,47 @@ serve(async (req) => {
       throw new Error('BREVO_API_KEY is not configured');
     }
 
-    const { email: rawEmail, resumeUrl, firstName } = await req.json();
+    const { email: rawEmail, resumeUrl: rawResumeUrl, firstName: rawFirstName } = await req.json();
 
     // Boundary normalisation: canonicalise inbound email at receipt.
     const email = rawEmail ? String(rawEmail).toLowerCase().trim() : rawEmail;
 
-    if (!email || !resumeUrl) {
+    if (!email || !rawResumeUrl) {
       return new Response(JSON.stringify({ error: 'email and resumeUrl are required' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    const name = firstName || 'there';
+    // SECURITY: validate resumeUrl strictly. Must be an https:// URL on an
+    // allowlisted host. This blocks `javascript:` URIs, `data:` URIs, and
+    // attacker-controlled phishing domains being smuggled into the CTA.
+    const ALLOWED_HOSTS = new Set([
+      'be-connect-dna.lovable.app',
+      'id-preview--649fb658-dfb9-4931-a9ed-42d2f74b2e3a.lovable.app',
+    ]);
+    let parsedUrl: URL;
+    try {
+      parsedUrl = new URL(String(rawResumeUrl));
+    } catch {
+      return new Response(JSON.stringify({ error: 'invalid resumeUrl' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    if (parsedUrl.protocol !== 'https:' || !ALLOWED_HOSTS.has(parsedUrl.host)) {
+      return new Response(JSON.stringify({ error: 'resumeUrl host not allowed' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // HTML-escape every candidate-supplied value before interpolation.
+    const esc = (s: unknown) => String(s ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+    const rawName = typeof rawFirstName === 'string' ? rawFirstName.trim().slice(0, 80) : '';
+    const name = esc(rawName || 'there');
+    const safeResumeUrl = esc(parsedUrl.toString());
 
     const response = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
@@ -39,7 +67,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         sender: { name: 'Be Connect DNA', email: 'noreply@beconnect.co' },
-        to: [{ email, name }],
+        to: [{ email, name: rawName || undefined }],
         subject: 'Resume your DNA Assessment',
         htmlContent: `
           <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 520px; margin: 0 auto; padding: 32px 20px;">
@@ -53,7 +81,7 @@ serve(async (req) => {
               You saved your progress on the Work DNA assessment. Click below to pick up right where you left off.
             </p>
             <div style="text-align: center; margin-bottom: 28px;">
-              <a href="${resumeUrl}" style="display: inline-block; background: linear-gradient(135deg, #d4a843, #b8922e); color: white; text-decoration: none; padding: 14px 32px; border-radius: 12px; font-weight: 700; font-size: 16px;">
+              <a href="${safeResumeUrl}" style="display: inline-block; background: linear-gradient(135deg, #d4a843, #b8922e); color: white; text-decoration: none; padding: 14px 32px; border-radius: 12px; font-weight: 700; font-size: 16px;">
                 Resume Assessment →
               </a>
             </div>
