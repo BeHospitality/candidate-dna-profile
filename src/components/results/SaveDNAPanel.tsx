@@ -271,19 +271,12 @@ const SaveDNAPanel = ({
       // Persist first name to the canonical localStorage key
       localStorage.setItem("beconnect-firstname", firstName.trim());
 
-      // Fire reveal-email-captured webhook to the Hub (Email #1 trigger).
-      // Non-blocking, candidate proceeds regardless of outcome.
-      fireRevealEmailCaptured({
-        assessmentId: storage.getAssessmentId(),
-        email: normalisedEmail,
-        firstName: firstName.trim(),
-        lastName: localStorage.getItem("beconnect-lastname") || "",
-        archetype: result.primaryArchetype,
-        path: localStorage.getItem("beconnect-path") || "growing",
-      });
+      // Hub delivery (including the post-save email-captured signal) is now
+      // routed exclusively through the durable hub_outbox queue fired at
+      // reveal time in ArchetypeReveal (fireHubRelayReveal → enqueue_hub_outbox).
+      // The two open relays (hub-relay, reveal-email-relay) were inbound-locked
+      // on 2026-06-03 and no longer accept browser calls.
 
-      // Fire hub-relay in background, never blocks UI
-      fireHubRelay(normalisedEmail);
 
       setSubmitted(true);
     } catch (err) {
