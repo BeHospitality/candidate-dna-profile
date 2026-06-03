@@ -133,6 +133,12 @@ const ArchetypeReveal = () => {
     setResult(res);
     storage.setResults(res);
 
+    // Funnel: candidate reached the results screen with valid answers.
+    track("results_viewed", {
+      archetype: res.primaryArchetype,
+      experience_path: storage.getExperiencePath() || null,
+    });
+
     const path = storage.getExperiencePath() || 'experienced';
     const pathQuestions = getQuestionsForPath(path as ExperiencePath);
     const comprehensive = calculateComprehensiveScores(answers, pathQuestions);
