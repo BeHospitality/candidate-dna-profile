@@ -79,8 +79,18 @@ export function fireHubRelayReveal(args: {
     // Durable outbox: write once, retry worker delivers. Replaces the prior
     // fire-and-forget direct invoke that silently lost rows on network blips
     // (the "DNA PRE-FIX" cohort). See migration: public.hub_outbox.
+    // Proof token = the response_proof written into assessments.token at
+    // persistAssessment time (entryInfo.token || beconnect-session-id).
+    // Server-side secure-rpc verifies this matches assessments.token, so
+    // only the candidate that actually inserted the row can enqueue for it.
+    const assessmentToken =
+      entryInfo.token ||
+      localStorage.getItem("beconnect-session-id") ||
+      "";
+
     invokeSecureRpc("enqueue_hub_outbox", {
       p_assessment_id: args.assessmentId,
+      p_assessment_token: assessmentToken,
       p_email: email,
       p_payload: payload,
     })
