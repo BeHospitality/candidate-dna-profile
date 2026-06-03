@@ -35,3 +35,6 @@ verify_jwt = false
 
 [functions.video-reminder-worker]
 verify_jwt = false
+
+[functions.hub-outbox-status]
+verify_jwt = false
