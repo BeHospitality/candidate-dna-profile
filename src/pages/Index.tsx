@@ -71,6 +71,7 @@ const Index = () => {
   }, [location.pathname, searchParams]);
 
   const handleStart = () => {
+    (window as any).fbq?.("track", "Lead");
     navigate("/assessment");
   };
 
