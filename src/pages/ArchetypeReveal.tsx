@@ -138,6 +138,9 @@ const ArchetypeReveal = () => {
       archetype: res.primaryArchetype,
       experience_path: storage.getExperiencePath() || null,
     });
+    (window as any).fbq?.("track", "CompleteRegistration", {
+      content_name: res.primaryArchetype,
+    });
 
     const path = storage.getExperiencePath() || 'experienced';
     const pathQuestions = getQuestionsForPath(path as ExperiencePath);
