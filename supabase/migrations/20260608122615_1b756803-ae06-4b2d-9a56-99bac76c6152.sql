@@ -1,0 +1,30 @@
+
+REVOKE EXECUTE ON FUNCTION public.enqueue_hub_outbox(uuid, text, jsonb) FROM anon, authenticated, PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.get_assessment_by_id(uuid) FROM anon, authenticated, PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.get_dna_candidate_by_email(text) FROM anon, authenticated, PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.get_resume_token(text) FROM anon, authenticated, PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.link_participant_to_assessment(text, text, text, text, text, timestamptz) FROM anon, authenticated, PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.list_undelivered_assessments(integer) FROM anon, authenticated, PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.load_assessment_progress(text) FROM anon, authenticated, PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.mark_magic_link_used(text, uuid) FROM anon, authenticated, PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.mark_resume_token_used(text) FROM anon, authenticated, PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.mark_video_completed(uuid) FROM anon, authenticated, PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.mark_video_skipped(uuid) FROM anon, authenticated, PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.update_dna_participant(uuid, text, text, text, text, text, text, text, text, text, timestamptz, boolean, timestamptz) FROM anon, authenticated, PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.upsert_assessment_progress(text, text, integer, jsonb, jsonb, integer) FROM anon, authenticated, PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.validate_magic_link(text) FROM anon, authenticated, PUBLIC;
+
+GRANT EXECUTE ON FUNCTION public.enqueue_hub_outbox(uuid, text, jsonb) TO service_role;
+GRANT EXECUTE ON FUNCTION public.get_assessment_by_id(uuid) TO service_role;
+GRANT EXECUTE ON FUNCTION public.get_dna_candidate_by_email(text) TO service_role;
+GRANT EXECUTE ON FUNCTION public.get_resume_token(text) TO service_role;
+GRANT EXECUTE ON FUNCTION public.link_participant_to_assessment(text, text, text, text, text, timestamptz) TO service_role;
+GRANT EXECUTE ON FUNCTION public.list_undelivered_assessments(integer) TO service_role;
+GRANT EXECUTE ON FUNCTION public.load_assessment_progress(text) TO service_role;
+GRANT EXECUTE ON FUNCTION public.mark_magic_link_used(text, uuid) TO service_role;
+GRANT EXECUTE ON FUNCTION public.mark_resume_token_used(text) TO service_role;
+GRANT EXECUTE ON FUNCTION public.mark_video_completed(uuid) TO service_role;
+GRANT EXECUTE ON FUNCTION public.mark_video_skipped(uuid) TO service_role;
+GRANT EXECUTE ON FUNCTION public.update_dna_participant(uuid, text, text, text, text, text, text, text, text, text, timestamptz, boolean, timestamptz) TO service_role;
+GRANT EXECUTE ON FUNCTION public.upsert_assessment_progress(text, text, integer, jsonb, jsonb, integer) TO service_role;
+GRANT EXECUTE ON FUNCTION public.validate_magic_link(text) TO service_role;
