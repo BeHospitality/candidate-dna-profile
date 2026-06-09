@@ -97,9 +97,28 @@ export function fireHubRelayReveal(args: {
       .then(({ data, error }) => {
         if (error) {
           console.warn("[hub-relay:reveal] enqueue failed", { ...logMeta, error: error.message });
-        } else {
-          console.log("[hub-relay:reveal] enqueued", { ...logMeta, outbox_id: data });
+          return;
         }
+        console.log("[hub-relay:reveal] enqueued", { ...logMeta, outbox_id: data });
+        // SYNC FLUSH: kick the worker NOW so the Hub's candidate_memory is
+        // updated before the 15s concierge auto-return fires. Without this,
+        // the cron tick (lag 7-53s, median ~22s) would race the redirect
+        // and returning candidates could land back on "start your DNA".
+        // Cron remains as a safety net for failed kicks.
+        supabase.functions.invoke("hub-outbox-worker", { body: {} })
+          .then(({ data: flushData, error: flushErr }) => {
+            if (flushErr) {
+              console.warn("[hub-relay:reveal] worker flush failed", { ...logMeta, error: flushErr.message });
+            } else {
+              console.log("[hub-relay:reveal] worker flushed", { ...logMeta, ...flushData });
+            }
+          })
+          .catch((err) => {
+            console.warn("[hub-relay:reveal] worker flush threw", {
+              ...logMeta,
+              error: err instanceof Error ? err.message : String(err),
+            });
+          });
       })
       .catch((err) => {
         console.warn("[hub-relay:reveal] enqueue threw", {
