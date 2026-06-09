@@ -34,3 +34,6 @@ verify_jwt = false
 
 [functions.hub-outbox-status]
 verify_jwt = false
+
+[functions.portal-sync]
+verify_jwt = false
