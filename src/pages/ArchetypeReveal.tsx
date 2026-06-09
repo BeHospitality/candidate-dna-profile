@@ -240,6 +240,19 @@ const ArchetypeReveal = () => {
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); clearTimeout(t5); window.removeEventListener("scroll", onScroll); };
   }, [navigate]);
 
+  // Concierge auto-handback countdown. Decrements each second; at 0 we
+  // navigate to connect.be.ie/concierge with full identity payload so
+  // the candidate lands on the video step without dead-end.
+  useEffect(() => {
+    if (autoReturnSeconds === null) return;
+    if (autoReturnSeconds <= 0) {
+      window.location.href = buildConciergeURL();
+      return;
+    }
+    const id = setTimeout(() => setAutoReturnSeconds((s) => (s === null ? null : s - 1)), 1000);
+    return () => clearTimeout(id);
+  }, [autoReturnSeconds]);
+
   if (!result) return null;
 
   const archetype = archetypeData[result.primaryArchetype];
