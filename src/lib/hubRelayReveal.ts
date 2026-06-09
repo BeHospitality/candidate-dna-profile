@@ -127,6 +127,45 @@ export function fireHubRelayReveal(args: {
         });
       });
 
+    // PORTAL SYNC: in addition to the Hub path above, write the archetype
+    // directly into the Portal's candidate_memory (separate Supabase project)
+    // so connect.be.ie /resume + concierge recognise the DNA as done.
+    // Synchronous-ish (fire-and-forget Promise, server has 4s timeout + 1 retry)
+    // so it completes well within the 15s auto-return grace.
+    if (email) {
+      const portalPayload = {
+        email,
+        archetype: archetypeKey,
+        first_name: firstName,
+        last_name: localStorage.getItem("beconnect-lastname") || null,
+        assessment_id: args.assessmentId,
+        completed_at: new Date().toISOString(),
+      };
+      supabase.functions.invoke("portal-sync", { body: portalPayload })
+        .then(({ data: portalData, error: portalErr }) => {
+          if (portalErr) {
+            console.warn("[portal-sync:reveal] failed", { ...logMeta, error: portalErr.message });
+          } else {
+            console.log("[portal-sync:reveal] ok", { ...logMeta, ...(portalData ?? {}) });
+          }
+        })
+        .catch((err) => {
+          console.warn("[portal-sync:reveal] threw", {
+            ...logMeta,
+            error: err instanceof Error ? err.message : String(err),
+          });
+        });
+    } else {
+      console.log("[portal-sync:reveal] skipped, no email", logMeta);
+    }
+
+      .catch((err) => {
+        console.warn("[hub-relay:reveal] enqueue threw", {
+          ...logMeta,
+          error: err instanceof Error ? err.message : String(err),
+        });
+      });
+
     track("assessment_completed", { assessment_id: args.assessmentId, archetype: archetypeKey });
   } catch (err) {
     console.warn("[hub-relay:reveal] build error", err);
