@@ -41,6 +41,25 @@ const Index = () => {
     let token: string | undefined;
     let orgCode: string | undefined;
 
+    // Concierge deep-link identity capture: when the B2C Portal hands a
+    // candidate over via /?email=...&first_name=...&path=...&assessment_id=...
+    // we treat the supplied email as the canonical identity for this
+    // assessment so completion ties back to the SAME Portal record.
+    const qEmailRaw = searchParams.get("email");
+    const qEmail = qEmailRaw ? qEmailRaw.toLowerCase().trim() : "";
+    const qFirstName = searchParams.get("first_name") || searchParams.get("name") || "";
+    const qLastName = searchParams.get("last_name") || "";
+    const qPath = searchParams.get("path") || "";
+    const qAssessmentId = searchParams.get("assessment_id") || "";
+
+    if (qEmail) localStorage.setItem("beconnect-email", qEmail);
+    if (qFirstName) localStorage.setItem("beconnect-firstname", qFirstName);
+    if (qLastName) localStorage.setItem("beconnect-lastname", qLastName);
+    if (qPath) localStorage.setItem("beconnect-path", qPath);
+    // Note: do NOT overwrite `dna-assessment-id` with the Portal's incoming
+    // value, that key is reserved for the DNA app's own persisted UUID and
+    // is the gate for dna_verified=true on hand-back.
+
     if (location.pathname === "/assess") {
       mode = "candidate";
       token = searchParams.get("token") || undefined;
@@ -67,7 +86,16 @@ const Index = () => {
       orgCode = searchParams.get("org") || undefined;
     }
 
-    storage.setEntryMode({ mode, token, orgCode });
+    // Carry concierge-supplied identity into EntryInfo so persistAssessment
+    // and hub-relay see the same canonical email without needing the user
+    // to re-enter it via PreAssessmentCapture.
+    storage.setEntryMode({
+      mode,
+      token,
+      orgCode,
+      candidateEmail: qEmail || undefined,
+      candidateName: qFirstName || undefined,
+    });
   }, [location.pathname, searchParams]);
 
   const handleStart = () => {
