@@ -201,6 +201,18 @@ const ArchetypeReveal = () => {
           matchingResults: { sectorMatches: sMat, geographyMatches: gMat, departmentMatches: dMat, comprehensiveScores: comprehensive },
           experiencePath: path,
         });
+
+        // Concierge handback: when we have an email (deep-linked from the
+        // B2C Portal OR captured via PreAssessmentCapture), auto-return the
+        // candidate to connect.be.ie/concierge so they land on their next
+        // step (video). 15s grace lets them see the archetype reveal and
+        // gives hub-outbox-worker time to deliver. Manual button still
+        // available below for early exit.
+        const handbackEmail =
+          entryInfo.candidateEmail || localStorage.getItem("beconnect-email") || "";
+        if (handbackEmail) {
+          setAutoReturnSeconds(15);
+        }
       })
       .catch((err) => {
         // FIX 1, surface the failure to the user and forensic audit log
