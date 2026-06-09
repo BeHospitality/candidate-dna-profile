@@ -467,6 +467,42 @@ const ArchetypeReveal = () => {
                 transition={{ delay: 0.5 }}
                 className="w-full max-w-lg mx-auto space-y-6"
               >
+                {/* Concierge auto-return banner */}
+                {autoReturnSeconds !== null && (
+                  <div
+                    className="rounded-2xl p-4 text-sm flex items-center justify-between gap-3"
+                    style={{
+                      background: "rgba(245, 158, 11, 0.10)",
+                      border: "1px solid rgba(245, 158, 11, 0.40)",
+                      color: "#fde68a",
+                      fontFamily: "DM Sans, sans-serif",
+                    }}
+                    role="status"
+                  >
+                    <span>
+                      Returning you to your career agent in{" "}
+                      <strong>{autoReturnSeconds}s</strong> to continue with your video step…
+                    </span>
+                    <div className="flex gap-2 shrink-0">
+                      <Button
+                        size="sm"
+                        className="rounded-lg"
+                        onClick={() => { window.location.href = buildConciergeURL(); }}
+                      >
+                        Go now
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="rounded-lg"
+                        onClick={() => setAutoReturnSeconds(null)}
+                      >
+                        Stay
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
                 {/* Hero Actions */}
                 <div className="flex gap-3">
                   <Button onClick={handleDownloadPDF} variant="outline" className="flex-1 rounded-xl" size="sm">
