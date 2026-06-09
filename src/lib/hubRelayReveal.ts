@@ -159,12 +159,7 @@ export function fireHubRelayReveal(args: {
       console.log("[portal-sync:reveal] skipped, no email", logMeta);
     }
 
-      .catch((err) => {
-        console.warn("[hub-relay:reveal] enqueue threw", {
-          ...logMeta,
-          error: err instanceof Error ? err.message : String(err),
-        });
-      });
+
 
     track("assessment_completed", { assessment_id: args.assessmentId, archetype: archetypeKey });
   } catch (err) {
