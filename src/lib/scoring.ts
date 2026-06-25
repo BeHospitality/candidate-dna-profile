@@ -56,13 +56,28 @@ export function calculateScores(answers: Record<number, any>): AssessmentResult 
     adaptability: Math.round(Math.min(100, (raw.adaptability / maxPossible) * 100)),
   };
 
-  const archetypeScores = {
-    lion: scores.autonomy * 0.35 + scores.leadership * 0.4 + scores.adaptability * 0.15 + scores.precision * 0.1,
-    whale: scores.collaboration * 0.4 + scores.adaptability * 0.3 + scores.leadership * 0.15 + scores.precision * 0.15,
-    falcon: scores.precision * 0.4 + scores.autonomy * 0.2 + scores.collaboration * 0.15 + scores.adaptability * 0.15 + scores.leadership * 0.1,
+  // Score distinctiveness, not shared baseline: centre each dimension on this
+  // candidate's own mean, then weight each archetype on its signature dimensions.
+  const mean = (scores.autonomy + scores.collaboration + scores.precision + scores.leadership + scores.adaptability) / 5;
+  const cAutonomy = scores.autonomy - mean;
+  const cCollaboration = scores.collaboration - mean;
+  const cPrecision = scores.precision - mean;
+  const cLeadership = scores.leadership - mean;
+  const cAdaptability = scores.adaptability - mean;
+
+  const sig = {
+    lion:   cLeadership * 1.0 + cAutonomy * 0.8,
+    whale:  cCollaboration * 1.2 + cAdaptability * 0.3,
+    falcon: cPrecision * 1.2 + cAutonomy * 0.2,
   };
 
-  const sorted = Object.entries(archetypeScores).sort((a, b) => b[1] - a[1]);
+  // Presentable 0-100 scores for storage/display (winner selection is unaffected, monotonic).
+  const archetypeScores = {
+    lion:   Math.round(Math.max(0, Math.min(100, 50 + sig.lion * 1.5))),
+    whale:  Math.round(Math.max(0, Math.min(100, 50 + sig.whale * 1.5))),
+    falcon: Math.round(Math.max(0, Math.min(100, 50 + sig.falcon * 1.5))),
+  };
+  const sorted = Object.entries(sig).sort((a, b) => b[1] - a[1]);
   const primaryArchetype = sorted[0][0] as Archetype;
   const secondaryArchetype = sorted[1][1] > sorted[2][1] * 1.1 ? (sorted[1][0] as Archetype) : null;
 
