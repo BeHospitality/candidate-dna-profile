@@ -423,7 +423,7 @@ const ArchetypeReveal = () => {
                             <div key={key} className="flex items-baseline justify-between gap-3 text-sm">
                               <span className="font-semibold text-foreground">{dimLabels[key]}</span>
                               <span className="text-xs text-muted-foreground flex-1 px-2 truncate">
-                                {getNarrativeForScore(key, score)}
+                                {getNarrativeForScore(key, score)?.label}
                               </span>
                               <span className="font-mono text-primary">{score}</span>
                             </div>
