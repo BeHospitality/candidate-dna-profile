@@ -406,8 +406,33 @@ const ArchetypeReveal = () => {
                   <div className="card-shine absolute inset-0 rounded-2xl pointer-events-none" />
                   <div className="relative z-10">
                     <div className="text-7xl mb-4">{archetype.emoji}</div>
+                    {(() => {
+                      const dimLabels: Record<string, string> = {
+                        autonomy: "Autonomy",
+                        collaboration: "Collaboration",
+                        precision: "Precision",
+                        leadership: "Leadership",
+                        adaptability: "Adaptability",
+                      };
+                      const top3 = (Object.entries(result.scores) as [keyof typeof result.scores, number][])
+                        .sort((a, b) => b[1] - a[1])
+                        .slice(0, 3);
+                      return (
+                        <div className="mb-4 space-y-1 text-left max-w-xs mx-auto">
+                          {top3.map(([key, score]) => (
+                            <div key={key} className="flex items-baseline justify-between gap-3 text-sm">
+                              <span className="font-semibold text-foreground">{dimLabels[key]}</span>
+                              <span className="text-xs text-muted-foreground flex-1 px-2 truncate">
+                                {getNarrativeForScore(key, score)}
+                              </span>
+                              <span className="font-mono text-primary">{score}</span>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })()}
                     <p className="text-sm font-medium text-primary tracking-widest uppercase mb-2">
-                      You are a
+                      Your working profile
                     </p>
                     <h1 className="text-4xl font-extrabold text-foreground mb-2">
                       {archetype.name}
