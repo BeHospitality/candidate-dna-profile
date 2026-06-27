@@ -56,18 +56,21 @@ export function getMicroReward(
 
   // Deterministic tie-break: sort by score desc, then dimension key asc.
   const sorted = Object.entries(dimensionScores)
-    .filter(([, score]) => score > 20)
+    .filter(([dim, score]) => score > 20 && INSIGHT_MAP[dim])
     .sort(([a, sa], [b, sb]) => (sb - sa) || a.localeCompare(b));
 
   if (sorted.length === 0) return null;
 
-  // Walk the ranked list, return the highest-scoring dimension whose insight
-  // we have not already shown in this session. Never repeat.
-  for (const [dim] of sorted) {
-    if (!INSIGHT_MAP[dim]) continue;
-    if (shownDimensions.has(dim)) continue;
-    return { ...INSIGHT_MAP[dim], dim };
-  }
+  // Find the highest-scoring not-yet-shown dimension.
+  const topIdx = sorted.findIndex(([dim]) => !shownDimensions.has(dim));
+  if (topIdx === -1) return null;
 
-  return null;
+  const [topDim, topScore] = sorted[topIdx];
+
+  // Margin check against the next eligible candidate (>20), whether shown or
+  // not. If the gap is too thin we skip rather than name a near-tie.
+  const runnerUp = sorted[topIdx + 1];
+  if (runnerUp && topScore - runnerUp[1] < MICRO_MARGIN) return null;
+
+  return { ...INSIGHT_MAP[topDim], dim: topDim };
 }
