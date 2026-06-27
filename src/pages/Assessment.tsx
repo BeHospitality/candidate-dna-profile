@@ -382,7 +382,27 @@ const AssessmentInner = ({
             dimension_or_archetype: insight?.named ?? null,
             gated: !!insight?.gated,
           });
-          setShowChapterTransition(true);
+          // A/B treatment: after Chapter 1, when the gate passed AND the
+          // candidate is in archch1_treatment, show a prominent archetype
+          // reveal step instead of the neutral chapter card. Falls back to
+          // the regular chapter card otherwise.
+          const variant = getArchCh1Variant();
+          if (
+            currentCh.id === 1 &&
+            variant === "archch1_treatment" &&
+            insight?.gated &&
+            insight?.named
+          ) {
+            setCh1ArchReveal(insight.named as Archetype);
+            track("reveal_shown", {
+              type: "ch1_archetype_prominent",
+              chapter: 1,
+              dimension_or_archetype: insight.named,
+              gated: true,
+            });
+          } else {
+            setShowChapterTransition(true);
+          }
           setDirection(1);
           setCurrentIdx(i => i + 1);
           return;
