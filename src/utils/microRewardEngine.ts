@@ -50,9 +50,10 @@ export function getMicroReward(
   );
   if (nearBoundary) return null;
 
+  // Deterministic tie-break: sort by score desc, then dimension key asc.
   const sorted = Object.entries(dimensionScores)
     .filter(([, score]) => score > 20)
-    .sort(([, a], [, b]) => b - a);
+    .sort(([a, sa], [b, sb]) => (sb - sa) || a.localeCompare(b));
 
   if (sorted.length === 0) return null;
 
