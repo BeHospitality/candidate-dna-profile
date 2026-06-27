@@ -15,9 +15,12 @@ import SliderQuestion from "@/components/assessment/SliderQuestion";
 import RankingQuestion from "@/components/assessment/RankingQuestion";
 import MilestoneReveal from "@/components/assessment/MilestoneReveal";
 import ChapterTransition from "@/components/assessment/ChapterTransition";
+import ArchetypeRevealCh1 from "@/components/assessment/ArchetypeRevealCh1";
 import MicroReward from "@/components/assessment/MicroReward";
 import { getMicroReward, type MicroRewardContent } from "@/utils/microRewardEngine";
 import { computeChapterInsight, type ChapterInsight } from "@/utils/chapterInsight";
+import { getArchCh1Variant } from "@/lib/abTest";
+import type { Archetype } from "@/lib/scoring";
 import ExperienceScreener from "@/components/ExperienceScreener";
 import ResumeDialog, { type SavedProgress } from "@/components/assessment/ResumeDialog";
 import SaveProgressDialog from "@/components/assessment/SaveProgressDialog";
@@ -188,6 +191,7 @@ const AssessmentInner = ({
   const [shownDimensions] = useState<Set<string>>(() => new Set());
   const [microReward, setMicroReward] = useState<MicroRewardContent | null>(null);
   const [chapterInsight, setChapterInsight] = useState<ChapterInsight | null>(null);
+  const [ch1ArchReveal, setCh1ArchReveal] = useState<Archetype | null>(null);
   const navBarRef = useRef<HTMLDivElement | null>(null);
   const [showFoldHint, setShowFoldHint] = useState(false);
 
