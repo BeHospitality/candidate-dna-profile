@@ -23,6 +23,7 @@ const ChapterTransition = ({
   questionCount,
   previousChapterCompleted,
   completedChapterNumber,
+  personalInsight,
   onStart,
   onSaveAndExit,
 }: ChapterTransitionProps) => {
