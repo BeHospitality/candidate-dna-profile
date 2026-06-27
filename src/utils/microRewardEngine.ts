@@ -10,6 +10,10 @@ const TRIGGER_POSITIONS = [7, 17, 27, 37, 47, 57, 67];
 const BOUNDARY_BUFFER = 2;
 const CHAPTER_BOUNDARIES = [11, 26, 46, 61, 76];
 
+/** Score gap (on the 0-100 comprehensive scale) the top eligible dimension
+ *  must beat the runner-up by before we name it. Avoids near-tie reveals. */
+export const MICRO_MARGIN = 5;
+
 export const INSIGHT_MAP: Record<string, MicroRewardContent> = {
   leadership:         { emoji: "👑", insight: "Natural command is emerging", sublabel: "Rooms reorganise around you." },
   precision:          { emoji: "🎯", insight: "Your precision is standing out", sublabel: "You catch what others miss." },
