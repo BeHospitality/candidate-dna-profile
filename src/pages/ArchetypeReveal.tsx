@@ -26,6 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 import { persistAssessment, markMagicLinkUsed } from "@/lib/persistence";
 import { fireHubRelayReveal, logPersistFailure } from "@/lib/hubRelayReveal";
 import { track } from "@/lib/funnel";
+import { getArchCh1Variant } from "@/lib/abTest";
 import { generateProfilePDF } from "@/utils/generateProfilePDF";
 import { supabase } from "@/integrations/supabase/client";
 import ScrollRevealSection from "@/components/results/ScrollRevealSection";
