@@ -421,6 +421,7 @@ const AssessmentInner = ({
     setShowChapterTransition(false);
     setPendingChapter(null);
     setCompletedChapterNumber(undefined);
+    setChapterInsight(null);
   };
 
   const prev = () => {
