@@ -17,6 +17,7 @@ import MilestoneReveal from "@/components/assessment/MilestoneReveal";
 import ChapterTransition from "@/components/assessment/ChapterTransition";
 import MicroReward from "@/components/assessment/MicroReward";
 import { getMicroReward, type MicroRewardContent } from "@/utils/microRewardEngine";
+import { computeChapterInsight, type ChapterInsight } from "@/utils/chapterInsight";
 import ExperienceScreener from "@/components/ExperienceScreener";
 import ResumeDialog, { type SavedProgress } from "@/components/assessment/ResumeDialog";
 import SaveProgressDialog from "@/components/assessment/SaveProgressDialog";
