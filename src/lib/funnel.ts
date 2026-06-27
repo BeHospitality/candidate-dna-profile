@@ -5,7 +5,10 @@ import { supabase } from "@/integrations/supabase/client";
 
 export type FunnelEvent =
   | "assessment_started"
+  | "chapter_start"
+  | "chapter_complete"
   | "chapter_completed"
+  | "reveal_shown"
   | "ethics_shown"
   | "ethics_signed"
   | "video_shown"
