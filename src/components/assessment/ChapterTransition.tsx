@@ -68,6 +68,12 @@ const ChapterTransition = ({
             {personalInsight.nextTeaser && (
               <p className="text-xs text-primary/80 pt-1">{personalInsight.nextTeaser}</p>
             )}
+            <p className="text-[11px] text-muted-foreground/80 pt-2 leading-snug">
+              There are no right answers. Answer honestly for the most accurate profile.
+            </p>
+            <p className="text-[11px] text-muted-foreground/70 leading-snug">
+              This is about how you work, not whether you qualify. Eligibility depends on completing your profile and meeting the programme criteria.
+            </p>
           </motion.div>
         )}
 

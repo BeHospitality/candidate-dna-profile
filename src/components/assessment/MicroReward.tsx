@@ -70,6 +70,15 @@ const MicroReward = ({ content, onDismiss }: MicroRewardProps) => {
         {content.sublabel}
       </motion.p>
 
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.45, duration: 0.4 }}
+        className="mt-4 text-[11px] text-muted-foreground/80 text-center px-10 leading-snug"
+      >
+        There are no right answers. Answer honestly for the most accurate profile.
+      </motion.p>
+
       <AnimatePresence>
         {showTapHint && (
           <motion.p
