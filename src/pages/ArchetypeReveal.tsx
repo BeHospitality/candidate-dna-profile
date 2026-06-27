@@ -132,7 +132,9 @@ const ArchetypeReveal = () => {
     }
     const res = calculateScores(answers);
     setResult(res);
-    storage.setResults(res);
+    // Stamp the A/B variant onto persisted results so downstream joins
+    // (concierge handoff, analytics) can attribute by variant later.
+    storage.setResults({ ...res, ab_archch1: getArchCh1Variant() });
 
     // Funnel: candidate reached the results screen with valid answers.
     track("results_viewed", {
