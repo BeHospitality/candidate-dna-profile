@@ -2,9 +2,16 @@
  * Builds a URL to hand off candidate data to the Be Connect concierge.
  * Reads localStorage values and passes them as URL params.
  */
+import { getArchCh1Variant } from "@/lib/abTest";
+
 export function buildConciergeURL(): string {
   const base = "https://connect.be.ie/concierge";
   const params = new URLSearchParams();
+
+  // A/B test stamp — carry the Chapter-1 archetype-reveal variant onward
+  // so downstream eligibility / completion can be joined by variant.
+  params.set("ab_archch1", getArchCh1Variant());
+
 
   const path = localStorage.getItem("beconnect-path");
   if (path) params.set("path", path);

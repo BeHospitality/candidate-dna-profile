@@ -15,9 +15,12 @@ import SliderQuestion from "@/components/assessment/SliderQuestion";
 import RankingQuestion from "@/components/assessment/RankingQuestion";
 import MilestoneReveal from "@/components/assessment/MilestoneReveal";
 import ChapterTransition from "@/components/assessment/ChapterTransition";
+import ArchetypeRevealCh1 from "@/components/assessment/ArchetypeRevealCh1";
 import MicroReward from "@/components/assessment/MicroReward";
 import { getMicroReward, type MicroRewardContent } from "@/utils/microRewardEngine";
 import { computeChapterInsight, type ChapterInsight } from "@/utils/chapterInsight";
+import { getArchCh1Variant } from "@/lib/abTest";
+import type { Archetype } from "@/lib/scoring";
 import ExperienceScreener from "@/components/ExperienceScreener";
 import ResumeDialog, { type SavedProgress } from "@/components/assessment/ResumeDialog";
 import SaveProgressDialog from "@/components/assessment/SaveProgressDialog";
@@ -188,6 +191,7 @@ const AssessmentInner = ({
   const [shownDimensions] = useState<Set<string>>(() => new Set());
   const [microReward, setMicroReward] = useState<MicroRewardContent | null>(null);
   const [chapterInsight, setChapterInsight] = useState<ChapterInsight | null>(null);
+  const [ch1ArchReveal, setCh1ArchReveal] = useState<Archetype | null>(null);
   const navBarRef = useRef<HTMLDivElement | null>(null);
   const [showFoldHint, setShowFoldHint] = useState(false);
 
@@ -378,7 +382,27 @@ const AssessmentInner = ({
             dimension_or_archetype: insight?.named ?? null,
             gated: !!insight?.gated,
           });
-          setShowChapterTransition(true);
+          // A/B treatment: after Chapter 1, when the gate passed AND the
+          // candidate is in archch1_treatment, show a prominent archetype
+          // reveal step instead of the neutral chapter card. Falls back to
+          // the regular chapter card otherwise.
+          const variant = getArchCh1Variant();
+          if (
+            currentCh.id === 1 &&
+            variant === "archch1_treatment" &&
+            insight?.gated &&
+            insight?.named
+          ) {
+            setCh1ArchReveal(insight.named as Archetype);
+            track("reveal_shown", {
+              type: "ch1_archetype_prominent",
+              chapter: 1,
+              dimension_or_archetype: insight.named,
+              gated: true,
+            });
+          } else {
+            setShowChapterTransition(true);
+          }
           setDirection(1);
           setCurrentIdx(i => i + 1);
           return;
@@ -485,6 +509,21 @@ const AssessmentInner = ({
   if (microReward) {
     return <MicroReward content={microReward} onDismiss={handleMicroRewardDismiss} />;
   }
+
+  // A/B treatment Chapter 1 prominent archetype reveal. Continue button
+  // hands off to the normal chapter card for the next chapter (Ch2).
+  if (ch1ArchReveal) {
+    return (
+      <ArchetypeRevealCh1
+        archetype={ch1ArchReveal}
+        onContinue={() => {
+          setCh1ArchReveal(null);
+          setShowChapterTransition(true);
+        }}
+      />
+    );
+  }
+
 
   // Show chapter transition
   if (showChapterTransition) {
