@@ -773,10 +773,10 @@ const ArchetypeReveal = () => {
                     <Share2 className="w-5 h-5 text-primary" />Share Your Results
                   </h3>
                   <div className="flex flex-wrap gap-3">
-                    <Button variant="outline" size="sm" onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareableUrl || window.location.origin)}&summary=${encodeURIComponent(shareText)}`, "_blank")} className="rounded-lg">
+                    <Button variant="outline" size="sm" onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareableUrlWithRef)}&summary=${encodeURIComponent(shareText)}`, "_blank")} className="rounded-lg">
                       <Linkedin className="w-4 h-4 mr-2" />LinkedIn
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareableUrl || window.location.origin)}`, "_blank")} className="rounded-lg">
+                    <Button variant="outline" size="sm" onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareableUrlWithRef)}`, "_blank")} className="rounded-lg">
                       <Twitter className="w-4 h-4 mr-2" />Twitter
                     </Button>
                     <Button variant="outline" size="sm" onClick={shareableUrl ? copyShareLink : copyLink} className="rounded-lg">
