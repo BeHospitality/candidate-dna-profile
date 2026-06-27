@@ -114,7 +114,7 @@ const ArchetypeReveal = () => {
   const [comprehensiveScores, setComprehensiveScores] = useState<ComprehensiveScores | null>(null);
   const [persistedAssessmentId, setPersistedAssessmentId] = useState<string | null>(null);
   const [persistError, setPersistError] = useState<boolean>(false);
-  const [autoReturnSeconds, setAutoReturnSeconds] = useState<number | null>(null);
+  const [showHandback, setShowHandback] = useState(false);
   const [sectorMatches, setSectorMatches] = useState<SectorMatch[]>([]);
   const [geographyMatches, setGeographyMatches] = useState<GeographyMatch[]>([]);
   const [departmentMatches, setDepartmentMatches] = useState<DepartmentFit[]>([]);
@@ -203,15 +203,13 @@ const ArchetypeReveal = () => {
         });
 
         // Concierge handback: when we have an email (deep-linked from the
-        // B2C Portal OR captured via PreAssessmentCapture), auto-return the
-        // candidate to connect.be.ie/concierge so they land on their next
-        // step (video). 15s grace lets them see the archetype reveal and
-        // gives hub-outbox-worker time to deliver. Manual button still
-        // available below for early exit.
+        // B2C Portal OR captured via PreAssessmentCapture), surface an
+        // explicit "Continue to your next step" banner. No auto-redirect,
+        // the candidate chooses when to leave the reveal screen.
         const handbackEmail =
           entryInfo.candidateEmail || localStorage.getItem("beconnect-email") || "";
         if (handbackEmail) {
-          setAutoReturnSeconds(15);
+          setShowHandback(true);
         }
       })
       .catch((err) => {
@@ -240,18 +238,8 @@ const ArchetypeReveal = () => {
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); clearTimeout(t5); window.removeEventListener("scroll", onScroll); };
   }, [navigate]);
 
-  // Concierge auto-handback countdown. Decrements each second; at 0 we
-  // navigate to connect.be.ie/concierge with full identity payload so
-  // the candidate lands on the video step without dead-end.
-  useEffect(() => {
-    if (autoReturnSeconds === null) return;
-    if (autoReturnSeconds <= 0) {
-      window.location.href = buildConciergeURL();
-      return;
-    }
-    const id = setTimeout(() => setAutoReturnSeconds((s) => (s === null ? null : s - 1)), 1000);
-    return () => clearTimeout(id);
-  }, [autoReturnSeconds]);
+  // Concierge handback is now an explicit user action (see banner below).
+  // No automatic redirect, the candidate chooses when to continue.
 
   if (!result) return null;
 
@@ -492,10 +480,10 @@ const ArchetypeReveal = () => {
                 transition={{ delay: 0.5 }}
                 className="w-full max-w-lg mx-auto space-y-6"
               >
-                {/* Concierge auto-return banner */}
-                {autoReturnSeconds !== null && (
+                {/* Concierge handback banner, explicit user choice */}
+                {showHandback && (
                   <div
-                    className="rounded-2xl p-4 text-sm flex items-center justify-between gap-3"
+                    className="rounded-2xl p-5 flex flex-col gap-3"
                     style={{
                       background: "rgba(245, 158, 11, 0.10)",
                       border: "1px solid rgba(245, 158, 11, 0.40)",
@@ -504,27 +492,15 @@ const ArchetypeReveal = () => {
                     }}
                     role="status"
                   >
-                    <span>
-                      Returning you to your career agent in{" "}
-                      <strong>{autoReturnSeconds}s</strong> to continue with your video step…
-                    </span>
-                    <div className="flex gap-2 shrink-0">
-                      <Button
-                        size="sm"
-                        className="rounded-lg"
-                        onClick={() => { window.location.href = buildConciergeURL(); }}
-                      >
-                        Go now
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="rounded-lg"
-                        onClick={() => setAutoReturnSeconds(null)}
-                      >
-                        Stay
-                      </Button>
-                    </div>
+                    <p className="text-sm leading-relaxed">
+                      Your DNA is in. Next step: eligibility and availability — about 90 seconds.
+                    </p>
+                    <Button
+                      className="rounded-lg w-full sm:w-auto self-start"
+                      onClick={() => { window.location.href = buildConciergeURL(); }}
+                    >
+                      Continue to your next step →
+                    </Button>
                   </div>
                 )}
 
@@ -634,8 +610,12 @@ const ArchetypeReveal = () => {
                   </ScrollRevealSection>
                 )}
 
-                {/* Save DNA Panel, gated on confirmed persistence (FIX 1) */}
-                {entryInfo.mode === "public" && comprehensiveScores && persistedAssessmentId && (
+                {/* Save DNA Panel, gated on confirmed persistence (FIX 1)
+                    AND only when we don't already have the candidate's email.
+                    If email was captured upstream (deep-link or PreAssessmentCapture),
+                    skip the duplicate ask — results email already fires at reveal. */}
+                {entryInfo.mode === "public" && comprehensiveScores && persistedAssessmentId &&
+                  !entryInfo.candidateEmail && !localStorage.getItem("beconnect-email") && (
                   <SaveDNAPanel
                     result={result}
                     comprehensiveScores={comprehensiveScores as unknown as Record<string, number>}
