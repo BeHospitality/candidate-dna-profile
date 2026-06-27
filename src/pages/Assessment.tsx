@@ -359,6 +359,14 @@ const AssessmentInner = ({
           });
           setCompletedChapterNumber(currentCh.id);
           setPendingChapter(nextPathChapter);
+          // Compute the personalised chapter-complete insight from the
+          // candidate's own answers in the chapter they just finished.
+          // Chapter 6 is the final reveal, leave personalInsight null there.
+          setChapterInsight(
+            currentCh.id === 6
+              ? null
+              : computeChapterInsight(currentCh.id, answers, pathQuestions, nextPathChapter.unlockDescription)
+          );
           setShowChapterTransition(true);
           setDirection(1);
           setCurrentIdx(i => i + 1);
@@ -371,15 +379,17 @@ const AssessmentInner = ({
         return;
       }
 
-      // Check for micro-reward
+      // Check for micro-reward (never repeats a dimension in a session)
       const partialScores = calculateComprehensiveScores(answers, pathQuestions);
       const reward = getMicroReward(
         partialScores as unknown as Record<string, number>,
         currentIdx,
-        firedPositions
+        firedPositions,
+        shownDimensions
       );
       if (reward) {
         firedPositions.add(currentIdx);
+        if (reward.dim) shownDimensions.add(reward.dim);
         setMicroReward(reward);
         return;
       }
