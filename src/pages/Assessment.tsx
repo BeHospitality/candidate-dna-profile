@@ -185,7 +185,9 @@ const AssessmentInner = ({
     }
     return new Set();
   });
+  const [shownDimensions] = useState<Set<string>>(() => new Set());
   const [microReward, setMicroReward] = useState<MicroRewardContent | null>(null);
+  const [chapterInsight, setChapterInsight] = useState<ChapterInsight | null>(null);
   const navBarRef = useRef<HTMLDivElement | null>(null);
   const [showFoldHint, setShowFoldHint] = useState(false);
 
