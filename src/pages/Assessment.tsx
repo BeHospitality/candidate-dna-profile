@@ -510,6 +510,21 @@ const AssessmentInner = ({
     return <MicroReward content={microReward} onDismiss={handleMicroRewardDismiss} />;
   }
 
+  // A/B treatment Chapter 1 prominent archetype reveal. Continue button
+  // hands off to the normal chapter card for the next chapter (Ch2).
+  if (ch1ArchReveal) {
+    return (
+      <ArchetypeRevealCh1
+        archetype={ch1ArchReveal}
+        onContinue={() => {
+          setCh1ArchReveal(null);
+          setShowChapterTransition(true);
+        }}
+      />
+    );
+  }
+
+
   // Show chapter transition
   if (showChapterTransition) {
     const displayChapter = pendingChapter || firstChapter;
