@@ -17,6 +17,7 @@ import MilestoneReveal from "@/components/assessment/MilestoneReveal";
 import ChapterTransition from "@/components/assessment/ChapterTransition";
 import MicroReward from "@/components/assessment/MicroReward";
 import { getMicroReward, type MicroRewardContent } from "@/utils/microRewardEngine";
+import { computeChapterInsight, type ChapterInsight } from "@/utils/chapterInsight";
 import ExperienceScreener from "@/components/ExperienceScreener";
 import ResumeDialog, { type SavedProgress } from "@/components/assessment/ResumeDialog";
 import SaveProgressDialog from "@/components/assessment/SaveProgressDialog";
@@ -184,7 +185,9 @@ const AssessmentInner = ({
     }
     return new Set();
   });
+  const [shownDimensions] = useState<Set<string>>(() => new Set());
   const [microReward, setMicroReward] = useState<MicroRewardContent | null>(null);
+  const [chapterInsight, setChapterInsight] = useState<ChapterInsight | null>(null);
   const navBarRef = useRef<HTMLDivElement | null>(null);
   const [showFoldHint, setShowFoldHint] = useState(false);
 
@@ -356,6 +359,14 @@ const AssessmentInner = ({
           });
           setCompletedChapterNumber(currentCh.id);
           setPendingChapter(nextPathChapter);
+          // Compute the personalised chapter-complete insight from the
+          // candidate's own answers in the chapter they just finished.
+          // Chapter 6 is the final reveal, leave personalInsight null there.
+          setChapterInsight(
+            currentCh.id === 6
+              ? null
+              : computeChapterInsight(currentCh.id, answers, pathQuestions, nextPathChapter.unlockDescription)
+          );
           setShowChapterTransition(true);
           setDirection(1);
           setCurrentIdx(i => i + 1);
@@ -368,15 +379,17 @@ const AssessmentInner = ({
         return;
       }
 
-      // Check for micro-reward
+      // Check for micro-reward (never repeats a dimension in a session)
       const partialScores = calculateComprehensiveScores(answers, pathQuestions);
       const reward = getMicroReward(
         partialScores as unknown as Record<string, number>,
         currentIdx,
-        firedPositions
+        firedPositions,
+        shownDimensions
       );
       if (reward) {
         firedPositions.add(currentIdx);
+        if (reward.dim) shownDimensions.add(reward.dim);
         setMicroReward(reward);
         return;
       }
@@ -408,6 +421,7 @@ const AssessmentInner = ({
     setShowChapterTransition(false);
     setPendingChapter(null);
     setCompletedChapterNumber(undefined);
+    setChapterInsight(null);
   };
 
   const prev = () => {
@@ -462,6 +476,7 @@ const AssessmentInner = ({
             questionCount={chQCount}
             previousChapterCompleted={!!pendingChapter}
             completedChapterNumber={completedChapterNumber}
+            personalInsight={chapterInsight}
             onStart={handleChapterStart}
             onSaveAndExit={pendingChapter ? () => setShowSaveDialog(true) : undefined}
           />

@@ -2,13 +2,15 @@ export type MicroRewardContent = {
   emoji: string;
   insight: string;
   sublabel: string;
+  /** The dimension key this insight derives from (used to avoid repeats). */
+  dim?: string;
 };
 
 const TRIGGER_POSITIONS = [7, 17, 27, 37, 47, 57, 67];
 const BOUNDARY_BUFFER = 2;
 const CHAPTER_BOUNDARIES = [11, 26, 46, 61, 76];
 
-const INSIGHT_MAP: Record<string, MicroRewardContent> = {
+export const INSIGHT_MAP: Record<string, MicroRewardContent> = {
   leadership:         { emoji: "👑", insight: "Natural command is emerging", sublabel: "Rooms reorganise around you." },
   precision:          { emoji: "🎯", insight: "Your precision is standing out", sublabel: "You catch what others miss." },
   empathy:            { emoji: "🌊", insight: "Your emotional intelligence is high", sublabel: "You read rooms others can't." },
@@ -37,7 +39,8 @@ const INSIGHT_MAP: Record<string, MicroRewardContent> = {
 export function getMicroReward(
   dimensionScores: Record<string, number>,
   questionIndex: number,
-  firedPositions: Set<number>
+  firedPositions: Set<number>,
+  shownDimensions: Set<string> = new Set()
 ): MicroRewardContent | null {
   if (!TRIGGER_POSITIONS.includes(questionIndex)) return null;
   if (firedPositions.has(questionIndex)) return null;
@@ -53,8 +56,12 @@ export function getMicroReward(
 
   if (sorted.length === 0) return null;
 
+  // Walk the ranked list, return the highest-scoring dimension whose insight
+  // we have not already shown in this session. Never repeat.
   for (const [dim] of sorted) {
-    if (INSIGHT_MAP[dim]) return INSIGHT_MAP[dim];
+    if (!INSIGHT_MAP[dim]) continue;
+    if (shownDimensions.has(dim)) continue;
+    return { ...INSIGHT_MAP[dim], dim };
   }
 
   return null;
