@@ -2,6 +2,7 @@
 // Server validates against an allowlist of event names, so typos here become 400s
 // (visible in network tab) rather than silent corruption.
 import { supabase } from "@/integrations/supabase/client";
+import { getArchCh1Variant } from "@/lib/abTest";
 
 export type FunnelEvent =
   | "assessment_started"
@@ -36,11 +37,13 @@ function getEmail(): string | null {
 
 export function track(event: FunnelEvent, metadata: Record<string, unknown> = {}): void {
   try {
+    // Stamp the A/B variant on every event so the test can be read from our own data.
+    const enriched = { ab_archch1: getArchCh1Variant(), ...metadata };
     const body = {
       session_id: getSessionId(),
       email: getEmail(),
       event_name: event,
-      metadata,
+      metadata: enriched,
     };
     // Don't await — keep candidate UX zero-latency
     supabase.functions
