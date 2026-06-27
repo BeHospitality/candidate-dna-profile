@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Chapter } from "@/data/chapters";
+import type { ChapterInsight } from "@/utils/chapterInsight";
 
 interface ChapterTransitionProps {
   chapter: Chapter;
@@ -11,6 +12,8 @@ interface ChapterTransitionProps {
   previousChapterCompleted: boolean;
   /** The chapter number that was just completed (for display) */
   completedChapterNumber?: number;
+  /** Personalised reveal derived from the just-completed chapter's answers */
+  personalInsight?: ChapterInsight | null;
   onStart: () => void;
   onSaveAndExit?: () => void;
 }
