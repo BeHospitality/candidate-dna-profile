@@ -632,6 +632,34 @@ const ArchetypeReveal = () => {
                   </div>
                 </ScrollRevealSection>
 
+                {/* Invite a friend — referral */}
+                <ScrollRevealSection>
+                  <div className="glass-card p-6 rounded-2xl space-y-3">
+                    <h3 className="font-bold text-lg text-foreground flex items-center gap-2">
+                      💌 Invite a friend
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Know someone who'd be great at this? Invite them to discover their DNA.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-2 items-stretch">
+                      <input
+                        readOnly
+                        value={referralLink}
+                        onFocus={(e) => e.currentTarget.select()}
+                        className="flex-1 min-w-0 rounded-lg bg-background/40 border border-border px-3 py-2 text-xs text-muted-foreground truncate"
+                      />
+                      <Button
+                        size="sm"
+                        onClick={shareReferral}
+                        className="rounded-lg"
+                      >
+                        <Copy className="w-4 h-4 mr-2" />
+                        Copy invite link
+                      </Button>
+                    </div>
+                  </div>
+                </ScrollRevealSection>
+
                 {/* Persist error banner, shown only when persistAssessment failed */}
                 {persistError && (
                   <ScrollRevealSection>
