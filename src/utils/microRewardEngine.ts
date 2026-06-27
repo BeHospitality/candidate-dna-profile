@@ -10,6 +10,10 @@ const TRIGGER_POSITIONS = [7, 17, 27, 37, 47, 57, 67];
 const BOUNDARY_BUFFER = 2;
 const CHAPTER_BOUNDARIES = [11, 26, 46, 61, 76];
 
+/** Score gap (on the 0-100 comprehensive scale) the top eligible dimension
+ *  must beat the runner-up by before we name it. Avoids near-tie reveals. */
+export const MICRO_MARGIN = 5;
+
 export const INSIGHT_MAP: Record<string, MicroRewardContent> = {
   leadership:         { emoji: "👑", insight: "Natural command is emerging", sublabel: "Rooms reorganise around you." },
   precision:          { emoji: "🎯", insight: "Your precision is standing out", sublabel: "You catch what others miss." },
@@ -52,18 +56,21 @@ export function getMicroReward(
 
   // Deterministic tie-break: sort by score desc, then dimension key asc.
   const sorted = Object.entries(dimensionScores)
-    .filter(([, score]) => score > 20)
+    .filter(([dim, score]) => score > 20 && INSIGHT_MAP[dim])
     .sort(([a, sa], [b, sb]) => (sb - sa) || a.localeCompare(b));
 
   if (sorted.length === 0) return null;
 
-  // Walk the ranked list, return the highest-scoring dimension whose insight
-  // we have not already shown in this session. Never repeat.
-  for (const [dim] of sorted) {
-    if (!INSIGHT_MAP[dim]) continue;
-    if (shownDimensions.has(dim)) continue;
-    return { ...INSIGHT_MAP[dim], dim };
-  }
+  // Find the highest-scoring not-yet-shown dimension.
+  const topIdx = sorted.findIndex(([dim]) => !shownDimensions.has(dim));
+  if (topIdx === -1) return null;
 
-  return null;
+  const [topDim, topScore] = sorted[topIdx];
+
+  // Margin check against the next eligible candidate (>20), whether shown or
+  // not. If the gap is too thin we skip rather than name a near-tie.
+  const runnerUp = sorted[topIdx + 1];
+  if (runnerUp && topScore - runnerUp[1] < MICRO_MARGIN) return null;
+
+  return { ...INSIGHT_MAP[topDim], dim: topDim };
 }
