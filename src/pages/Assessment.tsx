@@ -476,6 +476,7 @@ const AssessmentInner = ({
             questionCount={chQCount}
             previousChapterCompleted={!!pendingChapter}
             completedChapterNumber={completedChapterNumber}
+            personalInsight={chapterInsight}
             onStart={handleChapterStart}
             onSaveAndExit={pendingChapter ? () => setShowSaveDialog(true) : undefined}
           />
