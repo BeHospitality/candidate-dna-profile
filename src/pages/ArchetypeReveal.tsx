@@ -300,10 +300,49 @@ const ArchetypeReveal = () => {
   const assessmentId = storage.getAssessmentId();
   const shareableUrl = assessmentId ? `${window.location.origin}/results/${assessmentId}` : null;
 
+  // Referral link to the Be Connect Hub, attributed to this candidate's
+  // assessment id when available (falls back to legacy localStorage key,
+  // then to a plain link with no ref param).
+  const refCode =
+    assessmentId ||
+    (typeof window !== "undefined"
+      ? localStorage.getItem("beconnect-assessment-id")
+      : null);
+  const referralLink = refCode
+    ? `https://connect.be.ie/?ref=${encodeURIComponent(refCode)}`
+    : "https://connect.be.ie";
+
+  // Attribute organic LinkedIn/Twitter shares of the results URL too.
+  const shareableUrlWithRef = (() => {
+    const base = shareableUrl || window.location.origin;
+    if (!refCode) return base;
+    const sep = base.includes("?") ? "&" : "?";
+    return `${base}${sep}ref=${encodeURIComponent(refCode)}`;
+  })();
+
   const copyShareLink = () => {
     if (shareableUrl) {
       navigator.clipboard.writeText(shareableUrl);
       toast({ title: "Link copied!", description: "Share your DNA profile with anyone." });
+    }
+  };
+
+  const shareReferral = async () => {
+    const text =
+      "I just discovered my Work DNA with Be Connect. Find out yours:";
+    if (typeof navigator !== "undefined" && (navigator as any).share) {
+      try {
+        await (navigator as any).share({ title: "Discover your Work DNA", text, url: referralLink });
+        return;
+      } catch {
+        // user cancelled or unsupported, fall through to copy
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(referralLink);
+      toast({ title: "Link copied", description: "Share it with a friend." });
+    } catch {
+      toast({ title: "Couldn't copy", description: referralLink });
     }
   };
 
@@ -593,6 +632,34 @@ const ArchetypeReveal = () => {
                   </div>
                 </ScrollRevealSection>
 
+                {/* Invite a friend — referral */}
+                <ScrollRevealSection>
+                  <div className="glass-card p-6 rounded-2xl space-y-3">
+                    <h3 className="font-bold text-lg text-foreground flex items-center gap-2">
+                      💌 Invite a friend
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Know someone who'd be great at this? Invite them to discover their DNA.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-2 items-stretch">
+                      <input
+                        readOnly
+                        value={referralLink}
+                        onFocus={(e) => e.currentTarget.select()}
+                        className="flex-1 min-w-0 rounded-lg bg-background/40 border border-border px-3 py-2 text-xs text-muted-foreground truncate"
+                      />
+                      <Button
+                        size="sm"
+                        onClick={shareReferral}
+                        className="rounded-lg"
+                      >
+                        <Copy className="w-4 h-4 mr-2" />
+                        Copy invite link
+                      </Button>
+                    </div>
+                  </div>
+                </ScrollRevealSection>
+
                 {/* Persist error banner, shown only when persistAssessment failed */}
                 {persistError && (
                   <ScrollRevealSection>
@@ -734,10 +801,10 @@ const ArchetypeReveal = () => {
                     <Share2 className="w-5 h-5 text-primary" />Share Your Results
                   </h3>
                   <div className="flex flex-wrap gap-3">
-                    <Button variant="outline" size="sm" onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareableUrl || window.location.origin)}&summary=${encodeURIComponent(shareText)}`, "_blank")} className="rounded-lg">
+                    <Button variant="outline" size="sm" onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareableUrlWithRef)}&summary=${encodeURIComponent(shareText)}`, "_blank")} className="rounded-lg">
                       <Linkedin className="w-4 h-4 mr-2" />LinkedIn
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareableUrl || window.location.origin)}`, "_blank")} className="rounded-lg">
+                    <Button variant="outline" size="sm" onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareableUrlWithRef)}`, "_blank")} className="rounded-lg">
                       <Twitter className="w-4 h-4 mr-2" />Twitter
                     </Button>
                     <Button variant="outline" size="sm" onClick={shareableUrl ? copyShareLink : copyLink} className="rounded-lg">
