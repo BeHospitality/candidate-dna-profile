@@ -351,22 +351,33 @@ const AssessmentInner = ({
         // Chapter boundary, show transition
         const nextPathChapter = pathChapters.find(ch => ch.id === nextCh.id);
         if (nextPathChapter) {
+          // Legacy + new event names (allowlisted server-side).
           track("chapter_completed", {
             chapter_id: currentCh.id,
             chapter_name: currentCh.name,
             experience_path: experiencePath,
             question_index: currentIdx,
           });
+          track("chapter_complete", {
+            chapter_id: currentCh.id,
+            chapter_name: currentCh.name,
+            experience_path: experiencePath,
+          });
           setCompletedChapterNumber(currentCh.id);
           setPendingChapter(nextPathChapter);
           // Compute the personalised chapter-complete insight from the
           // candidate's own answers in the chapter they just finished.
           // Chapter 6 is the final reveal, leave personalInsight null there.
-          setChapterInsight(
-            currentCh.id === 6
-              ? null
-              : computeChapterInsight(currentCh.id, answers, pathQuestions, nextPathChapter.unlockDescription)
-          );
+          const insight = currentCh.id === 6
+            ? null
+            : computeChapterInsight(currentCh.id, answers, pathQuestions, nextPathChapter.unlockDescription);
+          setChapterInsight(insight);
+          track("reveal_shown", {
+            type: "chapter",
+            chapter: currentCh.id,
+            dimension_or_archetype: insight?.named ?? null,
+            gated: !!insight?.gated,
+          });
           setShowChapterTransition(true);
           setDirection(1);
           setCurrentIdx(i => i + 1);
@@ -391,6 +402,12 @@ const AssessmentInner = ({
         firedPositions.add(currentIdx);
         if (reward.dim) shownDimensions.add(reward.dim);
         setMicroReward(reward);
+        track("reveal_shown", {
+          type: "micro",
+          chapter: currentCh?.id ?? null,
+          dimension_or_archetype: reward.dim ?? null,
+          gated: true,
+        });
         return;
       }
 
@@ -418,6 +435,14 @@ const AssessmentInner = ({
   };
 
   const handleChapterStart = () => {
+    const ch = pendingChapter;
+    if (ch) {
+      track("chapter_start", {
+        chapter_id: ch.id,
+        chapter_name: ch.name,
+        experience_path: experiencePath,
+      });
+    }
     setShowChapterTransition(false);
     setPendingChapter(null);
     setCompletedChapterNumber(undefined);
