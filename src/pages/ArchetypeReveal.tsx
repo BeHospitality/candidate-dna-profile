@@ -300,10 +300,49 @@ const ArchetypeReveal = () => {
   const assessmentId = storage.getAssessmentId();
   const shareableUrl = assessmentId ? `${window.location.origin}/results/${assessmentId}` : null;
 
+  // Referral link to the Be Connect Hub, attributed to this candidate's
+  // assessment id when available (falls back to legacy localStorage key,
+  // then to a plain link with no ref param).
+  const refCode =
+    assessmentId ||
+    (typeof window !== "undefined"
+      ? localStorage.getItem("beconnect-assessment-id")
+      : null);
+  const referralLink = refCode
+    ? `https://connect.be.ie/?ref=${encodeURIComponent(refCode)}`
+    : "https://connect.be.ie";
+
+  // Attribute organic LinkedIn/Twitter shares of the results URL too.
+  const shareableUrlWithRef = (() => {
+    const base = shareableUrl || window.location.origin;
+    if (!refCode) return base;
+    const sep = base.includes("?") ? "&" : "?";
+    return `${base}${sep}ref=${encodeURIComponent(refCode)}`;
+  })();
+
   const copyShareLink = () => {
     if (shareableUrl) {
       navigator.clipboard.writeText(shareableUrl);
       toast({ title: "Link copied!", description: "Share your DNA profile with anyone." });
+    }
+  };
+
+  const shareReferral = async () => {
+    const text =
+      "I just discovered my Work DNA with Be Connect. Find out yours:";
+    if (typeof navigator !== "undefined" && (navigator as any).share) {
+      try {
+        await (navigator as any).share({ title: "Discover your Work DNA", text, url: referralLink });
+        return;
+      } catch {
+        // user cancelled or unsupported, fall through to copy
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(referralLink);
+      toast({ title: "Link copied", description: "Share it with a friend." });
+    } catch {
+      toast({ title: "Couldn't copy", description: referralLink });
     }
   };
 
